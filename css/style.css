@@ -148,6 +148,7 @@ img{max-width:100%;display:block}
 .course-blue{background:var(--blue)}
 .course-pink{background:var(--pink)}
 .course-icon{font-size:34px}
+.course-icon svg{width:34px;height:34px;display:block}
 .course-card h3{font:600 22px 'Fredoka',sans-serif;margin-top:10px}
 .course-card p{font-size:13px;opacity:.9;margin-top:6px}
 .course-loc{font-size:12px;font-weight:700;opacity:.85;margin-top:8px}
@@ -318,6 +319,7 @@ img{max-width:100%;display:block}
 /* course detail page */
 .course-hero{padding:56px 0 48px;text-align:center;color:#fff}
 .course-hero .course-icon-lg{font-size:52px}
+.course-hero .course-icon-lg svg{width:52px;height:52px;display:block;margin:0 auto}
 .course-hero h1{font:600 38px 'Fredoka',sans-serif;margin-top:14px}
 .course-hero-tags{display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap}
 
