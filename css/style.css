@@ -194,8 +194,8 @@ img{max-width:100%;display:block}
   box-shadow:4px 4px 0 rgba(30,37,64,.12);transition:transform .15s ease;
 }
 .event-card:hover{transform:translateY(-3px)}
-.event-card .ph{width:100%;height:160px;border-radius:0}
-.event-card img{width:100%;height:160px;border-radius:0;object-fit:cover;display:block}
+.event-card .ph{width:100%;height:200px;border-radius:0}
+.event-card img{width:100%;height:200px;border-radius:0;object-fit:contain;background:#efebe2;display:block}
 .event-body{padding:16px}
 .event-body h3{font:600 17px 'Fredoka',sans-serif;color:var(--navy);margin-top:6px}
 .event-body p{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
