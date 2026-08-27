@@ -304,6 +304,7 @@ img{max-width:100%;display:block}
 .contact-form input,.contact-form select,.contact-form textarea{
   border:1.5px solid #ddd;border-radius:8px;padding:11px 14px;font-size:14px;
   font-family:inherit;color:var(--ink);background:#fff;resize:vertical;
+  width:100%;min-width:0;
 }
 .contact-form input:focus,.contact-form select:focus,.contact-form textarea:focus{
   outline:none;border-color:var(--teal);
@@ -373,6 +374,8 @@ img{max-width:100%;display:block}
   .nav-toggle{display:flex}
   .courses-grid{grid-template-columns:1fr}
   .social-inner{flex-direction:column;text-align:center}
+  .social-thumbs{flex-wrap:wrap;justify-content:center;width:100%}
+  .social-thumbs .ph-sm{width:64px}
   .events-grid{grid-template-columns:1fr}
   .ph{width:100%}
   .hero-shape-square,.hero-shape-dot2,.hero-shape-dot3,.hero-shape-tri1,.hero-shape-tri2,.hero-shape-tri3{display:none}
