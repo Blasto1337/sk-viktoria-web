@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Administrace — SK Viktoria Tábor</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+<header class="admin-header">
+  <a class="brand" href="index.html">
+    <span class="brand-badge">SK</span>
+    <span class="brand-name">VIKTORIA TÁBOR</span>
+  </a>
+  <div class="admin-header-title">Administrace</div>
+  <a class="admin-back" href="index.html">← Zpět na web</a>
+</header>
+
+<div class="admin-banner">
+  Toto je funkční ukázka administrace pro prezentaci klientovi. Nová data se ukládají lokálně do tohoto prohlížeče (localStorage) — po schválení napojíme ostrou databázi a přihlašování.
+  <button type="button" id="reset-all">Vymazat všechna přidaná data</button>
+</div>
+
+<main class="admin-main">
+
+  <nav class="admin-tabs" id="admin-tabs">
+    <button class="admin-tab active" data-tab="submissions">📥 Přihlášky <span class="admin-tab-count" id="count-submissions">0</span></button>
+    <button class="admin-tab" data-tab="aktuality">📢 Aktuality <span class="admin-tab-count" id="count-aktuality">0</span></button>
+    <button class="admin-tab" data-tab="akce">🎉 Akce <span class="admin-tab-count" id="count-akce">0</span></button>
+    <button class="admin-tab" data-tab="krouzky">🏅 Kroužky <span class="admin-tab-count" id="count-krouzky">0</span></button>
+  </nav>
+
+  <!-- ================= PŘIHLÁŠKY ================= -->
+  <section class="admin-panel" id="panel-submissions" data-panel="submissions">
+    <div class="admin-panel-head">
+      <h2>Přihlášky a kontaktní formuláře</h2>
+      <div class="admin-filters">
+        <button class="filter-btn active" data-status="all">Vše</button>
+        <button class="filter-btn" data-status="new">Nové</button>
+        <button class="filter-btn" data-status="done">Vyřízené</button>
+      </div>
+    </div>
+    <div class="admin-list" id="submissions-list"></div>
+    <p class="admin-empty" id="submissions-empty" hidden>Zatím žádné přihlášky. Jakmile někdo odešle kontaktní formulář na webu, objeví se tady.</p>
+  </section>
+
+  <!-- ================= AKTUALITY ================= -->
+  <section class="admin-panel" id="panel-aktuality" data-panel="aktuality" hidden>
+    <div class="admin-panel-head"><h2>Aktuality</h2></div>
+    <div class="admin-columns">
+      <form class="admin-form" id="form-aktualita">
+        <h3>Přidat aktualitu</h3>
+        <label>Emoji ikona
+          <input type="text" name="icon" placeholder="📢" maxlength="4">
+        </label>
+        <label>Datum / termín
+          <input type="text" name="date" placeholder="např. 15. 9. 2026" required>
+        </label>
+        <label>Text
+          <textarea name="text" rows="4" placeholder="Krátká zpráva — zavřeno, prázdniny, výpadek trenéra…" required></textarea>
+        </label>
+        <button class="btn btn-submit" type="submit">Přidat aktualitu</button>
+      </form>
+
+      <div>
+        <p class="admin-subhead">Napevno na webu</p>
+        <div class="admin-static-list" id="aktuality-static-list"></div>
+
+        <p class="admin-subhead">Přidané v administraci</p>
+        <div class="admin-list" id="aktuality-list"></div>
+        <p class="admin-empty" id="aktuality-empty" hidden>Zatím jste nepřidali žádnou aktualitu.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= AKCE ================= -->
+  <section class="admin-panel" id="panel-akce" data-panel="akce" hidden>
+    <div class="admin-panel-head"><h2>Akce</h2></div>
+    <div class="admin-columns">
+      <form class="admin-form" id="form-akce">
+        <h3>Přidat akci</h3>
+        <div class="field-row">
+          <label>Štítek
+            <input type="text" name="tag" placeholder="NÁBOR" required>
+          </label>
+          <label>Barva štítku
+            <select name="color">
+              <option value="teal">tyrkysová</option>
+              <option value="purple">fialová</option>
+              <option value="red">červená</option>
+              <option value="blue">modrá</option>
+            </select>
+          </label>
+        </div>
+        <label>Kategorie (pro filtr na stránce Akce)
+          <select name="category">
+            <option value="nabor">Nábory a zápisy</option>
+            <option value="tabor">Tábory</option>
+            <option value="zavody">Závody</option>
+          </select>
+        </label>
+        <label>Nadpis
+          <input type="text" name="title" placeholder="Název akce" required>
+        </label>
+        <div class="field-row">
+          <label>Datum
+            <input type="text" name="date" placeholder="např. 15. 9. 2026" required>
+          </label>
+          <label>Místo
+            <input type="text" name="location" placeholder="např. Centrum Univerzita Tábor">
+          </label>
+        </div>
+        <label>Krátký popis (na kartě)
+          <textarea name="description" rows="2" placeholder="Jedna–dvě věty pro náhled na kartě"></textarea>
+        </label>
+        <label>Podrobnosti (na detailu, jeden bod na řádek)
+          <textarea name="bullets" rows="4" placeholder="15:30–16:30 — zkušební lekce&#10;Registrace: e-mail nebo SMS"></textarea>
+        </label>
+        <button class="btn btn-submit" type="submit">Přidat akci</button>
+      </form>
+
+      <div>
+        <p class="admin-subhead">Napevno na webu</p>
+        <div class="admin-static-list" id="akce-static-list"></div>
+
+        <p class="admin-subhead">Přidané v administraci</p>
+        <div class="admin-list" id="akce-list"></div>
+        <p class="admin-empty" id="akce-empty" hidden>Zatím jste nepřidali žádnou akci.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= KROUŽKY ================= -->
+  <section class="admin-panel" id="panel-krouzky" data-panel="krouzky" hidden>
+    <div class="admin-panel-head"><h2>Kroužky</h2></div>
+    <div class="admin-columns">
+      <form class="admin-form" id="form-krouzek">
+        <h3>Přidat kroužek</h3>
+        <div class="field-row">
+          <label>Emoji ikona
+            <input type="text" name="icon" placeholder="⭐" maxlength="4">
+          </label>
+          <label>Barva karty
+            <select name="color">
+              <option value="teal">tyrkysová</option>
+              <option value="purple">fialová</option>
+              <option value="yellow">žlutá</option>
+              <option value="red">červená</option>
+              <option value="blue">modrá</option>
+              <option value="pink">růžová</option>
+            </select>
+          </label>
+        </div>
+        <label>Název kroužku
+          <input type="text" name="name" placeholder="např. Judo" required>
+        </label>
+        <div class="field-row">
+          <label>Věková kategorie
+            <input type="text" name="age" placeholder="např. 6–10 let">
+          </label>
+          <label>Místo
+            <input type="text" name="location" placeholder="např. Centrum Univerzita Tábor">
+          </label>
+        </div>
+        <label>Popis
+          <textarea name="description" rows="2" placeholder="Krátký popis pro kartu i detail"></textarea>
+        </label>
+        <label>Rozvrh (jeden řádek = den | čas)
+          <textarea name="schedule" rows="3" placeholder="Pondělí | 16:00–17:00&#10;Středa | 17:00–18:00"></textarea>
+          <span class="hint">Formát: den a čas oddělte svislítkem „|“.</span>
+        </label>
+        <button class="btn btn-submit" type="submit">Přidat kroužek</button>
+      </form>
+
+      <div>
+        <p class="admin-subhead">Napevno na webu</p>
+        <div class="admin-static-list" id="krouzky-static-list"></div>
+
+        <p class="admin-subhead">Přidané v administraci</p>
+        <div class="admin-list" id="krouzky-list"></div>
+        <p class="admin-empty" id="krouzky-empty" hidden>Zatím jste nepřidali žádný kroužek.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="js/store.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

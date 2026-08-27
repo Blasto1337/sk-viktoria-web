@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Akce — SK Viktoria Tábor</title>
+<meta name="description" content="Příměstské tábory, závody a lokální akce SK Viktoria Tábor, na které zveme děti i rodiče.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-badge">SK</span>
+      <span class="brand-name">VIKTORIA TÁBOR</span>
+    </a>
+
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html#krouzky">Kroužky</a>
+      <a href="akce.html" class="active">Akce</a>
+      <a href="gallery.html">Galerie</a>
+      <a href="index.html#aktuality">Aktuality</a>
+      <a href="index.html#kontakt">Kontakt</a>
+      <a class="btn btn-cta nav-cta" href="index.html#kontakt">Přihláška <span aria-hidden="true">✦</span></a>
+    </nav>
+
+    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Otevřít menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <section class="page-head">
+    <div class="wrap">
+      <h1>Akce</h1>
+      <p>Příměstské tábory, závody a lokální akce, na které zveme děti i rodiče.</p>
+    </div>
+  </section>
+
+  <div class="gallery-filters">
+    <button class="filter-btn active" data-filter="all">Vše</button>
+    <button class="filter-btn" data-filter="nabor">Nábory a zápisy</button>
+    <button class="filter-btn" data-filter="tabor">Tábory</button>
+    <button class="filter-btn" data-filter="zavody">Závody</button>
+  </div>
+
+  <section class="events">
+    <div class="wrap">
+      <div class="events-grid" id="events-grid">
+
+        <a class="event-card" href="akce-vfresh-dc.html" data-filter-type="nabor">
+          <img src="assets/akce/vfresh-dc.jpg" alt="VFRESH DC" loading="lazy">
+          <div class="event-body">
+            <div class="event-meta"><span class="tag tag-teal">ZÁPIS</span><time>7. 9. 2026</time></div>
+            <h3>VFRESH DC — den otevřených dveří</h3>
+            <p>Zkušební lekce a zápis v AB Studiu, OC MAGA, Planá nad Lužnicí. 15:30 Street Dance Crew (7–14 let), 17:00 Freshík a Mini Beat (3–7 let).</p>
+          </div>
+        </a>
+
+        <a class="event-card" href="akce-dramaticky-klub.html" data-filter-type="nabor">
+          <img src="assets/akce/dramaticky-klub.jpg" alt="Dramatický klub" loading="lazy">
+          <div class="event-body">
+            <div class="event-meta"><span class="tag tag-purple">NÁBOR</span><time>2. 9. 2026</time></div>
+            <h3>Dramatický klub — ukázkové hodiny zdarma</h3>
+            <p>Zkuste divadlo nanečisto. Dramáček (3–6 let) a Dramalab (7–12 let), Centrum Univerzity Tábor.</p>
+          </div>
+        </a>
+
+        <a class="event-card" href="akce-sportuj-s-viktorkou.html" data-filter-type="nabor">
+          <img src="assets/akce/sportuj-s-viktorkou.jpg" alt="Sportuj s Viktorkou" loading="lazy">
+          <div class="event-body">
+            <div class="event-meta"><span class="tag tag-red">NÁBOR</span><time>9. 9. 2026</time></div>
+            <h3>Sportuj s Viktorkou — nábor na ZŠ Helsinská</h3>
+            <p>Dva nové pohybové kroužky. St 16:00–17:00 (4–7 let), St 17:00–18:00 (7–12 let).</p>
+          </div>
+        </a>
+
+        <a class="event-card" href="akce-fresh-mates.html" data-filter-type="nabor">
+          <div class="ph" aria-hidden="true"><span>foto</span></div>
+          <div class="event-body">
+            <div class="event-meta"><span class="tag tag-blue">NÁBOR</span><time>10. 9. 2026</time></div>
+            <h3>Viktoria Fresh Mates — nábor pro rodiče</h3>
+            <p>Nová dospělácká taneční crew (Hobby Masters). Zkušební lekce 18:00–19:00, žádné zkušenosti nejsou potřeba.</p>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="supporters">
+    <div class="wrap">
+      <p class="supporters-title">V naší činnosti nás podporují</p>
+      <div class="supporters-logos">
+        <div class="logo-ph"><span>ČUS</span></div>
+        <div class="logo-ph"><span>NSA</span></div>
+        <div class="logo-ph"><span>Tábor</span></div>
+        <div class="logo-ph"><span>JK</span></div>
+        <div class="logo-ph"><span>CUT</span></div>
+        <div class="logo-ph"><span>Safari</span></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>SK Viktoria Tábor · +420 607 825 318 · lena.cimpova@seznam.cz</span>
+    <span>© 2026 SK Viktoria Tábor</span>
+    <a href="admin.html" style="opacity:.55">Administrace</a>
+  </div>
+</footer>
+
+<script src="js/store.js"></script>
+<script src="js/script.js"></script>
+<script src="js/render-public.js"></script>
+<script src="js/akce.js"></script>
+</body>
+</html>

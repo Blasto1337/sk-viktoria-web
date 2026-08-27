@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kroužek — SK Viktoria Tábor</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-badge">SK</span>
+      <span class="brand-name">VIKTORIA TÁBOR</span>
+    </a>
+
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html#krouzky">Kroužky</a>
+      <a href="akce.html">Akce</a>
+      <a href="gallery.html">Galerie</a>
+      <a href="index.html#aktuality">Aktuality</a>
+      <a href="index.html#kontakt">Kontakt</a>
+      <a class="btn btn-cta nav-cta" href="index.html#kontakt">Přihláška <span aria-hidden="true">✦</span></a>
+    </nav>
+
+    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Otevřít menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main id="k-root">
+
+  <section class="course-hero course-teal" id="k-hero">
+    <div class="wrap">
+      <div class="course-icon-lg" id="k-icon" aria-hidden="true">⭐</div>
+      <h1 id="k-name">Kroužek</h1>
+      <div class="course-hero-tags">
+        <span class="age-badge" id="k-age">—</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="detail">
+    <div class="wrap">
+      <a class="back-link" href="index.html#krouzky">← Zpět na kroužky</a>
+      <p class="detail-lead" id="k-desc"></p>
+
+      <div class="detail-grid">
+        <div class="detail-box">
+          <h2>Rozvrh</h2>
+          <ul class="schedule-list" id="k-schedule"></ul>
+        </div>
+        <div class="detail-box">
+          <h2>Kde trénujeme</h2>
+          <p id="k-location">Bude upřesněno.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="detail-cta">
+    <div class="wrap">
+      <p>Máte zájem o tento kroužek?</p>
+      <a class="btn btn-hero" id="k-cta" href="index.html#kontakt">Mám zájem — napsat zprávu</a>
+    </div>
+  </section>
+
+  <section class="supporters">
+    <div class="wrap">
+      <p class="supporters-title">V naší činnosti nás podporují</p>
+      <div class="supporters-logos">
+        <div class="logo-ph"><span>ČUS</span></div>
+        <div class="logo-ph"><span>NSA</span></div>
+        <div class="logo-ph"><span>Tábor</span></div>
+        <div class="logo-ph"><span>JK</span></div>
+        <div class="logo-ph"><span>CUT</span></div>
+        <div class="logo-ph"><span>Safari</span></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>SK Viktoria Tábor · +420 607 825 318 · lena.cimpova@seznam.cz</span>
+    <span>© 2026 SK Viktoria Tábor</span>
+    <a href="admin.html" style="opacity:.55">Administrace</a>
+  </div>
+</footer>
+
+<script src="js/store.js"></script>
+<script src="js/script.js"></script>
+<script src="js/kurz-detail.js"></script>
+</body>
+</html>
