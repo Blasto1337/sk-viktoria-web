@@ -10,7 +10,7 @@
     document.getElementById("k-root").innerHTML = `
       <section class="detail">
         <div class="wrap">
-          <a class="back-link" href="index.html#krouzky">← Zpět na kroužky</a>
+          <a class="back-link" href="krouzky.html">← Zpět na kroužky</a>
           <p class="detail-lead">Tento kroužek jsme nenašli. Možná byl odebrán, nebo si prohlížíte odkaz z jiného zařízení/prohlížeče — data z administrace jsou zatím uložená jen lokálně.</p>
         </div>
       </section>

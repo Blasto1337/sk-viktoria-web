@@ -74,6 +74,9 @@
   }
 
   // --- Kroužky (courses) ------------------------------------------------
+  // Only the dedicated krouzky.html has #courses-grid — the homepage grid
+  // is #courses-grid-preview and intentionally stays a fixed, curated set
+  // so it doesn't outgrow the layout as more kroužky get added.
   const coursesGrid = document.getElementById("courses-grid");
   if (coursesGrid) {
     VTStore.krouzky.all().forEach((item) => {
@@ -92,20 +95,22 @@
         </a>
       `));
     });
+  }
 
-    const categorySelect = document.getElementById("f-category");
-    if (categorySelect) {
-      const jineOption = [...categorySelect.options].find((o) => o.value === "Jiné");
-      VTStore.krouzky.all().forEach((item) => {
-        const opt = document.createElement("option");
-        opt.value = item.name;
-        opt.textContent = `${item.name} (${item.age || "Novinka"})`;
-        if (jineOption) categorySelect.insertBefore(opt, jineOption);
-        else categorySelect.appendChild(opt);
-      });
+  // Contact form category dropdown — present only on the homepage, but
+  // independent of which (if any) courses grid exists on this page.
+  const categorySelect = document.getElementById("f-category");
+  if (categorySelect) {
+    const jineOption = [...categorySelect.options].find((o) => o.value === "Jiné");
+    VTStore.krouzky.all().forEach((item) => {
+      const opt = document.createElement("option");
+      opt.value = item.name;
+      opt.textContent = `${item.name} (${item.age || "Novinka"})`;
+      if (jineOption) categorySelect.insertBefore(opt, jineOption);
+      else categorySelect.appendChild(opt);
+    });
 
-      const kurzname = new URLSearchParams(window.location.search).get("kurzname");
-      if (kurzname) categorySelect.value = kurzname;
-    }
+    const kurzname = new URLSearchParams(window.location.search).get("kurzname");
+    if (kurzname) categorySelect.value = kurzname;
   }
 })();
