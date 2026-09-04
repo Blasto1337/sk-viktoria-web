@@ -101,7 +101,7 @@ img{max-width:100%;display:block}
 .deco-disco{top:14px;left:5%;width:64px;transform:rotate(-6deg)}
 .deco-cap{top:24px;right:6%;width:50px;transform:rotate(11deg)}
 .deco-cassette{top:120px;right:16%;width:58px;transform:rotate(9deg)}
-.deco-boombox{bottom:120px;left:12%;width:68px;transform:rotate(-8deg)}
+.deco-boombox{top:110px;left:19%;width:60px;transform:rotate(-8deg)}
 .hero-dancer{position:absolute;bottom:0;z-index:1;line-height:0;pointer-events:none}
 .hero-dancer img{display:block;height:clamp(140px,22vw,230px);width:auto}
 .dancer-left{left:8%}
