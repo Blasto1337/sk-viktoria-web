@@ -80,7 +80,7 @@ img{max-width:100%;display:block}
 
 /* hero */
 .hero{
-  position:relative;overflow:hidden;padding:56px 0 40px;text-align:center;
+  position:relative;overflow:hidden;padding:64px 0 60px;text-align:center;
   background:var(--purple);
 }
 .hero::before{
@@ -104,28 +104,13 @@ img{max-width:100%;display:block}
 .deco-boombox{bottom:120px;left:12%;width:68px;transform:rotate(-8deg)}
 .hero-dancer{position:absolute;bottom:0;z-index:1;line-height:0;pointer-events:none}
 .hero-dancer img{display:block;height:clamp(140px,22vw,230px);width:auto}
-.dancer-left{left:1%}
-.dancer-right{right:1%}
+.dancer-left{left:8%}
+.dancer-right{right:8%}
 .btn-hero{
   background:var(--green);color:#fff;padding:15px 34px;font-size:18px;
   box-shadow:4px 4px 0 var(--yellow);
 }
 .btn-hero:hover{box-shadow:6px 6px 0 var(--yellow);transform:translate(-2px,-2px);background:#25a35f}
-
-.hero-slider{
-  position:relative;display:flex;align-items:center;gap:10px;
-  max-width:640px;margin:40px auto 0;
-}
-.hero-slider-viewport{overflow:hidden;flex:1;border-radius:14px}
-.hero-slider-track{display:flex;gap:14px;transition:transform .4s ease}
-.hero-media-item{flex:none;height:120px;border-radius:14px;overflow:hidden}
-.hero-media-item img{width:100%;height:100%;object-fit:cover;display:block}
-.hero-slider-arrow{
-  flex:none;width:38px;height:38px;border-radius:50%;border:2px solid var(--navy);
-  background:#fff;color:var(--navy);font-size:18px;font-weight:800;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;transition:background .15s ease,color .15s ease;
-}
-.hero-slider-arrow:hover{background:var(--navy);color:#fff}
 
 /* marquee strip */
 .strip{background:var(--stone);overflow:hidden;padding:12px 0}
@@ -388,9 +373,6 @@ img{max-width:100%;display:block}
   .events-grid{grid-template-columns:1fr}
   .ph{width:100%}
   .hero-deco,.hero-dancer{display:none}
-  .hero-slider{max-width:320px;gap:6px}
-  .hero-media-item{height:80px}
-  .hero-slider-arrow{width:30px;height:30px;font-size:15px}
   .gallery-grid-preview,.gallery-grid-full{grid-template-columns:repeat(2,1fr)}
   .logo-ph{width:100px;height:56px}
   .lightbox-prev{left:4px}

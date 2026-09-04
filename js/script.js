@@ -18,40 +18,6 @@
     });
   }
 
-  const sliderTrack = document.getElementById("hero-slider-track");
-  const sliderViewport = sliderTrack ? sliderTrack.parentElement : null;
-  const sliderPrev = document.getElementById("hero-slider-prev");
-  const sliderNext = document.getElementById("hero-slider-next");
-
-  if (sliderTrack && sliderViewport && sliderPrev && sliderNext) {
-    const visibleCount = 3;
-    const gap = 14;
-    const items = [...sliderTrack.children];
-    let index = 0;
-
-    const layout = () => {
-      const itemWidth = (sliderViewport.clientWidth - gap * (visibleCount - 1)) / visibleCount;
-      items.forEach((item) => {
-        item.style.flexBasis = `${itemWidth}px`;
-      });
-      goTo(index, false);
-    };
-
-    const goTo = (next, animate = true) => {
-      const maxIndex = Math.max(items.length - visibleCount, 0);
-      index = ((next % (maxIndex + 1)) + (maxIndex + 1)) % (maxIndex + 1);
-      const itemWidth = items[0] ? items[0].getBoundingClientRect().width : 0;
-      sliderTrack.style.transition = animate ? "transform .4s ease" : "none";
-      sliderTrack.style.transform = `translateX(-${index * (itemWidth + gap)}px)`;
-    };
-
-    sliderPrev.addEventListener("click", () => goTo(index - 1));
-    sliderNext.addEventListener("click", () => goTo(index + 1));
-
-    window.addEventListener("resize", layout);
-    layout();
-  }
-
   const form = document.getElementById("contact-form");
   const note = document.getElementById("form-note");
 
