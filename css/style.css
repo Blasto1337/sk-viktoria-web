@@ -86,7 +86,7 @@ img{max-width:100%;display:block}
   background:var(--purple);opacity:.74;
 }
 .hero{
-  background-image:url("assets/hero/laser-bg.jpg");
+  background-image:url("../assets/hero/laser-bg.jpg");
   background-size:cover;background-position:center 70%;
 }
 .hero-inner{position:relative;z-index:2;max-width:720px}
