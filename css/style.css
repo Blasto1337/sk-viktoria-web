@@ -153,7 +153,7 @@ img{max-width:100%;display:block}
 
 .schedule-list{display:flex;flex-direction:column;gap:10px}
 .schedule-list li{
-  background:#fff;border:2px solid var(--navy);border-radius:12px;padding:13px 18px;
+  background:var(--cream);border:2px solid var(--navy);border-radius:12px;padding:13px 18px;
   display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
 }
 .schedule-list b{color:var(--navy)}
@@ -162,7 +162,7 @@ img{max-width:100%;display:block}
 /* aktuality: short operational announcements */
 .alerts-list{display:flex;flex-direction:column;gap:10px}
 .alert-item{
-  background:#fff;border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;
+  background:var(--cream);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;
   border-left:4px solid var(--yellow);
 }
 .alert-icon{font-size:20px;line-height:1;flex:none}
@@ -179,7 +179,7 @@ img{max-width:100%;display:block}
 .events{padding:8px 0 40px}
 .events-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .event-card{
-  background:#fff;border-radius:16px;overflow:hidden;
+  background:var(--cream);border-radius:16px;overflow:hidden;
   box-shadow:4px 4px 0 rgba(30,37,64,.12);transition:transform .15s ease;
 }
 .event-card:hover{transform:translateY(-3px)}
@@ -224,7 +224,7 @@ img{max-width:100%;display:block}
 
 .gallery-filters{display:flex;justify-content:center;gap:10px;padding:24px 0;flex-wrap:wrap}
 .filter-btn{
-  border:2px solid var(--navy);background:#fff;color:var(--navy);
+  border:2px solid var(--navy);background:var(--cream);color:var(--navy);
   padding:9px 20px;border-radius:999px;font:800 13px 'Fredoka',sans-serif;cursor:pointer;
 }
 .filter-btn.active{background:var(--navy);color:#fff}
@@ -260,7 +260,7 @@ img{max-width:100%;display:block}
 .supporters-title{text-align:center;font-weight:800;font-size:14px;color:var(--on-bg-muted);margin-bottom:20px}
 .supporters-logos{display:flex;flex-wrap:wrap;justify-content:center;gap:14px}
 .logo-ph{
-  width:120px;height:64px;border-radius:10px;background:#fff;border:1.5px solid rgba(30,37,64,.12);
+  width:120px;height:64px;border-radius:10px;background:var(--cream);border:1.5px solid rgba(30,37,64,.12);
   display:flex;align-items:center;justify-content:center;
 }
 .logo-ph span{font:700 13px 'Fredoka',sans-serif;color:var(--muted)}
@@ -292,7 +292,7 @@ img{max-width:100%;display:block}
 .contact-form label{font-size:12px;font-weight:800;color:#fff;margin-top:2px}
 .contact-form input,.contact-form select,.contact-form textarea{
   border:1.5px solid #ddd;border-radius:8px;padding:11px 14px;font-size:14px;
-  font-family:inherit;color:var(--ink);background:#fff;resize:vertical;
+  font-family:inherit;color:var(--ink);background:var(--cream);resize:vertical;
   width:100%;min-width:0;
 }
 .contact-form input:focus,.contact-form select:focus,.contact-form textarea:focus{
@@ -316,7 +316,7 @@ img{max-width:100%;display:block}
 .back-link:hover{color:var(--gold)}
 .detail-lead{font-size:17px;color:var(--on-bg-muted);line-height:1.7;max-width:700px;margin-top:22px}
 .detail-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;margin-top:32px;align-items:start}
-.detail-box{background:#fff;border:2px solid var(--navy);border-radius:16px;padding:24px}
+.detail-box{background:var(--cream);border:2px solid var(--navy);border-radius:16px;padding:24px}
 .detail-box h2{font:600 20px 'Fredoka',sans-serif;color:var(--charcoal);margin-bottom:14px}
 .detail-box p{color:var(--muted);font-size:14px;line-height:1.6}
 .detail-media{padding:40px 0 0}
