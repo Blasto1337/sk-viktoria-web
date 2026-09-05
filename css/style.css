@@ -323,6 +323,9 @@ img{max-width:100%;display:block}
 .detail-media h2{font:600 24px 'Fredoka',sans-serif;color:#fff;margin-bottom:18px}
 .detail-cta{margin:40px 0 8px;text-align:center}
 .detail-cta p{color:var(--on-bg-muted);margin-bottom:16px}
+.detail-cta-alt{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-top:16px;font-size:14px;font-weight:700}
+.detail-cta-alt a{color:#fff}
+.detail-cta-alt a:hover{color:var(--gold)}
 
 /* akce (event) detail page — compact, text-first, no colored hero */
 .event-detail{padding:48px 0 8px}
