@@ -14,7 +14,7 @@
   --ink:#1e2540;
   --muted:#5a5f75;
   --gold:#ffcf5c;
-  --stone:#746e62;
+  --stone:#000;
   --on-bg-muted:rgba(255,255,255,.82);
   --radius:14px;
 }
@@ -130,12 +130,12 @@ img{max-width:100%;display:block}
   cursor:pointer;border-radius:20px;transition:transform .15s ease,box-shadow .15s ease;
 }
 .course-card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(30,37,64,.18);position:relative;z-index:1}
-.course-red{background:#746e62}
-.course-teal{background:#57534a}
-.course-purple{background:var(--yellow-deep)}
-.course-yellow{background:#8a7454}
-.course-blue{background:#8a6a1f}
-.course-pink{background:#9c8563}
+.course-red,
+.course-teal,
+.course-purple,
+.course-yellow,
+.course-blue,
+.course-pink{background:var(--yellow-deep)}
 .course-icon{font-size:34px}
 .course-icon svg{width:34px;height:34px;display:block}
 .course-card h3{font:600 22px 'Fredoka',sans-serif;margin-top:10px}
