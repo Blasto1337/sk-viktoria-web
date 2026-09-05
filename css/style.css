@@ -54,11 +54,7 @@ img{max-width:100%;display:block}
   padding:14px 24px;
 }
 .brand{display:flex;align-items:center;gap:10px}
-.brand-badge{
-  width:40px;height:40px;border-radius:12px;background:var(--yellow-deep);color:#fff;
-  display:flex;align-items:center;justify-content:center;
-  font:700 15px 'Anton',sans-serif;letter-spacing:.5px;transform:rotate(-6deg);flex:none;
-}
+.brand-badge{width:46px;height:46px;object-fit:contain;flex:none}
 .brand-name{font:700 18px 'Anton',sans-serif;color:#fff;letter-spacing:.6px}
 
 .main-nav{display:flex;align-items:center;gap:8px}
