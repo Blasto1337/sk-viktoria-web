@@ -64,7 +64,7 @@ img{max-width:100%;display:block}
 .main-nav{display:flex;align-items:center;gap:8px}
 .main-nav a{
   padding:10px 16px;border:2px solid rgba(255,255,255,.55);border-radius:999px;
-  font-weight:800;font-size:13px;color:#fff;background:transparent;
+  font-family:'Anton',sans-serif;font-weight:800;font-size:13px;color:#fff;background:transparent;
 }
 .main-nav a:hover{background:var(--purple);color:#fff;border-color:var(--purple)}
 .main-nav a.active{background:var(--purple);color:#fff;border-color:var(--purple)}
