@@ -63,7 +63,7 @@
       window.location.href = `mailto:lena.cimpova@seznam.cz?subject=${subject}&body=${body}`;
 
       note.textContent = "Přihláška uložena a otevírá se e-mailový klient s vyplněnou zprávou…";
-      note.style.color = "#0fa3a3";
+      note.style.color = "#ffcf5c";
       form.reset();
     });
   }
