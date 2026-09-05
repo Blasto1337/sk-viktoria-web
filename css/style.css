@@ -126,23 +126,24 @@ img{max-width:100%;display:block}
 .courses{padding:40px 0}
 .courses-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .course-card{
-  padding:30px 26px;min-height:210px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;
-  cursor:pointer;border-radius:20px;transition:transform .15s ease,box-shadow .15s ease;
+  padding:30px 26px;min-height:210px;display:flex;flex-direction:column;justify-content:space-between;color:var(--navy);
+  cursor:pointer;border-radius:20px;box-shadow:4px 4px 0 var(--navy);
+  transition:transform .15s ease,box-shadow .15s ease;
 }
-.course-card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(30,37,64,.18);position:relative;z-index:1}
+.course-card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--navy);position:relative;z-index:1}
 .course-red,
 .course-teal,
 .course-purple,
 .course-yellow,
 .course-blue,
-.course-pink{background:var(--yellow-deep)}
+.course-pink{background:var(--gold)}
 .course-icon{font-size:34px}
 .course-icon svg{width:34px;height:34px;display:block}
 .course-card h3{font:600 22px 'Anton',sans-serif;margin-top:10px}
 .course-card p{font-size:13px;opacity:.9;margin-top:6px}
 .course-loc{font-size:12px;font-weight:700;opacity:.85;margin-top:8px}
 .course-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
-.age-badge{background:rgba(255,255,255,.25);padding:4px 11px;border-radius:999px;font-weight:800;font-size:12px}
+.age-badge{background:rgba(30,37,64,.14);padding:4px 11px;border-radius:999px;font-weight:800;font-size:12px}
 .course-arrow{font-weight:800;font-size:15px;color:inherit;transition:transform .15s ease}
 .course-card:hover .course-arrow{transform:translateX(4px)}
 
