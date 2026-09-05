@@ -7,7 +7,7 @@
   padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
 }
 .admin-header .brand{display:flex;align-items:center;gap:10px}
-.admin-header-title{font:700 16px 'Fredoka',sans-serif;color:var(--charcoal)}
+.admin-header-title{font:700 16px 'Anton',sans-serif;color:var(--charcoal)}
 .admin-back{font-weight:800;font-size:13px;color:var(--navy)}
 .admin-back:hover{color:var(--teal)}
 
@@ -25,7 +25,7 @@
 .admin-tabs{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap}
 .admin-tab{
   border:2px solid var(--navy);background:#fff;color:var(--navy);
-  padding:10px 18px;border-radius:999px;font:800 13px 'Fredoka',sans-serif;cursor:pointer;
+  padding:10px 18px;border-radius:999px;font:800 13px 'Anton',sans-serif;cursor:pointer;
 }
 .admin-tab.active{background:var(--navy);color:#fff}
 .admin-tab-count{
@@ -36,12 +36,12 @@
 .admin-panel[hidden]{display:none}
 
 .admin-panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px}
-.admin-panel-head h2{font:600 24px 'Fredoka',sans-serif;color:var(--charcoal)}
+.admin-panel-head h2{font:600 24px 'Anton',sans-serif;color:var(--charcoal)}
 
 .admin-columns{display:grid;grid-template-columns:1fr 1.3fr;gap:28px;align-items:start}
 
 .admin-form{display:flex;flex-direction:column;gap:12px;background:#fff;border:2px solid var(--navy);border-radius:16px;padding:20px}
-.admin-form h3{font:600 17px 'Fredoka',sans-serif;color:var(--charcoal);margin-bottom:2px}
+.admin-form h3{font:600 17px 'Anton',sans-serif;color:var(--charcoal);margin-bottom:2px}
 .admin-form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:800;color:var(--navy)}
 .admin-form .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .admin-form input,.admin-form select,.admin-form textarea{
@@ -54,24 +54,24 @@
 .admin-form .btn:hover{background:#25a35f}
 
 .admin-list{display:flex;flex-direction:column;gap:12px}
-.admin-list h3{font:600 17px 'Fredoka',sans-serif;color:var(--charcoal);margin-bottom:2px}
+.admin-list h3{font:600 17px 'Anton',sans-serif;color:var(--charcoal);margin-bottom:2px}
 
 .admin-card{
   background:#fff;border-radius:14px;padding:16px;box-shadow:4px 4px 0 rgba(30,37,64,.08);
   display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
 }
-.admin-card-title{font:700 16px 'Fredoka',sans-serif;color:var(--charcoal);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.admin-card-title{font:700 16px 'Anton',sans-serif;color:var(--charcoal);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .admin-card-meta{font-size:12px;color:var(--muted);margin-top:4px}
 .admin-card-message{font-size:14px;color:var(--ink);margin-top:8px;max-width:520px;line-height:1.5}
 .admin-card-actions{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none}
 
-.status-badge{font:800 11px 'Fredoka',sans-serif;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.status-badge{font:800 11px 'Anton',sans-serif;padding:4px 10px;border-radius:999px;white-space:nowrap}
 .status-new{background:#fde4e2;color:#c03328}
 .status-done{background:#d9f2f2;color:#0a6d6d}
 
 .btn-mini{
   border:1.5px solid var(--navy);background:#fff;color:var(--navy);border-radius:999px;
-  padding:5px 12px;font:700 12px 'Fredoka',sans-serif;cursor:pointer;white-space:nowrap;
+  padding:5px 12px;font:700 12px 'Anton',sans-serif;cursor:pointer;white-space:nowrap;
 }
 .btn-mini:hover{background:var(--navy);color:#fff}
 .btn-mini-danger{border-color:var(--red);color:var(--red)}
@@ -84,7 +84,7 @@
 }
 .admin-static-item b{color:var(--charcoal)}
 .admin-static-item a{font-weight:800;color:var(--teal);margin-left:auto}
-.admin-static-tag{font:700 10px 'Fredoka',sans-serif;background:#e2ded0;color:#6b6250;padding:2px 8px;border-radius:999px}
+.admin-static-tag{font:700 10px 'Anton',sans-serif;background:#e2ded0;color:#6b6250;padding:2px 8px;border-radius:999px}
 
 .admin-empty{color:var(--muted);font-size:14px;padding:24px;text-align:center;background:#fff;border-radius:12px;border:1.5px dashed #ddd}
 
