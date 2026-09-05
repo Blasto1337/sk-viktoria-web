@@ -107,10 +107,10 @@ img{max-width:100%;display:block}
 .dancer-left{left:8%}
 .dancer-right{right:8%}
 .btn-hero{
-  background:var(--green);color:#fff;padding:15px 34px;font-size:18px;
-  box-shadow:4px 4px 0 var(--yellow);
+  background:var(--gold);color:var(--navy);padding:15px 34px;font-size:18px;
+  box-shadow:4px 4px 0 var(--navy);
 }
-.btn-hero:hover{box-shadow:6px 6px 0 var(--yellow);transform:translate(-2px,-2px);background:#25a35f}
+.btn-hero:hover{box-shadow:6px 6px 0 var(--navy);transform:translate(-2px,-2px);background:#ffd873}
 
 /* marquee strip */
 .strip{background:var(--stone);overflow:hidden;padding:12px 0}
