@@ -126,6 +126,18 @@ img{max-width:100%;display:block}
 .course-yellow,
 .course-blue,
 .course-pink{background:var(--gold)}
+.course-card.course-red,
+.course-card.course-teal,
+.course-card.course-purple,
+.course-card.course-yellow,
+.course-card.course-blue,
+.course-card.course-pink{
+  background-image:
+    linear-gradient(rgba(255,207,92,.8), rgba(255,207,92,.8)),
+    url("../assets/hero/laser-bg.jpg");
+  background-size:cover;
+  background-position:center;
+}
 .course-icon{font-size:34px}
 .course-icon svg{width:34px;height:34px;display:block}
 .course-card h3{font:600 22px 'Anton',sans-serif;margin-top:10px}
