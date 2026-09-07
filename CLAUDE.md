@@ -185,7 +185,8 @@ Slogan (**výrazně**): 🔥 **VFRESH DC – Tvoje crew. Tvoje cesta. Tvůj vibe
 - Nová stránka `kurz-zumba.html` (Zumba & Dance, dospělí, AB Studio Planá n. L., ceník a termíny z letáku).
 - kurz-vfresh-dc.html: rozvrh podle klientské tabulky, DVK/JVK/A crew časy schválně NEJSOU na webu (jen "rozvrh upřesníme") — nahradit až přijdou reálné časy. Přidána nábor sekce (styly, "Proč zrovna VFRESH DC", slogan) a adresa Vančurova 2904.
 - Kontaktní sekce na indexu: lokace rozdělené Tábor/Planá, select v kontakt. formuláři aktualizovaný (bez Hopíka, + Zumba).
-- Nedotčeno (čeká na rozhodnutí/podklady): obsah stránky Akce (staré nábor karty VFRESH DC/Dramatický klub/Sportuj s Viktorkou/Fresh Mates mají jiná data než brief; nové akce "Sportuj v parku 16.9" a "Silvestrovský běh 30.12" ještě nejsou na webu), hero video, texty pro Sportuj s Viktorkou/Dramatický klub/Viktoriánek z příloh.
+- Akce: staré placeholder nábor karty (VFRESH DC/Dramatický klub/Sportuj s Viktorkou/Fresh Mates s daty, které brief nepotvrzuje) byly odstraněny. Nahrazeny dvěma akcemi z briefu: `akce-sportuj-v-parku.html` (16. 9.) a `akce-silvestrovsky-beh.html` (30. 12.) — obě mají jen datum potvrzené briefem, čas/místo/trasu je potřeba od klientky doplnit.
+- Nedotčeno (čeká na podklady): hero video, texty pro Sportuj s Viktorkou/Dramatický klub/Viktoriánek z příloh.
 
 ### Původní zadání (2026-08-29) — stále platí
 - Zachovat přehlednost webu; tmavší/muted pozadí (probíhá: purple + black).

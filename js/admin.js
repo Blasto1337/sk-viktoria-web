@@ -14,10 +14,8 @@
   ];
 
   const STATIC_AKCE = [
-    { tag: "ZÁPIS", date: "7. 9. 2026", title: "VFRESH DC — den otevřených dveří", href: "akce-vfresh-dc.html" },
-    { tag: "NÁBOR", date: "2. 9. 2026", title: "Dramatický klub — ukázkové hodiny zdarma", href: "akce-dramaticky-klub.html" },
-    { tag: "NÁBOR", date: "9. 9. 2026", title: "Sportuj s Viktorkou — nábor na ZŠ Helsinská", href: "akce-sportuj-s-viktorkou.html" },
-    { tag: "NÁBOR", date: "10. 9. 2026", title: "Viktoria Fresh Mates — nábor pro rodiče", href: "akce-fresh-mates.html" },
+    { tag: "NÁBOR", date: "16. 9. 2026", title: "Sportuj v parku s VIKTORKOU", href: "akce-sportuj-v-parku.html" },
+    { tag: "ZÁVOD", date: "30. 12. 2026", title: "Silvestrovský běh", href: "akce-silvestrovsky-beh.html" },
   ];
 
   const STATIC_KROUZKY = [
