@@ -66,14 +66,32 @@ Taneční kurzy STREET DANCE pro děti a mládež, rozdělené podle věku:
 |---|---|---|---|
 | Taneční školička FRESHÍK | 3–4 roky | ST 16:00–17:00 | 9. 9., 23. 9. |
 | VIKTORIA FRESH MINI BEAT | 5–8 let (předškolní) | ÚT 16:30–17:30 | 8. 9., 22. 9. |
-| STREET DANCE CREW / DVK VFRESH CREW | 8–11 (12) let | — | 10. 9., 17. 9. 16:30–18:00 |
-| STREET DANCE CREW / JVK VFRESH CREW | 12–14 (16) let | — | 23. 9. 17:00–18:30 |
-| A FRESH CREW – pokročilí / Elita A tým | 15–21 let | — | 22. 9. 17:30–19:00 (nutná taneční zkušenost) |
+| STREET DANCE CREW / DVK VFRESH CREW | 8–11 (12) let | ⚠️DUMMY ÚT 17:45–19:15 + ČT 16:30–18:00, gymnastika PÁ 15:30–16:30 | 10. 9., 17. 9. 16:30–18:00 |
+| STREET DANCE CREW / JVK VFRESH CREW | 12–14 (16) let | ⚠️DUMMY PO 17:00–18:30 + ST 17:00–18:30, gymnastika PÁ 16:30–17:30 | 23. 9. 17:00–18:30 |
+| A FRESH CREW – pokročilí / Elita A tým | 15–21 let | ⚠️DUMMY ÚT 19:15–20:45 + ČT 18:00–19:30, gymnastika PÁ 17:30–18:30 | 22. 9. 17:30–19:00 (nutná taneční zkušenost) |
 | VIKTORIA FRESH MATES (rodičovská crew, Hobby Masters) | dospělí | ST 18:30–20:00, od října | — |
 | Zumba & Dance (dospělí začátečníci) | dospělí | PO 17:45–18:45 | 14. 9. první lekce zdarma |
 
 - Věkové hranice se v e-mailu a v PDF mírně liší (8–12 vs 8–11, 12–16 vs 12–14/15, 14+ vs 15+). Na web použít **rozsahy z PDF** (novější, oficiální leták), pokud klientka neřekne jinak.
-- Časy pravidelných tréninků DVK/JVK/A crew zatím nemáme — chybí rozvrh.
+- **Časy DVK / JVK / A crew označené ⚠️DUMMY jsou vymyšlené placeholdery** (nekolidují s FRESHÍK/MINI BEAT/MATES, drží 2×1,5 h tance + 1 h gymnastiky dle PDF). Na webu je označit jako „rozvrh upřesníme" a **nahradit skutečným rozvrhem, jakmile ho klientka pošle**.
+
+Týdenní přehled (Tábor, sál VFRESH DC; Zumba je v Plané):
+
+| Den | Čas | Skupina |
+|---|---|---|
+| PO | 17:00–18:30 | JVK ⚠️DUMMY |
+| PO | 17:45–18:45 | Zumba & Dance (Planá n. L.) |
+| ÚT | 16:30–17:30 | MINI BEAT |
+| ÚT | 17:45–19:15 | DVK ⚠️DUMMY |
+| ÚT | 19:15–20:45 | A FRESH CREW ⚠️DUMMY |
+| ST | 16:00–17:00 | FRESHÍK |
+| ST | 17:00–18:30 | JVK ⚠️DUMMY |
+| ST | 18:30–20:00 | FRESH MATES (od října) |
+| ČT | 16:30–18:00 | DVK ⚠️DUMMY |
+| ČT | 18:00–19:30 | A FRESH CREW ⚠️DUMMY |
+| PÁ | 15:30–16:30 | Gymnastika DVK ⚠️DUMMY |
+| PÁ | 16:30–17:30 | Gymnastika JVK ⚠️DUMMY |
+| PÁ | 17:30–18:30 | Gymnastika A crew ⚠️DUMMY |
 - Obecné: „Nestihneš termín? Domluv si svoji 1 lekci zdarma do konce září."
 
 - Lišta/marquee pro tento blok: *STREET DANCE CREW · Taneční školička FRESHÍK · VFRESH MINI BEAT · FRESH MATES · Zumba & DANCE*
@@ -156,7 +174,7 @@ Slogan (**výrazně**): 🔥 **VFRESH DC – Tvoje crew. Tvoje cesta. Tvůj vibe
 **Odchylky PDF vs. e-mail:** slogan v PDF je „Tvoje crew. Tvůj vibe. Tvůj domov." (bez „Tvoje cesta"); „Jsme jedna rodina"; „Přijď na nábor" místo „na zkušební lekce". Preferovat verzi z e-mailu (novější), ale jsou to drobnosti.
 
 ### Co ještě čekáme od klientky
-- Rozvrh pravidelných tréninků DVK / JVK / A crew (v PDF jsou jen zkušební lekce)
+- Rozvrh pravidelných tréninků DVK / JVK / A crew — zatím DUMMY, nahradit skutečným
 - Info-přílohy: Sportuj s VIKTORKOU, Dramatický klub, Viktoriánek
 - Fotky a videa (hero video)
 
