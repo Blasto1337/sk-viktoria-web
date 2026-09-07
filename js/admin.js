@@ -21,10 +21,10 @@
   ];
 
   const STATIC_KROUZKY = [
-    { icon: "🥇", name: "Sportovní gymnastika", age: "5–15 let", href: "kurz-gymnastika.html" },
     { icon: "💃", name: "VFRESH DC", age: "3–20 let", href: "kurz-vfresh-dc.html" },
-    { icon: "🏃", name: "Rekreační tělovýchova", age: "4–12 let", href: "kurz-telovychova.html" },
-    { icon: "🤸", name: "Klub Hopík", age: "3–6 let", href: "kurz-hopik.html" },
+    { icon: "🎶", name: "Zumba & Dance", age: "dospělí", href: "kurz-zumba.html" },
+    { icon: "🥇", name: "Sportovní gymnastika", age: "5–15 let", href: "kurz-gymnastika.html" },
+    { icon: "🏃", name: "Sportuj s VIKTORKOU", age: "4–12 let", href: "kurz-telovychova.html" },
     { icon: "🎭", name: "Dramatický klub", age: "3–12 let", href: "kurz-dramaticky-klub.html" },
     { icon: "🧸", name: "Viktoriánek", age: "1,5–3 roky", href: "kurz-viktorianek.html" },
   ];

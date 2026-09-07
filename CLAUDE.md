@@ -178,6 +178,15 @@ Slogan (**výrazně**): 🔥 **VFRESH DC – Tvoje crew. Tvoje cesta. Tvůj vibe
 - Info-přílohy: Sportuj s VIKTORKOU, Dramatický klub, Viktoriánek
 - Fotky a videa (hero video)
 
+### Stav webu (2026-09-07) — brief promítnut na web
+- Hlavička/patička: brand v navbaru je nyní "VFRESH DC", plný právní název "Viktoria Fresh Dance Center & SK Viktoria z.s." je v patičce.
+- Hopík, cvičení seniorů a harmonizační cvičení odebrány ze všech stránek (kurz-hopik.html smazán).
+- krouzky.html rozdělen na 2 vizuální bloky: "VFRESH DC" (dominantní, vlastní lišta) a "Volnočasové aktivity 2026/27" (vlastní lišta) — homepage má jednu sloučenou lištu a přeuspořádaný preview grid (VFRESH DC první).
+- Nová stránka `kurz-zumba.html` (Zumba & Dance, dospělí, AB Studio Planá n. L., ceník a termíny z letáku).
+- kurz-vfresh-dc.html: rozvrh podle klientské tabulky, DVK/JVK/A crew časy schválně NEJSOU na webu (jen "rozvrh upřesníme") — nahradit až přijdou reálné časy. Přidána nábor sekce (styly, "Proč zrovna VFRESH DC", slogan) a adresa Vančurova 2904.
+- Kontaktní sekce na indexu: lokace rozdělené Tábor/Planá, select v kontakt. formuláři aktualizovaný (bez Hopíka, + Zumba).
+- Nedotčeno (čeká na rozhodnutí/podklady): obsah stránky Akce (staré nábor karty VFRESH DC/Dramatický klub/Sportuj s Viktorkou/Fresh Mates mají jiná data než brief; nové akce "Sportuj v parku 16.9" a "Silvestrovský běh 30.12" ještě nejsou na webu), hero video, texty pro Sportuj s Viktorkou/Dramatický klub/Viktoriánek z příloh.
+
 ### Původní zadání (2026-08-29) — stále platí
 - Zachovat přehlednost webu; tmavší/muted pozadí (probíhá: purple + black).
 - STREET DANCE / VFRESH DC dominantní (hero hotové).

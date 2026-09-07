@@ -27,7 +27,7 @@
       gymnastika: "Gymnastika",
       "vfresh-dc": "VFRESH DC",
       telovychova: "Tělovýchova",
-      hopik: "Hopík",
+      zumba: "Zumba & Dance",
       "dramaticky-klub": "Dramatický klub",
       viktorianek: "Viktoriánek",
     };
