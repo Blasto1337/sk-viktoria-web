@@ -31,6 +31,7 @@ js/akce.js, gallery.js  filtrování karet
 js/kurz-detail.js, akce-detail.js   detail položek z VTStore
 js/admin.js             logika adminu
 assets/hero, akce, gallery   obrázky
+podklady/               originální podklady od klientky (PDF nábor, leták Zumba)
 ```
 
 ## Jak kód funguje
@@ -61,15 +62,19 @@ assets/hero, akce, gallery   obrázky
 **1. VIKTORIA FRESH DANCE CENTER – VFRESH DC** (hlavní, dominantní)
 Taneční kurzy STREET DANCE pro děti a mládež, rozdělené podle věku:
 
-| Kategorie | Věk |
-|---|---|
-| Taneční školička FRESHÍK | 3–4 roky |
-| VFRESH MINI BEAT | 5–8 let |
-| DVK VFRESH CREW | 8–12 let |
-| JVK VFRESH CREW | 12–16 let |
-| Elita A tým | 14–21 let |
-| VFRESH MATES | rodičovská CREW |
-| Zumba & Dance | — |
+| Kategorie | Věk | Pravidelně | Zkušební lekce zdarma |
+|---|---|---|---|
+| Taneční školička FRESHÍK | 3–4 roky | ST 16:00–17:00 | 9. 9., 23. 9. |
+| VIKTORIA FRESH MINI BEAT | 5–8 let (předškolní) | ÚT 16:30–17:30 | 8. 9., 22. 9. |
+| STREET DANCE CREW / DVK VFRESH CREW | 8–11 (12) let | — | 10. 9., 17. 9. 16:30–18:00 |
+| STREET DANCE CREW / JVK VFRESH CREW | 12–14 (16) let | — | 23. 9. 17:00–18:30 |
+| A FRESH CREW – pokročilí / Elita A tým | 15–21 let | — | 22. 9. 17:30–19:00 (nutná taneční zkušenost) |
+| VIKTORIA FRESH MATES (rodičovská crew, Hobby Masters) | dospělí | ST 18:30–20:00, od října | — |
+| Zumba & Dance (dospělí začátečníci) | dospělí | PO 17:45–18:45 | 14. 9. první lekce zdarma |
+
+- Věkové hranice se v e-mailu a v PDF mírně liší (8–12 vs 8–11, 12–16 vs 12–14/15, 14+ vs 15+). Na web použít **rozsahy z PDF** (novější, oficiální leták), pokud klientka neřekne jinak.
+- Časy pravidelných tréninků DVK/JVK/A crew zatím nemáme — chybí rozvrh.
+- Obecné: „Nestihneš termín? Domluv si svoji 1 lekci zdarma do konce září."
 
 - Lišta/marquee pro tento blok: *STREET DANCE CREW · Taneční školička FRESHÍK · VFRESH MINI BEAT · FRESH MATES · Zumba & DANCE*
 - Rozvrh lekcí: klientka pošle v příloze (zatím nemáme).
@@ -115,8 +120,43 @@ Chceš tenhle vibe zažít na vlastní kůži? Přijď na zkušební lekce, nask
 
 Slogan (**výrazně**): 🔥 **VFRESH DC – Tvoje crew. Tvoje cesta. Tvůj vibe. Tvůj domov.** 🔥
 
+### Zumba & Dance — podzimní kurz (leták, `podklady/zumba-dance-podzim-2026.png`)
+- Pro dospělé začátečníky. **Každé pondělí 17:45–18:45**, AB STUDIO (OC MAGA), Planá nad Lužnicí.
+- **14. 9.: první lekce zdarma** (nezávazně). Kurz **21. 9. – 14. 12. (12 lekcí)**, cena **1 550 Kč**, jednorázový vstup **150 Kč** (jen do konce září).
+- Od října se skupina uzavírá (aby nováčci nezpomalovali pokročilé). Omezená kapacita.
+- Rezervace: tel. 607 825 318, e-mail lena.cimpova@seznam.cz.
+- Vizuál letáku: růžová/fialová/oranžová, štětcové písmo — na webu držet náš gold/navy styl, jen převzít obsah.
+
+### VFRESH DC — obsah z náborového PDF (`podklady/vfresh-dc-nabor-2026-27.pdf`)
+**Příběh / „O nás" (použít na úvod sekce nebo O nás):**
+- Z malého tanečního klubu pod SK Viktoria vzniká moderní taneční centrum **Viktoria Fresh DC** s novým názvem **VFRESH DC**.
+- Ve spolupráci s **Centrem Univerzity Tábor** otevírají moderní taneční, pohybové a volnočasové centrum **VIKTORIA FRESH DC & SK Viktoria z.s.** v srdci Tábora — multifunkční, mezigenerační prostor.
+- **SK Viktoria z.s. funguje od roku 1990**: sportovní gymnastika, taneční klub, rekreační sport a aktivity pro celou rodinu. Nově: dramatický klub, Sportuj s VIKTORKOU, Zumba & Dance, Viktoriánek.
+- Nový domov v centru Tábora: sál se zrcadly, dětská herna Safari, moderní restaurace („už žádné nudné čekání na chodbách").
+
+**Benefity pro členy:** sleva na kávu v restauraci pro rodiče · zvýhodněný vstup do herny Safari · doprava na soutěže se spoluúčastí klubu · sourozenecká sleva · sleva na druhý kurz · od září příspěvek Jihočeského kraje „Pomáháme s kroužky pro jihočeské děti".
+
+**Vize:** zábava a respekt k lektorovi — bez tlaku na výkon, ale ne „alternativní kroužek"; individuální přístup; u nejmenších hravě, ale s pravidly a cílem.
+
+**Dvě cesty:**
+- **Rekreační tanec** — pro radost, pohyb, partu; galapředstavení v květnu. Nabírá se ve všech kategoriích.
+- **Soutěžní úroveň — VIKTORIA FRESH DC CREW**: DVK 8–11, JVK 12–15, A skupina 15–20. Příprava 3 h tance týdně + 1 h gymnastické průpravy.
+
+**Styly / programy:** STREET DANCE HIP HOP (energické choreografie na aktuální hudbu) · STREET DANCE FREESTYLE (improvizace, vlastní styl, choreografie s dějem, rekvizity a kulisy). Základy i advanced level: HIP HOP, HOUSE DANCE, DANCEHALL, LOCKING a další.
+
+**Externí lektoři:** Adam Kmenta (Fantasy DC Praha), Barbora Grulichová (Movement Company Brandýs nad Labem) a další.
+
+**Popisy kategorií:**
+- FRESHÍK (3–4): pohybová, výrazová a rytmická průprava, hravé pomůcky (padák, šátky, značky), vlastní deník + motivační samolepky.
+- MINI BEAT (5–8): základní pohybová průprava, koordinace, první krůčky ke streetovým stylům.
+- FRESH MATES (dospělí, od října, ST 18:30–20:00): „NESEĎTE NA CHODBĚ!" — tanec, parta, recese, trochu divadla; čistá hlava; žádné zkušenosti netřeba; buďte dětem vzorem.
+
+**CTA:** „Klikněte na odkaz a přihlaste své dítě na ukázkovou lekci ještě dnes." → přihlašovací formulář / odkaz na zkušební lekci.
+
+**Odchylky PDF vs. e-mail:** slogan v PDF je „Tvoje crew. Tvůj vibe. Tvůj domov." (bez „Tvoje cesta"); „Jsme jedna rodina"; „Přijď na nábor" místo „na zkušební lekce". Preferovat verzi z e-mailu (novější), ale jsou to drobnosti.
+
 ### Co ještě čekáme od klientky
-- Rozvrh lekcí (příloha)
+- Rozvrh pravidelných tréninků DVK / JVK / A crew (v PDF jsou jen zkušební lekce)
 - Info-přílohy: Sportuj s VIKTORKOU, Dramatický klub, Viktoriánek
 - Fotky a videa (hero video)
 
