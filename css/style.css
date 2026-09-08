@@ -286,11 +286,16 @@ img{max-width:100%;display:block}
 /* contact */
 .contact{padding:8px 0 48px;position:relative}
 .contact-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:32px;align-items:start}
-.contact-info h2{font:600 26px 'Anton',sans-serif;color:#fff;margin-bottom:10px}
-.contact-info p{color:var(--on-bg-muted);font-size:14px;line-height:1.6}
-.contact-details{margin-top:18px;display:flex;flex-direction:column;gap:10px;font-size:15px}
-.contact-details a{font-weight:700;color:#fff}
-.contact-details a:hover{color:var(--gold)}
+.contact-card{background:var(--gold);box-shadow:4px 4px 0 var(--navy);padding:26px 28px}
+.contact-card h2{font:600 26px 'Anton',sans-serif;color:var(--navy);margin-bottom:10px}
+.contact-card p{color:var(--navy);opacity:.8;font-size:14px;line-height:1.6}
+.contact-details{margin-top:18px;display:flex;flex-direction:column;gap:12px;font-size:15px}
+.contact-details li{display:flex;align-items:center;gap:10px}
+.contact-icon{flex:none;width:20px;height:20px;color:var(--navy)}
+.contact-icon svg{width:20px;height:20px;display:block}
+.contact-details a{font-weight:700;color:var(--navy)}
+.contact-details a:hover{color:#fff}
+.contact-details span{color:var(--navy);opacity:.9}
 
 .contact-form{display:flex;flex-direction:column;gap:10px}
 .contact-form label{font-size:12px;font-weight:800;color:#fff;margin-top:2px}
