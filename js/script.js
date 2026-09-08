@@ -24,9 +24,9 @@
   if (form) {
     const courseParam = new URLSearchParams(window.location.search).get("kurz");
     const courseMap = {
-      gymnastika: "Gymnastika",
+      gymnastika: "Sportovní gymnastika",
       "vfresh-dc": "VFRESH DC",
-      telovychova: "Tělovýchova",
+      telovychova: "Sportuj s VIKTORKOU",
       zumba: "Zumba & Dance",
       "dramaticky-klub": "Dramatický klub",
       viktorianek: "Viktoriánek",

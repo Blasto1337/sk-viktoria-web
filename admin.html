@@ -23,8 +23,8 @@
 </header>
 
 <div class="admin-banner">
-  Toto je funkční ukázka administrace pro prezentaci klientovi. Nová data se ukládají lokálně do tohoto prohlížeče (localStorage) — po schválení napojíme ostrou databázi a přihlašování.
-  <button type="button" id="reset-all">Vymazat všechna přidaná data</button>
+  Toto je funkční ukázka administrace pro prezentaci klientovi. Vše, co tu upravíte nebo přidáte, se hned zobrazí na veřejném webu (v tomto prohlížeči) — data se zatím ukládají lokálně (localStorage), po schválení napojíme ostrou databázi a přihlašování.
+  <button type="button" id="reset-all">Obnovit web do původního stavu</button>
 </div>
 
 <main class="admin-main">
@@ -54,27 +54,30 @@
   <section class="admin-panel" id="panel-aktuality" data-panel="aktuality" hidden>
     <div class="admin-panel-head"><h2>Aktuality</h2></div>
     <div class="admin-columns">
-      <form class="admin-form" id="form-aktualita">
-        <h3>Přidat aktualitu</h3>
-        <label>Emoji ikona
-          <input type="text" name="icon" placeholder="📢" maxlength="4">
-        </label>
+      <form class="admin-form" id="form-aktualita" data-collection="aktuality">
+        <h3 id="form-aktualita-title">Přidat aktualitu</h3>
         <label>Datum / termín
           <input type="text" name="date" placeholder="např. 15. 9. 2026" required>
         </label>
         <label>Text
           <textarea name="text" rows="4" placeholder="Krátká zpráva — zavřeno, prázdniny, výpadek trenéra…" required></textarea>
         </label>
-        <button class="btn btn-submit" type="submit">Přidat aktualitu</button>
+        <label>Fotka (nepovinné — jinak se zobrazí ikona zvonečku)
+          <input type="file" name="photo" accept="image/*">
+        </label>
+        <div class="admin-photo-row" id="aktualita-photo-row" hidden>
+          <img class="admin-photo-preview" id="aktualita-photo-preview" alt="">
+          <button type="button" class="btn-mini btn-mini-danger" data-remove-photo>🗑 Odebrat fotku</button>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-submit" type="submit">Přidat aktualitu</button>
+          <button type="button" class="btn-cancel-edit" data-cancel-edit hidden>Zrušit úpravu</button>
+        </div>
       </form>
 
       <div>
-        <p class="admin-subhead">Napevno na webu</p>
-        <div class="admin-static-list" id="aktuality-static-list"></div>
-
-        <p class="admin-subhead">Přidané v administraci</p>
         <div class="admin-list" id="aktuality-list"></div>
-        <p class="admin-empty" id="aktuality-empty" hidden>Zatím jste nepřidali žádnou aktualitu.</p>
+        <p class="admin-empty" id="aktuality-empty" hidden>Zatím žádné aktuality.</p>
       </div>
     </div>
   </section>
@@ -83,8 +86,8 @@
   <section class="admin-panel" id="panel-akce" data-panel="akce" hidden>
     <div class="admin-panel-head"><h2>Akce</h2></div>
     <div class="admin-columns">
-      <form class="admin-form" id="form-akce">
-        <h3>Přidat akci</h3>
+      <form class="admin-form" id="form-akce" data-collection="akce">
+        <h3 id="form-akce-title">Přidat akci</h3>
         <div class="field-row">
           <label>Štítek
             <input type="text" name="tag" placeholder="NÁBOR" required>
@@ -122,16 +125,26 @@
         <label>Podrobnosti (na detailu, jeden bod na řádek)
           <textarea name="bullets" rows="4" placeholder="15:30–16:30 — zkušební lekce&#10;Registrace: e-mail nebo SMS"></textarea>
         </label>
-        <button class="btn btn-submit" type="submit">Přidat akci</button>
+        <label>Fotka (nepovinné)
+          <input type="file" name="photo" accept="image/*">
+        </label>
+        <div class="admin-photo-row" id="akce-photo-row" hidden>
+          <img class="admin-photo-preview" id="akce-photo-preview" alt="">
+          <button type="button" class="btn-mini btn-mini-danger" data-remove-photo>🗑 Odebrat fotku</button>
+        </div>
+        <label style="flex-direction:row;align-items:center;gap:8px">
+          <input type="checkbox" name="featured" style="width:auto">
+          Zobrazit i na hlavní stránce
+        </label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-submit" type="submit">Přidat akci</button>
+          <button type="button" class="btn-cancel-edit" data-cancel-edit hidden>Zrušit úpravu</button>
+        </div>
       </form>
 
       <div>
-        <p class="admin-subhead">Napevno na webu</p>
-        <div class="admin-static-list" id="akce-static-list"></div>
-
-        <p class="admin-subhead">Přidané v administraci</p>
         <div class="admin-list" id="akce-list"></div>
-        <p class="admin-empty" id="akce-empty" hidden>Zatím jste nepřidali žádnou akci.</p>
+        <p class="admin-empty" id="akce-empty" hidden>Zatím žádné akce.</p>
       </div>
     </div>
   </section>
@@ -140,23 +153,20 @@
   <section class="admin-panel" id="panel-krouzky" data-panel="krouzky" hidden>
     <div class="admin-panel-head"><h2>Kroužky</h2></div>
     <div class="admin-columns">
-      <form class="admin-form" id="form-krouzek">
-        <h3>Přidat kroužek</h3>
-        <div class="field-row">
-          <label>Emoji ikona
-            <input type="text" name="icon" placeholder="⭐" maxlength="4">
-          </label>
-          <label>Barva karty
-            <select name="color">
-              <option value="teal">tyrkysová</option>
-              <option value="purple">fialová</option>
-              <option value="yellow">žlutá</option>
-              <option value="red">červená</option>
-              <option value="blue">modrá</option>
-              <option value="pink">růžová</option>
-            </select>
-          </label>
-        </div>
+      <form class="admin-form" id="form-krouzek" data-collection="krouzky">
+        <h3 id="form-krouzek-title">Přidat kroužek</h3>
+        <label>Ikona
+          <span class="icon-picker-row">
+            <span class="icon-preview" id="krouzek-icon-preview" aria-hidden="true"></span>
+            <select name="icon" id="krouzek-icon-select"></select>
+          </span>
+        </label>
+        <label>Blok na stránce Kroužky
+          <select name="group">
+            <option value="vfresh">VFRESH DC</option>
+            <option value="volnocas" selected>Volnočasové aktivity</option>
+          </select>
+        </label>
         <label>Název kroužku
           <input type="text" name="name" placeholder="např. Judo" required>
         </label>
@@ -173,24 +183,36 @@
         </label>
         <label>Rozvrh (jeden řádek = den | čas)
           <textarea name="schedule" rows="3" placeholder="Pondělí | 16:00–17:00&#10;Středa | 17:00–18:00"></textarea>
-          <span class="hint">Formát: den a čas oddělte svislítkem „|“.</span>
+          <span class="hint">Formát: den a čas oddělte svislítkem „|“. (Napevno napsané kroužky mají rozvrh na vlastní stránce a tady se needituje.)</span>
         </label>
-        <button class="btn btn-submit" type="submit">Přidat kroužek</button>
+        <label>Fotka (nepovinné — jinak se zobrazí ikona)
+          <input type="file" name="photo" accept="image/*">
+        </label>
+        <div class="admin-photo-row" id="krouzek-photo-row" hidden>
+          <img class="admin-photo-preview" id="krouzek-photo-preview" alt="">
+          <button type="button" class="btn-mini btn-mini-danger" data-remove-photo>🗑 Odebrat fotku</button>
+        </div>
+        <label style="flex-direction:row;align-items:center;gap:8px">
+          <input type="checkbox" name="featured" style="width:auto">
+          Zobrazit i na hlavní stránce
+        </label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-submit" type="submit">Přidat kroužek</button>
+          <button type="button" class="btn-cancel-edit" data-cancel-edit hidden>Zrušit úpravu</button>
+        </div>
       </form>
 
       <div>
-        <p class="admin-subhead">Napevno na webu</p>
-        <div class="admin-static-list" id="krouzky-static-list"></div>
-
-        <p class="admin-subhead">Přidané v administraci</p>
         <div class="admin-list" id="krouzky-list"></div>
-        <p class="admin-empty" id="krouzky-empty" hidden>Zatím jste nepřidali žádný kroužek.</p>
+        <p class="admin-empty" id="krouzky-empty" hidden>Zatím žádné kroužky.</p>
       </div>
     </div>
   </section>
 
 </main>
 
+<script src="js/icons.js"></script>
+<script src="js/seed.js"></script>
 <script src="js/store.js"></script>
 <script src="js/admin.js"></script>
 </body>

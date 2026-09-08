@@ -28,6 +28,11 @@
   document.getElementById("a-date").textContent = item.date || "—";
   document.getElementById("a-location").textContent = item.location || "Bude upřesněno";
 
+  const photoWrap = document.getElementById("a-photo-wrap");
+  if (photoWrap && item.photo) {
+    photoWrap.innerHTML = `<img src="${item.photo}" alt="${item.title}" style="width:100%;max-height:340px;object-fit:cover;margin:18px 0;display:block">`;
+  }
+
   const listEl = document.getElementById("a-list");
   const bullets = Array.isArray(item.bullets) ? item.bullets.filter(Boolean) : [];
   if (bullets.length) {

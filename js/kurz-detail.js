@@ -21,11 +21,15 @@
   document.title = `${item.name} — SK Viktoria Tábor`;
 
   document.getElementById("k-hero").className = `course-hero course-${item.color || "teal"}`;
-  document.getElementById("k-icon").textContent = item.icon || "⭐";
   document.getElementById("k-name").textContent = item.name;
   document.getElementById("k-age").textContent = item.age || "Novinka";
   document.getElementById("k-desc").textContent = item.description || "";
   document.getElementById("k-location").textContent = item.location || "Bude upřesněno.";
+
+  const photoWrap = document.getElementById("k-photo-wrap");
+  if (photoWrap && item.photo) {
+    photoWrap.innerHTML = `<img src="${item.photo}" alt="${item.name}" style="width:100%;max-height:340px;object-fit:cover;margin-top:22px;display:block">`;
+  }
 
   const scheduleEl = document.getElementById("k-schedule");
   const schedule = Array.isArray(item.schedule) ? item.schedule : [];

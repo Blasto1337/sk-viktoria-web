@@ -84,7 +84,26 @@
 }
 .admin-static-item b{color:var(--charcoal)}
 .admin-static-item a{font-weight:800;color:var(--teal);margin-left:auto}
-.admin-static-tag{font:700 10px 'Anton',sans-serif;background:#e2ded0;color:#6b6250;padding:2px 8px;border-radius:999px}
+.admin-static-tag,.seed-badge{font:700 10px 'Anton',sans-serif;background:#e2ded0;color:#6b6250;padding:2px 8px;border-radius:999px;white-space:nowrap}
+
+.admin-card-thumb{width:56px;height:56px;object-fit:cover;border-radius:10px;flex:none}
+.admin-card-main{display:flex;gap:12px}
+.admin-card-main-text{flex:1;min-width:0}
+
+.admin-photo-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.admin-photo-preview{width:80px;height:80px;object-fit:cover;border-radius:10px;border:1.5px solid #ddd;display:block;flex:none}
+.icon-preview{width:22px;height:22px;flex:none;color:var(--navy)}
+.icon-preview svg{width:22px;height:22px;display:block}
+.icon-picker-row{display:flex;align-items:center;gap:10px}
+.icon-picker-row select{flex:1}
+
+.btn-cancel-edit{
+  background:none;border:1.5px solid var(--muted);color:var(--muted);padding:6px 14px;
+  border-radius:999px;font:700 12px 'Anton',sans-serif;cursor:pointer;align-self:flex-start;
+}
+.btn-cancel-edit:hover{border-color:var(--navy);color:var(--navy)}
+.admin-form.is-editing{border-color:var(--teal)}
+.admin-form-editing-badge{font:700 11px 'Anton',sans-serif;color:var(--teal);text-transform:uppercase;letter-spacing:.03em}
 
 .admin-empty{color:var(--muted);font-size:14px;padding:24px;text-align:center;background:#fff;border-radius:12px;border:1.5px dashed #ddd}
 
