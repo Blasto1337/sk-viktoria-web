@@ -25,8 +25,8 @@
   tagEl.className = `tag tag-${item.color || "teal"}`;
 
   document.getElementById("a-title").textContent = item.title;
-  document.getElementById("a-date").textContent = `📅 ${item.date || "—"}`;
-  document.getElementById("a-location").textContent = `📍 ${item.location || "Bude upřesněno"}`;
+  document.getElementById("a-date").textContent = item.date || "—";
+  document.getElementById("a-location").textContent = item.location || "Bude upřesněno";
 
   const listEl = document.getElementById("a-list");
   const bullets = Array.isArray(item.bullets) ? item.bullets.filter(Boolean) : [];
