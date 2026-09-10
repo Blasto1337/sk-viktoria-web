@@ -103,9 +103,11 @@
     list.innerHTML = filtered.map((s) => `
       <div class="admin-card" data-id="${s.id}">
         <div class="admin-card-main">
-          <div class="admin-card-title">${escapeHtml(s.name)} <span class="tag tag-teal">${escapeHtml(s.category)}</span></div>
-          <div class="admin-card-meta">${escapeHtml(s.email)} · ${escapeHtml(fmtDate(s.createdAt))}</div>
-          <p class="admin-card-message">${escapeHtml(s.message)}</p>
+          <div class="admin-card-main-text">
+            <div class="admin-card-title">${escapeHtml(s.name)} <span class="tag tag-teal">${escapeHtml(s.category)}</span></div>
+            <div class="admin-card-meta">${escapeHtml(s.email)} · ${escapeHtml(fmtDate(s.createdAt))}</div>
+            <p class="admin-card-message">${escapeHtml(s.message)}</p>
+          </div>
         </div>
         <div class="admin-card-actions">
           <span class="status-badge status-${s.status}">${s.status === "done" ? "Vyřízeno" : "Nové"}</span>
