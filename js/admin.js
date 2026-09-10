@@ -190,7 +190,7 @@
         </div>
         <div class="admin-card-actions">
           <button class="btn-mini" data-action="edit-aktualita" data-id="${a.id}">✎ Upravit</button>
-          ${a.seed ? "" : `<button class="btn-mini btn-mini-danger" data-action="delete-aktualita" data-id="${a.id}">🗑 Smazat</button>`}
+          <button class="btn-mini btn-mini-danger" data-action="delete-aktualita" data-id="${a.id}">🗑 Smazat</button>
         </div>
       </div>
     `).join("");
@@ -287,7 +287,7 @@
         <div class="admin-card-actions">
           <a class="btn-mini" href="${a.detailHref || `akce-detail.html?id=${encodeURIComponent(a.id)}`}" target="_blank" rel="noopener">👁 Náhled</a>
           <button class="btn-mini" data-action="edit-akce" data-id="${a.id}">✎ Upravit</button>
-          ${a.seed ? "" : `<button class="btn-mini btn-mini-danger" data-action="delete-akce" data-id="${a.id}">🗑 Smazat</button>`}
+          <button class="btn-mini btn-mini-danger" data-action="delete-akce" data-id="${a.id}">🗑 Smazat</button>
         </div>
       </div>
     `).join("");
@@ -410,7 +410,7 @@
         <div class="admin-card-actions">
           <a class="btn-mini" href="${k.detailHref || `kurz-detail.html?id=${encodeURIComponent(k.id)}`}" target="_blank" rel="noopener">👁 Náhled</a>
           <button class="btn-mini" data-action="edit-krouzek" data-id="${k.id}">✎ Upravit</button>
-          ${k.seed ? "" : `<button class="btn-mini btn-mini-danger" data-action="delete-krouzek" data-id="${k.id}">🗑 Smazat</button>`}
+          <button class="btn-mini btn-mini-danger" data-action="delete-krouzek" data-id="${k.id}">🗑 Smazat</button>
         </div>
       </div>
     `).join("");
