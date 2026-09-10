@@ -7,6 +7,7 @@
   --yellow:#ffc53d;
   --yellow-deep:#a67c00;
   --purple:#7a5af8;
+  --purple-deep:#5946b2;
   --blue:#2a78d6;
   --pink:#f2789f;
   --green:#29b869;
@@ -23,7 +24,7 @@
 html{scroll-behavior:smooth}
 body{
   margin:0;
-  background:var(--purple);
+  background:var(--purple-deep);
   color:var(--ink);
   font-family:'Nunito',system-ui,sans-serif;
   -webkit-font-smoothing:antialiased;
@@ -62,8 +63,8 @@ img{max-width:100%;display:block}
   padding:10px 16px;border:2px solid rgba(255,255,255,.55);border-radius:999px;
   font-family:'Anton',sans-serif;font-weight:800;font-size:13px;letter-spacing:.6px;color:#fff;background:transparent;
 }
-.main-nav a:hover{background:var(--purple);color:#fff;border-color:var(--purple)}
-.main-nav a.active{background:var(--purple);color:#fff;border-color:var(--purple)}
+.main-nav a:hover{background:var(--purple-deep);color:#fff;border-color:var(--purple-deep)}
+.main-nav a.active{background:var(--purple-deep);color:#fff;border-color:var(--purple-deep)}
 .nav-cta{background:var(--red)!important;border-color:var(--red)!important;color:#fff!important;
   box-shadow:3px 3px 0 var(--gold);}
 .nav-cta:hover{background:#d63a2f!important}
@@ -168,7 +169,7 @@ img{max-width:100%;display:block}
 
 .tag{color:#fff;font-weight:800;font-size:10px;padding:2px 8px;border-radius:999px}
 .tag-teal{background:var(--teal)}
-.tag-purple{background:var(--purple)}
+.tag-purple{background:var(--purple-deep)}
 .tag-red{background:var(--red)}
 .tag-blue{background:var(--blue)}
 
@@ -308,7 +309,7 @@ img{max-width:100%;display:block}
 .form-note{font-size:13px;color:#fff;min-height:18px}
 
 /* course detail page */
-.course-hero{padding:56px 0 48px;text-align:center;color:#fff;background:var(--purple)}
+.course-hero{padding:56px 0 48px;text-align:center;color:#fff;background:var(--purple-deep)}
 .course-hero h1{
   display:inline-block;font:600 clamp(34px,5vw,52px) 'Anton',sans-serif;
   color:var(--navy);background:var(--gold);border-radius:0;

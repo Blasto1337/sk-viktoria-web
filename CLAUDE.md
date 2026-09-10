@@ -45,7 +45,8 @@ podklady/               originální podklady od klientky (letáky, rozvrh, PDF,
 
 ## Design
 
-- Design tokeny jsou CSS proměnné v `css/style.css` `:root` (`--navy`, `--gold`, `--purple`, `--stone`, `--cream`…). Barvy měň tam, ne inline.
+- Design tokeny jsou CSS proměnné v `css/style.css` `:root` (`--navy`, `--gold`, `--purple`, `--purple-deep`, `--stone`, `--cream`…). Barvy měň tam, ne inline.
+- **Dvě fialové:** `--purple:#7a5af8` (světlejší) je vyhrazená jen pro hero sekci na homepage (`.hero`, `.hero::before` — přes fotku tanečníků, opacity .74). `--purple-deep:#5946b2` (tmavší, zadaná klientkou 2026-09-10) je základní fialová pro zbytek webu — pozadí `body`, `.main-nav` hover/active, `.tag-purple`, `.course-hero` (detail kroužku/akce, mimo homepage hero).
 - Aktuální směr (viz git log): purpurové pozadí, černý nav/footer/marquee, **zlaté karty (`--gold`) s navy hard-shadow** (`4px 4px 0 var(--navy)`), ostré rohy (`border-radius:0`) na kartách, Anton nadpisy s letter-spacingem.
 - Karty kroužků/akcí/aktualit mají jednotný gold/navy vzhled — při přidávání nových prvků držet stejný styl.
 - Hero komunikuje "VFRESH STREET DANCE", cílová skupina 10–15 let.
