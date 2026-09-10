@@ -114,6 +114,14 @@ img{max-width:100%;display:block}
 @media (prefers-reduced-motion: reduce){.strip-track{animation:none}}
 .section-divider{height:3px;background:var(--gold);border:none;border-radius:999px;margin:0}
 
+/* about */
+.about{padding:48px 0 8px;position:relative}
+.about-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:40px;align-items:center}
+.about-photo{box-shadow:4px 4px 0 var(--navy)}
+.about-photo img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.about-text h2{font:600 30px 'Anton',sans-serif;color:#fff;margin-bottom:14px}
+.about-text p{font-size:17px;line-height:1.7;color:var(--on-bg-muted)}
+
 /* courses */
 .courses{padding:40px 0;position:relative}
 .courses-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
@@ -367,7 +375,7 @@ img{max-width:100%;display:block}
 /* responsive */
 @media (max-width:960px){
   .courses-grid{grid-template-columns:repeat(2,1fr)}
-  .split-grid,.contact-grid,.detail-grid{grid-template-columns:1fr}
+  .split-grid,.contact-grid,.detail-grid,.about-grid{grid-template-columns:1fr}
   .gallery-grid-preview,.gallery-grid-full{grid-template-columns:repeat(3,1fr)}
   .events-grid{grid-template-columns:repeat(2,1fr)}
   .hero-dancer img{height:clamp(110px,16vw,150px)}

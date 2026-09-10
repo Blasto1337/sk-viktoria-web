@@ -50,6 +50,7 @@ podklady/               originální podklady od klientky (letáky, rozvrh, PDF,
 - Aktuální směr (viz git log): purpurové pozadí, černý nav/footer/marquee, **zlaté karty (`--gold`) s navy hard-shadow** (`4px 4px 0 var(--navy)`), ostré rohy (`border-radius:0`) na kartách, Anton nadpisy s letter-spacingem.
 - Karty kroužků/akcí/aktualit mají jednotný gold/navy vzhled — při přidávání nových prvků držet stejný styl.
 - Hero komunikuje "VFRESH STREET DANCE", cílová skupina 10–15 let.
+- Homepage má mezi hero a kroužky sekci „Kdo jsme" (`#o-nas`, `.about`) — fotka + krátký text (≤400 znaků) o SK Viktoria Tábor & VFRESH DC. Foto `assets/hero/dancers-hero.jpg` (původní hero foto, teď nepoužité jinde). Zdroj textu: e‑mail klientky "Fwd: Re: Prvni nastrel webu" (2026-09-06, v repu jen lokálně, 30 MB s přílohami — nekomitovat, obsah už je vytažený do `podklady/`).
 
 ## Zadání klienta (aktualizace 2026-09-07)
 
