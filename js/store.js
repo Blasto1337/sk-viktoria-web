@@ -18,7 +18,10 @@
     krouzky: "vt_krouzky",
   };
 
-  const SEED_FLAG = "vt_seeded_v1";
+  // Bump SEED_VERSION whenever js/seed.js changes: seed items (seed:true) are
+  // refreshed from the file, items added through the admin are kept.
+  const SEED_FLAG = "vt_seed_version";
+  const SEED_VERSION = "2";
 
   function uid() {
     return `vt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -78,6 +81,11 @@
         write(key, []);
         this.seedDefaults(seedItems);
       },
+      refreshSeed(seedItems) {
+        const custom = read(key).filter((it) => !it.seed);
+        write(key, custom);
+        this.seedDefaults(seedItems);
+      },
     };
   }
 
@@ -96,11 +104,12 @@
     },
   };
 
-  if (!localStorage.getItem(SEED_FLAG)) {
+  if (localStorage.getItem(SEED_FLAG) !== SEED_VERSION) {
     const seed = window.VT_SEED || {};
-    window.VTStore.aktuality.seedDefaults(seed.aktuality);
-    window.VTStore.akce.seedDefaults(seed.akce);
-    window.VTStore.krouzky.seedDefaults(seed.krouzky);
-    localStorage.setItem(SEED_FLAG, "1");
+    window.VTStore.aktuality.refreshSeed(seed.aktuality);
+    window.VTStore.akce.refreshSeed(seed.akce);
+    window.VTStore.krouzky.refreshSeed(seed.krouzky);
+    localStorage.removeItem("vt_seeded_v1");
+    localStorage.setItem(SEED_FLAG, SEED_VERSION);
   }
 })();

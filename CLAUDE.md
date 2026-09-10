@@ -31,13 +31,13 @@ js/akce.js, gallery.js  filtrování karet
 js/kurz-detail.js, akce-detail.js   detail položek z VTStore
 js/admin.js             logika adminu
 assets/hero, akce, gallery   obrázky
-podklady/               originální podklady od klientky (PDF nábor, leták Zumba)
+podklady/               originální podklady od klientky (letáky, rozvrh, PDF, reel) — gold source, nepatří na web přímo
 ```
 
 ## Jak kód funguje
 
 - **Obsah je psaný ručně v HTML.** Karty kroužků/akcí/galerie jsou statické. Změna obsahu = úprava HTML.
-- **VTStore (`js/store.js`)** je jediná datová vrstva; drží data v `localStorage` (klíče `vt_*`).
+- **VTStore (`js/store.js`)** je jediná datová vrstva; drží data v `localStorage` (klíče `vt_*`). Výchozí obsah je v `js/seed.js`; **po každé změně seed.js zvyš `SEED_VERSION` v store.js** — seed položky se pak v prohlížečích obnoví, položky přidané v adminu zůstanou.
   Zbytek webu mluví jen s `VTStore`, nikdy přímo s `localStorage`. Až bude backend, mění se jen `store.js`.
 - `render-public.js` pouze *přidává* to, co admin vložil navíc — statické karty nemaže ani nepřepisuje.
 - Všechny JS soubory jsou IIFE se `"use strict"`, bez modulů, bez závislostí.
@@ -62,7 +62,7 @@ podklady/               originální podklady od klientky (PDF nábor, leták Zu
 **1. VIKTORIA FRESH DANCE CENTER – VFRESH DC** (hlavní, dominantní)
 Taneční kurzy STREET DANCE pro děti a mládež, rozdělené podle věku:
 
-**Oficiální rozvrh od klientky** (`assets/Rozvrh kurzů VFRESH DC & Viktoria z.s..jpg`, Centrum Univerzita Tábor = CUT) — zdroj pravdy, nahrazuje dřívější dummy časy:
+**Oficiální rozvrh od klientky** (`podklady/rozvrh-kurzu-2026-27.jpg`, Centrum Univerzita Tábor = CUT) — zdroj pravdy, nahrazuje dřívější dummy časy:
 
 | Kurz | Věk | Četnost | Den / čas | Zkušební lekce zdarma (září) |
 |---|---|---|---|---|
@@ -168,31 +168,39 @@ Slogan (**výrazně**): 🔥 **VFRESH DC – Tvoje crew. Tvoje cesta. Tvůj vibe
 **Odchylky PDF vs. e-mail:** slogan v PDF je „Tvoje crew. Tvůj vibe. Tvůj domov." (bez „Tvoje cesta"); „Jsme jedna rodina"; „Přijď na nábor" místo „na zkušební lekce". Preferovat verzi z e-mailu (novější), ale jsou to drobnosti.
 
 ### Materiály od klientky v `assets/` (nahráno 2026-09-10) — co v nich je
-Soubory leží volně v `assets/` (dlouhé názvy s diakritikou, PNG 2–4 MB) — **nepoužívat přímo na webu**, jsou to podklady. Přesunout do `podklady/` a na web dávat jen ořezané/komprimované verze.
+Přesunuto do `podklady/` s čistými názvy (2026-09-10). Jsou to podklady — na web dávat jen ořezané/komprimované verze.
 
 | Soubor | Co to je | Použitelné na webu |
 |---|---|---|
-| `Rozvrh kurzů VFRESH DC & Viktoria z.s..jpg` | Oficiální tabulka rozvrhu (viz výše) | data ano; obrázek ne |
-| `VFRESH DC nové taneční centrum …pdf` | Náborový text (= `podklady/vfresh-dc-nabor-2026-27.pdf`) | text ano |
-| `SPORTUJ s Viktorkou!….pdf` | Text náboru: Směr A pohybové hry 3–6 (CUT, ukázka 10. 9. 15:30), Směr B míčové hry + atletika 4–7 / 7–12 (ZŠ Helsinská, ukázka 9. 9.); „žádný stres z víkendových zápasů" | text ano |
-| `1_…161727.png` | Leták NÁBOR VFRESH DC – STREET DANCE CREW 8–12, zkušební 10. 9./17. 9.; slogan „Tvoje CREW. Tvůj Vibe. Tvoje rodina."; FB **FRESHDANCE SK Viktoria Tábor** | data; foto dětí v pozadí je malé |
-| `1_…165423.png` | Leták ZÁPIS FRESHÍK + MINI BEAT; **„Poslední volná místa: FRESHÍK 5 míst, MINI BEAT 7 míst"** | aktualita |
-| `1_…162846.png` | Leták Dramáček 3–6, ST 15–16, ukázka 9. 9.; motto „Vykul oči, nastraž uši, divadlo ti vážně sluší" | text |
-| `_Dělá Vaše dítě doma scény…png` | Leták Dramalab 7–12, ST 14–15, ukázky 9. 9. a 23. 9.; motto „Dělá Vaše dítě doma scény? My ho to naučíme pořádně!" | text |
-| `1_…163935.png` | Leták Viktoriánek 1,5–3: zkušební 8./10./17. 9. 9:30; 1 900 Kč / permanentka 10 vstupů (5 měsíců); **45 min cvičení + 30 min herna Safari**; bezbariérově, kočárky; partneři NSA, Tábor, ČUS, Jihočeský kraj, Safari; web www.viktoria-tabor.cz | text, loga partnerů |
-| `Benefity _…0002.png` | **Benefity pro tanečníky VFRESH DC**: sourozenecká sleva 20 %, sleva na druhý kurz 20 %, sleva na vstupné do Safari a restaurace, příspěvek na dopravu autobusem na soutěže, zvýhodněná cena workshopů, věrnostní sleva 5 % | sekce Benefity |
-| `Benefity pro členy.png` | **Benefity pro členy Viktoria z.s.**: sourozenecká 20 %, druhý kurz 20 %, Safari + restaurace, Zumba&Dance 20 %, masáže 20 %, příměstské pobyty a akce 15 % | sekce Benefity |
-| `VFRES DC & Viktoria z.s.2….png` | Obecný leták „3 složky": 1 Taneční složka, 2 Dramatický kroužek, 3 Sportovní průprava; „Proč vsadit na…"; adresa **Vančurova 2904, CUT Tábor**; hashtagy | text pro O nás |
-| `Zumba & Dance Tábor 4….png` | Leták Zumba Tábor (CUT): ÚT 19–20 + ST 8:15–9:15, ukázka 9. 9. 18–19, blok 17. 9.–19. 12., 1 560 Kč, lekce 130 Kč, ranní s hlídáním | nová stránka/sekce |
-| `VID-20260817-WA0000.mp4` | Vertikální reel 35 s „sportovní kroužek ZŠ Helsinská" | max. do detailu Sportuj s Viktorkou, ne hero |
+| `rozvrh-kurzu-2026-27.jpg` | Oficiální tabulka rozvrhu (viz výše) | data ano; obrázek ne |
+| `vfresh-dc-nabor-2026-27.pdf` | Náborový text (= `podklady/vfresh-dc-nabor-2026-27.pdf`) | text ano |
+| `sportuj-s-viktorkou-nabor.pdf` | Text náboru: Směr A pohybové hry 3–6 (CUT, ukázka 10. 9. 15:30), Směr B míčové hry + atletika 4–7 / 7–12 (ZŠ Helsinská, ukázka 9. 9.); „žádný stres z víkendových zápasů" | text ano |
+| `letak-nabor-street-dance-crew-8-12.png` | Leták NÁBOR VFRESH DC – STREET DANCE CREW 8–12, zkušební 10. 9./17. 9.; slogan „Tvoje CREW. Tvůj Vibe. Tvoje rodina."; FB **FRESHDANCE SK Viktoria Tábor** | data; foto dětí v pozadí je malé |
+| `letak-zapis-freshik-minibeat.png` | Leták ZÁPIS FRESHÍK + MINI BEAT; **„Poslední volná místa: FRESHÍK 5 míst, MINI BEAT 7 míst"** | aktualita |
+| `letak-dramacek-3-6.png` | Leták Dramáček 3–6, ST 15–16, ukázka 9. 9.; motto „Vykul oči, nastraž uši, divadlo ti vážně sluší" | text |
+| `letak-dramalab-7-12.png` | Leták Dramalab 7–12, ST 14–15, ukázky 9. 9. a 23. 9.; motto „Dělá Vaše dítě doma scény? My ho to naučíme pořádně!" | text |
+| `letak-viktorianek-1.5-3.png` | Leták Viktoriánek 1,5–3: zkušební 8./10./17. 9. 9:30; 1 900 Kč / permanentka 10 vstupů (5 měsíců); **45 min cvičení + 30 min herna Safari**; bezbariérově, kočárky; partneři NSA, Tábor, ČUS, Jihočeský kraj, Safari; web www.viktoria-tabor.cz | text, loga partnerů |
+| `benefity-tanecnici-vfresh-dc.png` | **Benefity pro tanečníky VFRESH DC**: sourozenecká sleva 20 %, sleva na druhý kurz 20 %, sleva na vstupné do Safari a restaurace, příspěvek na dopravu autobusem na soutěže, zvýhodněná cena workshopů, věrnostní sleva 5 % | sekce Benefity |
+| `benefity-clenove-viktoria.png` | **Benefity pro členy Viktoria z.s.**: sourozenecká 20 %, druhý kurz 20 %, Safari + restaurace, Zumba&Dance 20 %, masáže 20 %, příměstské pobyty a akce 15 % | sekce Benefity |
+| `letak-obecny-3-slozky.png` | Obecný leták „3 složky": 1 Taneční složka, 2 Dramatický kroužek, 3 Sportovní průprava; „Proč vsadit na…"; adresa **Vančurova 2904, CUT Tábor**; hashtagy | text pro O nás |
+| `letak-zumba-tabor-cut.png` | Leták Zumba Tábor (CUT): ÚT 19–20 + ST 8:15–9:15, ukázka 9. 9. 18–19, blok 17. 9.–19. 12., 1 560 Kč, lekce 130 Kč, ranní s hlídáním | nová stránka/sekce |
+| `reel-sportuj-zs-helsinska.mp4` | Vertikální reel 35 s „sportovní kroužek ZŠ Helsinská" | max. do detailu Sportuj s Viktorkou, ne hero |
 | `hero/fresh-dance-hero.jpg` | Ilustrace street dance crew (AI/stock look), už použitá v hero | ano, ale klientka chtěla skutečné fotky |
 
 Kontakty všude stejné: **607 825 318** (i SMS), **lena.cimpova@seznam.cz**, FB **FRESHDANCE SK Viktoria Tábor**, IG @viktoriatabor.
 
 ### Co ještě čekáme od klientky
-- Hero video: dodané `assets/VID-20260817-WA0000.mp4` je vertikální reel (576×1024, 35 s) o Sportuj s Viktorkou na ZŠ Helsinská — ne hero materiál. Skutečné fotky tanečníků stále chybí (v letácích jsou, ale malé/oříznuté).
+- Hero video: dodané `podklady/reel-sportuj-zs-helsinska.mp4` je vertikální reel (576×1024, 35 s) o Sportuj s Viktorkou na ZŠ Helsinská — ne hero materiál. Skutečné fotky tanečníků stále chybí (v letácích jsou, ale malé/oříznuté).
 - Den gymnastické průpravy pro soutěžní crew.
 - Domény: leták Viktoriánek uvádí **www.viktoria-tabor.cz** — ověřit, zda existuje / kam web poběží.
+
+### Stav webu (2026-09-10) — materiály z `podklady/` promítnuty
+- `kurz-vfresh-dc.html`: skutečný rozvrh DVK/JVK/A (věk 8–12 / 12–15 / 14–20), nová kategorie Rekreační STREET děti 7–14 (ZŠ Helsinská), místo = CUT přízemí (Party Room), blok Benefity pro tanečníky.
+- `kurz-zumba.html`: dva sloupce — Tábor CUT (ÚT 19:00, ST 8:15 s hlídáním, blok 17. 9.–19. 12., 1 560 Kč, 130 Kč lekce, ukázka 9. 9.) + Planá (PO 17:45, 1 550 Kč).
+- `kurz-gymnastika.html`: ST 15:30–17:30, Gymnázium Tábor. `kurz-viktorianek.html`: ÚT + ČT, 30 min herna, zkušební 8./10./17. 9. `kurz-telovychova.html`: Směr A 3–7 (CUT, ČT 15:30, ukázka 10. 9.), Směr B 4–7 / 7–12 (ZŠ Helsinská, ST, ukázka 9. 9.), texty z PDF. `kurz-dramaticky-klub.html`: ukázkové lekce, motta, místo.
+- `index.html`: Kdy trénujeme kompletní PO–PÁ, nová sekce **Benefity pro členy** (2 karty dle grafik), kontaktní místa upřesněna (CUT/Party Room, ZŠ Helsinská, Gymnázium, AB Studio).
+- `js/seed.js`: nová karta `street-deti` (group vfresh, featured:false → jen na krouzky.html), aktualizované popisy/místa, 3 nové aktuality (poslední volná místa FRESHÍK 5 / MINI BEAT 7, zkušební lekce do 30. 9., Zumba Tábor). Prošlé aktuality (otevření 1. 9., zápis 1.–3. 9.) odstraněny. `SEED_VERSION = "2"`.
+- Stále chybí: hero video, skutečné fotky do galerie/karet (`photo: null`), loga partnerů (jsou v letáku Viktoriánek — NSA, Tábor, ČUS, Jihočeský kraj, Safari; na webu jen textové placeholdery).
 
 ### Stav webu (2026-09-07) — brief promítnut na web
 - Hlavička/patička: brand v navbaru je nyní "VFRESH DC", plný právní název "Viktoria Fresh Dance Center & SK Viktoria z.s." je v patičce.
