@@ -11,14 +11,14 @@
       <section class="detail">
         <div class="wrap">
           <a class="back-link" href="krouzky.html">← Zpět na kroužky</a>
-          <p class="detail-lead">Tento kroužek jsme nenašli. Možná byl odebrán, nebo si prohlížíte odkaz z jiného zařízení/prohlížeče — data z administrace jsou zatím uložená jen lokálně.</p>
+          <p class="detail-lead">Tento kroužek jsme nenašli. Možná byl odebrán, nebo si prohlížíte odkaz z jiného zařízení/prohlížeče, data z administrace jsou zatím uložená jen lokálně.</p>
         </div>
       </section>
     `;
     return;
   }
 
-  document.title = `${item.name} — SK Viktoria Tábor`;
+  document.title = `${item.name} | SK Viktoria Tábor`;
 
   document.getElementById("k-hero").className = `course-hero course-${item.color || "teal"}`;
   document.getElementById("k-name").textContent = item.name;

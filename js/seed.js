@@ -11,7 +11,7 @@ window.VT_SEED = {
       icon: "dance", color: "purple",
       name: "VFRESH DC",
       age: "3–20 let", location: "CUT Tábor, Vančurova 2904",
-      description: "Street dance pro děti a mládež — Freshík, Mini Beat, soutěžní DVK/JVK/A crew i rekreační street.",
+      description: "Street dance pro děti a mládež: Freshík, Mini Beat, soutěžní DVK/JVK/A crew i rekreační street.",
       photo: null, detailHref: "kurz-vfresh-dc.html",
     },
     {
@@ -19,7 +19,7 @@ window.VT_SEED = {
       icon: "pulse", color: "pink",
       name: "Zumba & Dance",
       age: "dospělí", location: "Tábor (CUT) & Planá n. L.",
-      description: "Taneční fitness pro dospělé — Tábor út večer a st ráno (s hlídáním dětí), Planá po večer.",
+      description: "Taneční fitness pro dospělé: Tábor út večer a st ráno (s hlídáním dětí), Planá po večer.",
       photo: null, detailHref: "kurz-zumba.html",
     },
     {
@@ -27,7 +27,7 @@ window.VT_SEED = {
       icon: "dance", color: "purple",
       name: "Rekreační STREET DANCE děti",
       age: "7–14 let", location: "ZŠ Helsinská, Tábor",
-      description: "Street dance pro radost bez soutěžení — úterý 15:30–17:00 na Sídlišti nad Lužnicí.",
+      description: "Street dance pro radost bez soutěžení, úterý 15:30–17:00 na Sídlišti nad Lužnicí.",
       photo: null, detailHref: "kurz-vfresh-dc.html",
     },
     {
@@ -51,7 +51,7 @@ window.VT_SEED = {
       icon: "theater", color: "blue",
       name: "Dramatický klub",
       age: "3–12 let", location: "CUT Tábor",
-      description: "Dramáček (3–6) a Dramalab (7–12) — divadelní hra, správná mluva a zdravé sebevědomí.",
+      description: "Dramáček (3–6) a Dramalab (7–12): divadelní hra, správná mluva a zdravé sebevědomí.",
       photo: null, detailHref: "kurz-dramaticky-klub.html",
     },
     {
@@ -59,7 +59,7 @@ window.VT_SEED = {
       icon: "toddler", color: "red",
       name: "Viktoriánek",
       age: "1,5–3 roky", location: "CUT Tábor",
-      description: "Dopolední cvičení rodiče a děti — út a čt 9:30, po cvičení herna Safari.",
+      description: "Dopolední cvičení rodiče a děti, út a čt 9:30, po cvičení herna Safari.",
       photo: null, detailHref: "kurz-viktorianek.html",
     },
   ],
@@ -70,9 +70,9 @@ window.VT_SEED = {
       tag: "NÁBOR", color: "red", category: "nabor",
       title: "Sportuj v parku s VIKTORKOU",
       date: "16. 9. 2026", location: "Tábor",
-      description: "Venkovní sportovní odpoledne pro děti — hry, pohyb a základy sportů pod širým nebem.",
+      description: "Venkovní sportovní odpoledne pro děti, hry, pohyb a základy sportů pod širým nebem.",
       bullets: [
-        "Venkovní sportovní odpoledne pro děti — hry, pohyb a základy nejrůznějších sportů",
+        "Venkovní sportovní odpoledne pro děti, hry, pohyb a základy nejrůznějších sportů",
         "Ochutnávka kroužku Sportuj s VIKTORKOU přímo pod širým nebem",
         "Vhodné oblečení do přírody a sportovní obuv",
         "Zájemci se mohou přihlásit i rovnou na pravidelný kroužek",
@@ -85,9 +85,9 @@ window.VT_SEED = {
       tag: "ZÁVOD", color: "teal", category: "zavody",
       title: "Silvestrovský běh",
       date: "30. 12. 2026", location: "Tábor",
-      description: "Tradiční sportovní rozloučení se starým rokem — pro děti i dospělé.",
+      description: "Tradiční sportovní rozloučení se starým rokem, pro děti i dospělé.",
       bullets: [
-        "Tradiční sportovní rozloučení se starým rokem — pro děti i dospělé, bez ohledu na výkonnost",
+        "Tradiční sportovní rozloučení se starým rokem, pro děti i dospělé, bez ohledu na výkonnost",
         "Otevřeno všem, kdo si chtějí protáhnout nohy před silvestrovskou oslavou",
         "Podrobnosti k trase, startovnému a registraci doplníme",
       ],
@@ -100,7 +100,7 @@ window.VT_SEED = {
     {
       id: "posledni-mista", seed: true,
       date: "září 2026",
-      text: "Poslední volná místa: Taneční školička FRESHÍK 3–4 roky (st 16:00) — 5 míst, VFRESH MINI BEAT 5–8 let (út 16:30) — 7 míst. Přihlášky: 607 825 318 nebo lena.cimpova@seznam.cz.",
+      text: "Poslední volná místa: Taneční školička FRESHÍK 3–4 roky (st 16:00), 5 míst, VFRESH MINI BEAT 5–8 let (út 16:30), 7 míst. Přihlášky: 607 825 318 nebo lena.cimpova@seznam.cz.",
       photo: null,
     },
     {

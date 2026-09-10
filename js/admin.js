@@ -113,7 +113,7 @@
       fn();
       return true;
     } catch (e) {
-      alert("Uložení se nepovedlo — úložiště prohlížeče je asi plné. Zkuste menší fotku, nebo smažte nějaké starší položky s fotkou.");
+      alert("Uložení se nepovedlo, úložiště prohlížeče je asi plné. Zkuste menší fotku, nebo smažte nějaké starší položky s fotkou.");
       return false;
     }
   }
@@ -527,7 +527,7 @@
 
   // ----------------------------------------------------------------- misc --
   document.getElementById("reset-all").addEventListener("click", () => {
-    if (!confirm("Opravdu obnovit web do původního stavu? Smažou se všechny úpravy a nově přidané položky (kroužky, akce, aktuality, přihlášky) — vrátí se výchozí obsah webu.")) return;
+    if (!confirm("Opravdu obnovit web do původního stavu? Smažou se všechny úpravy a nově přidané položky (kroužky, akce, aktuality, přihlášky), vrátí se výchozí obsah webu.")) return;
     VTStore.resetAllToSeed();
     resetAktualitaForm();
     resetAkceForm();

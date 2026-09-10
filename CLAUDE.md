@@ -224,6 +224,7 @@ Podrobná strategie je v Claude Projektu „Viktoria Tábor" → doc `claude/red
 ## Pravidla práce
 
 - Jazyk webu i commitů: čeština na webu, commity anglicky krátce (viz stávající styl `git log`).
+- **Žádné pomlčky (—) v běžném českém textu na webu** (nadpisy, popisky, věty, meta description, hlášky v adminu). Místo nich čárka, dvojtečka, závorka nebo nová věta — podle kontextu. Datumové/číselné rozsahy (např. „3–20 let", „17:45–18:45") používají spojovník/en-dash `–`, ten se netýká, zůstává. `<title>` tagy a `document.title` oddělují stránku a web pomocí ` | ` (ne pomlčkou). Nadpisy typu „Místo · Podnázev" používají `·` (interpunkt), stejně jako zbytek webu (patička, tagy). Výjimka: `—` jako placeholder prázdné hodnoty v dynamických polích (např. `<span id="k-age">—</span>`, než se načte JS) zůstává, to není text.
 - Neměnit strukturu HTML víc, než je nutné — klient chce zachovat přehlednost.
 - Nezavádět build nástroje, frameworky ani npm bez domluvy.
 - Nový obsah přidávat do statického HTML, ne do VTStore (ten je jen pro admin prototyp).

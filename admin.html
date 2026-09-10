@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Administrace — SK Viktoria Tábor</title>
+<title>Administrace | SK Viktoria Tábor</title>
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,7 +23,7 @@
 </header>
 
 <div class="admin-banner">
-  Toto je funkční ukázka administrace pro prezentaci klientovi. Vše, co tu upravíte nebo přidáte, se hned zobrazí na veřejném webu (v tomto prohlížeči) — data se zatím ukládají lokálně (localStorage), po schválení napojíme ostrou databázi a přihlašování.
+  Toto je funkční ukázka administrace pro prezentaci klientovi. Vše, co tu upravíte nebo přidáte, se hned zobrazí na veřejném webu (v tomto prohlížeči), data se zatím ukládají lokálně (localStorage), po schválení napojíme ostrou databázi a přihlašování.
   <button type="button" id="reset-all">Obnovit web do původního stavu</button>
 </div>
 
@@ -60,9 +60,9 @@
           <input type="text" name="date" placeholder="např. 15. 9. 2026" required>
         </label>
         <label>Text
-          <textarea name="text" rows="4" placeholder="Krátká zpráva — zavřeno, prázdniny, výpadek trenéra…" required></textarea>
+          <textarea name="text" rows="4" placeholder="Krátká zpráva: zavřeno, prázdniny, výpadek trenéra…" required></textarea>
         </label>
-        <label>Fotka (nepovinné — jinak se zobrazí ikona zvonečku)
+        <label>Fotka (nepovinné, jinak se zobrazí ikona zvonečku)
           <input type="file" name="photo" accept="image/*">
           <span class="hint">Zobrazí se jako malá kulatá ikonka, postačí i menší fotka.</span>
         </label>
@@ -124,11 +124,11 @@
           <textarea name="description" rows="2" placeholder="Jedna–dvě věty pro náhled na kartě"></textarea>
         </label>
         <label>Podrobnosti (na detailu, jeden bod na řádek)
-          <textarea name="bullets" rows="4" placeholder="15:30–16:30 — zkušební lekce&#10;Registrace: e-mail nebo SMS"></textarea>
+          <textarea name="bullets" rows="4" placeholder="15:30–16:30: zkušební lekce&#10;Registrace: e-mail nebo SMS"></textarea>
         </label>
         <label>Fotka (nepovinné)
           <input type="file" name="photo" accept="image/*">
-          <span class="hint">Foťte na šířku, hlavní dění mějte uprostřed záběru — na kartě akce se ořízne do čtverce, v detailu širokoúhle. Ideálně alespoň 1200 px na šířku.</span>
+          <span class="hint">Foťte na šířku, hlavní dění mějte uprostřed záběru. Na kartě akce se ořízne do čtverce, v detailu širokoúhle. Ideálně alespoň 1200 px na šířku.</span>
         </label>
         <div class="admin-photo-row" id="akce-photo-row" hidden>
           <img class="admin-photo-preview" id="akce-photo-preview" alt="">
@@ -187,9 +187,9 @@
           <textarea name="schedule" rows="3" placeholder="Pondělí | 16:00–17:00&#10;Středa | 17:00–18:00"></textarea>
           <span class="hint">Formát: den a čas oddělte svislítkem „|“. (Napevno napsané kroužky mají rozvrh na vlastní stránce a tady se needituje.)</span>
         </label>
-        <label>Fotka (nepovinné — jinak se zobrazí ikona)
+        <label>Fotka (nepovinné, jinak se zobrazí ikona)
           <input type="file" name="photo" accept="image/*">
-          <span class="hint">Foťte na šířku, hlavní dění mějte uprostřed záběru — na kartě kroužku je ořez hodně široký (skoro banner), v detailu 16:9. Ideálně alespoň 1600 px na šířku.</span>
+          <span class="hint">Foťte na šířku, hlavní dění mějte uprostřed záběru. Na kartě kroužku je ořez hodně široký (skoro banner), v detailu 16:9. Ideálně alespoň 1600 px na šířku.</span>
         </label>
         <div class="admin-photo-row" id="krouzek-photo-row" hidden>
           <img class="admin-photo-preview" id="krouzek-photo-preview" alt="">

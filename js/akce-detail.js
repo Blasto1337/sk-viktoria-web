@@ -11,14 +11,14 @@
       <section class="event-detail">
         <div class="wrap">
           <a class="back-link" href="akce.html">← Zpět na akce</a>
-          <p class="detail-lead">Tuto akci jsme nenašli. Možná byla odebrána, nebo si prohlížíte odkaz z jiného zařízení/prohlížeče — data z administrace jsou zatím uložená jen lokálně.</p>
+          <p class="detail-lead">Tuto akci jsme nenašli. Možná byla odebrána, nebo si prohlížíte odkaz z jiného zařízení/prohlížeče, data z administrace jsou zatím uložená jen lokálně.</p>
         </div>
       </section>
     `;
     return;
   }
 
-  document.title = `${item.title} — SK Viktoria Tábor`;
+  document.title = `${item.title} | SK Viktoria Tábor`;
 
   const tagEl = document.getElementById("a-tag");
   tagEl.textContent = item.tag || "AKCE";

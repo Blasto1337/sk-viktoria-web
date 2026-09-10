@@ -55,7 +55,7 @@
         VTStore.submissions.add({ name, email, category, message, status: "new" });
       }
 
-      const subject = encodeURIComponent(`Dotaz z webu — ${category}`);
+      const subject = encodeURIComponent(`Dotaz z webu: ${category}`);
       const body = encodeURIComponent(
         `Jméno: ${name}\nKategorie: ${category}\nE-mail: ${email}\n\n${message}`
       );
