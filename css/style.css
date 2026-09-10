@@ -111,6 +111,7 @@ img{max-width:100%;display:block}
 }
 @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media (prefers-reduced-motion: reduce){.strip-track{animation:none}}
+.section-divider{height:3px;background:var(--gold);border:none;border-radius:999px;margin:0}
 
 /* courses */
 .courses{padding:40px 0;position:relative}
