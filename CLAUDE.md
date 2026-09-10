@@ -62,40 +62,34 @@ podklady/               originální podklady od klientky (PDF nábor, leták Zu
 **1. VIKTORIA FRESH DANCE CENTER – VFRESH DC** (hlavní, dominantní)
 Taneční kurzy STREET DANCE pro děti a mládež, rozdělené podle věku:
 
-| Kategorie | Věk | Pravidelně | Zkušební lekce zdarma |
-|---|---|---|---|
-| Taneční školička FRESHÍK | 3–4 roky | ST 16:00–17:00 | 9. 9., 23. 9. |
-| VIKTORIA FRESH MINI BEAT | 5–8 let (předškolní) | ÚT 16:30–17:30 | 8. 9., 22. 9. |
-| STREET DANCE CREW / DVK VFRESH CREW | 8–11 (12) let | ⚠️DUMMY ÚT 17:45–19:15 + ČT 16:30–18:00, gymnastika PÁ 15:30–16:30 | 10. 9., 17. 9. 16:30–18:00 |
-| STREET DANCE CREW / JVK VFRESH CREW | 12–14 (16) let | ⚠️DUMMY PO 17:00–18:30 + ST 17:00–18:30, gymnastika PÁ 16:30–17:30 | 23. 9. 17:00–18:30 |
-| A FRESH CREW – pokročilí / Elita A tým | 15–21 let | ⚠️DUMMY ÚT 19:15–20:45 + ČT 18:00–19:30, gymnastika PÁ 17:30–18:30 | 22. 9. 17:30–19:00 (nutná taneční zkušenost) |
-| VIKTORIA FRESH MATES (rodičovská crew, Hobby Masters) | dospělí | ST 18:30–20:00, od října | — |
-| Zumba & Dance (dospělí začátečníci) | dospělí | PO 17:45–18:45 | 14. 9. první lekce zdarma |
+**Oficiální rozvrh od klientky** (`assets/Rozvrh kurzů VFRESH DC & Viktoria z.s..jpg`, Centrum Univerzita Tábor = CUT) — zdroj pravdy, nahrazuje dřívější dummy časy:
 
-- Věkové hranice se v e-mailu a v PDF mírně liší (8–12 vs 8–11, 12–16 vs 12–14/15, 14+ vs 15+). Na web použít **rozsahy z PDF** (novější, oficiální leták), pokud klientka neřekne jinak.
-- **Časy DVK / JVK / A crew označené ⚠️DUMMY jsou vymyšlené placeholdery** (nekolidují s FRESHÍK/MINI BEAT/MATES, drží 2×1,5 h tance + 1 h gymnastiky dle PDF). Na webu je označit jako „rozvrh upřesníme" a **nahradit skutečným rozvrhem, jakmile ho klientka pošle**.
+| Kurz | Věk | Četnost | Den / čas | Zkušební lekce zdarma (září) |
+|---|---|---|---|---|
+| FRESHÍK (taneční školička hrou) | 3–4 roky | 1×/týden | ST 16:00–17:00 | 9. 9., 23. 9. |
+| VFRESH MINI BEAT | 5–8 let | 1–2×/týden | ÚT 16:30–17:30 | 8. 9., 22. 9. |
+| VFRESH CREW DVK (soutěžní) | 8–12 let | 2×/týden + 1× sport. gymnastika | ÚT 15:00–16:30, ČT 16:30–18:00 | 10. 9., 17. 9. 16:30–18:00 |
+| VFRESH JVK (soutěžní) | 12–15 let | 2×/týden | ST 17:00–18:30, PÁ 15:00–16:30 | 23. 9. 17:00–18:30 |
+| VFRESH A – HVK, JVK pokročilí | 14–20 let | 2×/týden | ÚT 17:30–19:00, ČT 18:00–19:30 | 22. 9. 17:30–19:00 (nutná zkušenost) |
+| VFRESH rekreační STREET děti | 7–14 let | 1×/týden, **ZŠ Helsinská** | ÚT 15:30–17:00 | — |
+| VFRESH MATES (rodičovská) | 25+ neomezeně | 1×/týden | ST 18:30–20:00 (od října) | — |
+| Zumba DANCE ranní (Tábor, CUT) | dospělí začátečníci, hlídání dětí v ceně | 1×/týden | ST 8:15–9:15 | 9. 9. 18:00–19:00 |
+| Zumba DANCE večerní (Tábor, CUT) | dospělí (+ dcery 10+) | 1×/týden | ÚT 19:00–20:00 | 9. 9. 18:00–19:00 |
+| Zumba & Dance (Planá n. L., AB Studio) | dospělí začátečníci | 1×/týden | PO 17:45–18:45 | 14. 9. |
+| SPORTUJ S VIKTORKOU A | 3–7 let (PDF: 3–6), pohybové hry | 1×/týden, CUT | ČT 15:30–16:30 | 10. 9. 15:30–16:30 |
+| SPORTUJ S VIKTORKOU B | 4–7 a 7–12 let, míčové sporty + atletika | 1×/týden, **ZŠ Helsinská** | ST 16:00–17:00 (4–7), 17:00–18:00 (7–12) | 9. 9. |
+| Viktoriánek (rodiče a děti) | 1,5–3 roky | 1×/týden | ÚT, ČT 9:30–10:30 | 8. 9., 10. 9., 17. 9. |
+| Dramáček (dramatický kroužek) | 3–6 let | 1×/týden | ST 15:00–16:00 | 9. 9. |
+| Dramalab (divadlo) | 7–12 let | 1×/týden | ST 14:00–15:00 | 9. 9., 23. 9. |
+| Sportovní gymnastika | 5–15 let | 1×/týden, **Gymnázium** | ST 15:30–17:30 | — |
 
-Týdenní přehled (Tábor, sál VFRESH DC; Zumba je v Plané):
-
-| Den | Čas | Skupina |
-|---|---|---|
-| PO | 17:00–18:30 | JVK ⚠️DUMMY |
-| PO | 17:45–18:45 | Zumba & Dance (Planá n. L.) |
-| ÚT | 16:30–17:30 | MINI BEAT |
-| ÚT | 17:45–19:15 | DVK ⚠️DUMMY |
-| ÚT | 19:15–20:45 | A FRESH CREW ⚠️DUMMY |
-| ST | 16:00–17:00 | FRESHÍK |
-| ST | 17:00–18:30 | JVK ⚠️DUMMY |
-| ST | 18:30–20:00 | FRESH MATES (od října) |
-| ČT | 16:30–18:00 | DVK ⚠️DUMMY |
-| ČT | 18:00–19:30 | A FRESH CREW ⚠️DUMMY |
-| PÁ | 15:30–16:30 | Gymnastika DVK ⚠️DUMMY |
-| PÁ | 16:30–17:30 | Gymnastika JVK ⚠️DUMMY |
-| PÁ | 17:30–18:30 | Gymnastika A crew ⚠️DUMMY |
-- Obecné: „Nestihneš termín? Domluv si svoji 1 lekci zdarma do konce září."
+- Věkové hranice: řídit se rozvrhem (DVK 8–12, JVK 12–15, A 14–20). Sportuj A: rozvrh 3–7, PDF 3–6 → použít 3–7.
+- Obecné: „Nestihneš termín? Domluv si svoji 1 lekci zdarma do konce září." Dramáček/Dramalab: přihlašování celé září.
+- Zumba jsou **tři** produkty: Planá (PO, 1 550 Kč / 21. 9.–14. 12., vstup 150 Kč) a Tábor CUT ranní + večerní (blok 17. 9.–19. 12., 12 lekcí, 1 560 Kč/blok, jednotlivá lekce 130 Kč; ÚT nekoná se 17. 11., ST nekoná se 28. 10.; ranní s hlídáním dětí v ceně).
+- Soutěžní crew mají navíc 1 h sportovní gymnastiky týdně (den neuveden).
+- Místo tanečních kurzů: nové taneční centrum v CUT Tábor, Vančurova 2904 — **přízemí, bývalý prostor PARTY ROOM**.
 
 - Lišta/marquee pro tento blok: *STREET DANCE CREW · Taneční školička FRESHÍK · VFRESH MINI BEAT · FRESH MATES · Zumba & DANCE*
-- Rozvrh lekcí: klientka pošle v příloze (zatím nemáme).
 - Sekce „Nábor do kroužků 2026/27".
 
 **2. Volnočasové aktivity 2026/27**
@@ -173,10 +167,32 @@ Slogan (**výrazně**): 🔥 **VFRESH DC – Tvoje crew. Tvoje cesta. Tvůj vibe
 
 **Odchylky PDF vs. e-mail:** slogan v PDF je „Tvoje crew. Tvůj vibe. Tvůj domov." (bez „Tvoje cesta"); „Jsme jedna rodina"; „Přijď na nábor" místo „na zkušební lekce". Preferovat verzi z e-mailu (novější), ale jsou to drobnosti.
 
+### Materiály od klientky v `assets/` (nahráno 2026-09-10) — co v nich je
+Soubory leží volně v `assets/` (dlouhé názvy s diakritikou, PNG 2–4 MB) — **nepoužívat přímo na webu**, jsou to podklady. Přesunout do `podklady/` a na web dávat jen ořezané/komprimované verze.
+
+| Soubor | Co to je | Použitelné na webu |
+|---|---|---|
+| `Rozvrh kurzů VFRESH DC & Viktoria z.s..jpg` | Oficiální tabulka rozvrhu (viz výše) | data ano; obrázek ne |
+| `VFRESH DC nové taneční centrum …pdf` | Náborový text (= `podklady/vfresh-dc-nabor-2026-27.pdf`) | text ano |
+| `SPORTUJ s Viktorkou!….pdf` | Text náboru: Směr A pohybové hry 3–6 (CUT, ukázka 10. 9. 15:30), Směr B míčové hry + atletika 4–7 / 7–12 (ZŠ Helsinská, ukázka 9. 9.); „žádný stres z víkendových zápasů" | text ano |
+| `1_…161727.png` | Leták NÁBOR VFRESH DC – STREET DANCE CREW 8–12, zkušební 10. 9./17. 9.; slogan „Tvoje CREW. Tvůj Vibe. Tvoje rodina."; FB **FRESHDANCE SK Viktoria Tábor** | data; foto dětí v pozadí je malé |
+| `1_…165423.png` | Leták ZÁPIS FRESHÍK + MINI BEAT; **„Poslední volná místa: FRESHÍK 5 míst, MINI BEAT 7 míst"** | aktualita |
+| `1_…162846.png` | Leták Dramáček 3–6, ST 15–16, ukázka 9. 9.; motto „Vykul oči, nastraž uši, divadlo ti vážně sluší" | text |
+| `_Dělá Vaše dítě doma scény…png` | Leták Dramalab 7–12, ST 14–15, ukázky 9. 9. a 23. 9.; motto „Dělá Vaše dítě doma scény? My ho to naučíme pořádně!" | text |
+| `1_…163935.png` | Leták Viktoriánek 1,5–3: zkušební 8./10./17. 9. 9:30; 1 900 Kč / permanentka 10 vstupů (5 měsíců); **45 min cvičení + 30 min herna Safari**; bezbariérově, kočárky; partneři NSA, Tábor, ČUS, Jihočeský kraj, Safari; web www.viktoria-tabor.cz | text, loga partnerů |
+| `Benefity _…0002.png` | **Benefity pro tanečníky VFRESH DC**: sourozenecká sleva 20 %, sleva na druhý kurz 20 %, sleva na vstupné do Safari a restaurace, příspěvek na dopravu autobusem na soutěže, zvýhodněná cena workshopů, věrnostní sleva 5 % | sekce Benefity |
+| `Benefity pro členy.png` | **Benefity pro členy Viktoria z.s.**: sourozenecká 20 %, druhý kurz 20 %, Safari + restaurace, Zumba&Dance 20 %, masáže 20 %, příměstské pobyty a akce 15 % | sekce Benefity |
+| `VFRES DC & Viktoria z.s.2….png` | Obecný leták „3 složky": 1 Taneční složka, 2 Dramatický kroužek, 3 Sportovní průprava; „Proč vsadit na…"; adresa **Vančurova 2904, CUT Tábor**; hashtagy | text pro O nás |
+| `Zumba & Dance Tábor 4….png` | Leták Zumba Tábor (CUT): ÚT 19–20 + ST 8:15–9:15, ukázka 9. 9. 18–19, blok 17. 9.–19. 12., 1 560 Kč, lekce 130 Kč, ranní s hlídáním | nová stránka/sekce |
+| `VID-20260817-WA0000.mp4` | Vertikální reel 35 s „sportovní kroužek ZŠ Helsinská" | max. do detailu Sportuj s Viktorkou, ne hero |
+| `hero/fresh-dance-hero.jpg` | Ilustrace street dance crew (AI/stock look), už použitá v hero | ano, ale klientka chtěla skutečné fotky |
+
+Kontakty všude stejné: **607 825 318** (i SMS), **lena.cimpova@seznam.cz**, FB **FRESHDANCE SK Viktoria Tábor**, IG @viktoriatabor.
+
 ### Co ještě čekáme od klientky
-- Rozvrh pravidelných tréninků DVK / JVK / A crew — zatím DUMMY, nahradit skutečným
-- Info-přílohy: Sportuj s VIKTORKOU, Dramatický klub, Viktoriánek
-- Fotky a videa (hero video)
+- Hero video: dodané `assets/VID-20260817-WA0000.mp4` je vertikální reel (576×1024, 35 s) o Sportuj s Viktorkou na ZŠ Helsinská — ne hero materiál. Skutečné fotky tanečníků stále chybí (v letácích jsou, ale malé/oříznuté).
+- Den gymnastické průpravy pro soutěžní crew.
+- Domény: leták Viktoriánek uvádí **www.viktoria-tabor.cz** — ověřit, zda existuje / kam web poběží.
 
 ### Stav webu (2026-09-07) — brief promítnut na web
 - Hlavička/patička: brand v navbaru je nyní "VFRESH DC", plný právní název "Viktoria Fresh Dance Center & SK Viktoria z.s." je v patičce.
