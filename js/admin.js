@@ -22,6 +22,42 @@
   }
 
   // -------------------------------------------------------- photo fields --
+  // Photos are stored as data URLs directly in localStorage (no backend/file
+  // storage yet), which has a small quota shared by the whole site — an
+  // unresized phone photo (often several MB, ~33% bigger again once
+  // base64-encoded) can blow that quota on its own and make the save silently
+  // fail. Downscale + re-encode as JPEG on the client first so a typical
+  // photo ends up well under 300KB.
+  function compressImage(file, maxDim, quality) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width >= height) {
+            height = Math.round(height * (maxDim / width));
+            width = maxDim;
+          } else {
+            width = Math.round(width * (maxDim / height));
+            height = maxDim;
+          }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error("Obrázek se nepodařilo načíst."));
+      };
+      img.src = objectUrl;
+    });
+  }
+
   // Wires a <input type="file" name="photo"> to a preview thumbnail + a
   // "remove photo" button, and tracks the current value (an existing URL,
   // a freshly-picked data URL, or null) independent of the file input's
@@ -44,12 +80,15 @@
       }
     }
 
-    fileInput.addEventListener("change", () => {
+    fileInput.addEventListener("change", async () => {
       const file = fileInput.files && fileInput.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => show(reader.result);
-      reader.readAsDataURL(file);
+      try {
+        show(await compressImage(file, 1000, 0.75));
+      } catch (e) {
+        alert("Tuhle fotku se nepodařilo zpracovat, zkuste prosím jiný soubor.");
+        fileInput.value = "";
+      }
     });
 
     row.querySelector("[data-remove-photo]").addEventListener("click", () => {
@@ -64,6 +103,19 @@
         show(url);
       },
     };
+  }
+
+  // Wraps a VTStore add/update call; on quota-exceeded (localStorage is
+  // full — the most likely cause once photos are involved) or any other
+  // write failure, alerts the user instead of silently doing nothing.
+  function trySave(fn) {
+    try {
+      fn();
+      return true;
+    } catch (e) {
+      alert("Uložení se nepovedlo — úložiště prohlížeče je asi plné. Zkuste menší fotku, nebo smažte nějaké starší položky s fotkou.");
+      return false;
+    }
   }
 
   // ---------------------------------------------------------------- tabs --
@@ -204,11 +256,14 @@
       text: f.text.value.trim(),
       photo: aktualitaPhoto.get(),
     };
-    if (editingAktualitaId) {
-      VTStore.aktuality.update(editingAktualitaId, patch);
-    } else {
-      VTStore.aktuality.add(patch);
-    }
+    const ok = trySave(() => {
+      if (editingAktualitaId) {
+        VTStore.aktuality.update(editingAktualitaId, patch);
+      } else {
+        VTStore.aktuality.add(patch);
+      }
+    });
+    if (!ok) return;
     resetAktualitaForm();
     renderAktuality();
     updateCounts();
@@ -309,11 +364,14 @@
       featured: f.featured.checked,
       photo: akcePhoto.get(),
     };
-    if (editingAkceId) {
-      VTStore.akce.update(editingAkceId, patch);
-    } else {
-      VTStore.akce.add(patch);
-    }
+    const ok = trySave(() => {
+      if (editingAkceId) {
+        VTStore.akce.update(editingAkceId, patch);
+      } else {
+        VTStore.akce.add(patch);
+      }
+    });
+    if (!ok) return;
     resetAkceForm();
     renderAkce();
     updateCounts();
@@ -435,11 +493,14 @@
       featured: f.featured.checked,
       photo: krouzekPhoto.get(),
     };
-    if (editingKrouzekId) {
-      VTStore.krouzky.update(editingKrouzekId, patch);
-    } else {
-      VTStore.krouzky.add(patch);
-    }
+    const ok = trySave(() => {
+      if (editingKrouzekId) {
+        VTStore.krouzky.update(editingKrouzekId, patch);
+      } else {
+        VTStore.krouzky.add(patch);
+      }
+    });
+    if (!ok) return;
     resetKrouzekForm();
     renderKrouzky();
     updateCounts();
