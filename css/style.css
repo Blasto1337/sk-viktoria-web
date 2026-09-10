@@ -84,7 +84,7 @@ img{max-width:100%;display:block}
   background:var(--purple);opacity:.74;
 }
 .hero{
-  background-image:url("../assets/hero/dancers-hero.jpg");
+  background-image:url("../assets/hero/fresh-dance-hero.jpg");
   background-size:cover;background-position:center 40%;
 }
 .hero-inner{position:relative;z-index:2;max-width:720px}
