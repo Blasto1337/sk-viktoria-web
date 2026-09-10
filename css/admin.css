@@ -87,7 +87,7 @@
 .admin-static-tag,.seed-badge{font:700 10px 'Anton',sans-serif;background:#e2ded0;color:#6b6250;padding:2px 8px;border-radius:999px;white-space:nowrap}
 
 .admin-card-thumb{width:56px;height:56px;object-fit:cover;border-radius:10px;flex:none}
-.admin-card-main{display:flex;gap:12px}
+.admin-card-main{display:flex;gap:12px;flex:1;min-width:0}
 .admin-card-main-text{flex:1;min-width:0}
 
 .admin-photo-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
