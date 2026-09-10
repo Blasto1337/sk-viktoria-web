@@ -131,10 +131,17 @@
     });
   }
 
-  const coursesPreview = document.getElementById("courses-grid-preview");
-  if (coursesPreview) {
-    VTStore.krouzky.all().filter((item) => item.featured).forEach((item) => {
-      coursesPreview.appendChild(el(courseCardHtml(item)));
+  const coursesPreviewVfresh = document.getElementById("courses-grid-preview-vfresh");
+  if (coursesPreviewVfresh) {
+    VTStore.krouzky.all().filter((item) => item.featured && item.group === "vfresh").forEach((item) => {
+      coursesPreviewVfresh.appendChild(el(courseCardHtml(item)));
+    });
+  }
+
+  const coursesPreviewVolnocas = document.getElementById("courses-grid-preview-volnocas");
+  if (coursesPreviewVolnocas) {
+    VTStore.krouzky.all().filter((item) => item.featured && (item.group || "volnocas") !== "vfresh").forEach((item) => {
+      coursesPreviewVolnocas.appendChild(el(courseCardHtml(item)));
     });
   }
 
