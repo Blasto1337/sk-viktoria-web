@@ -28,7 +28,7 @@
 
   const photoWrap = document.getElementById("k-photo-wrap");
   if (photoWrap && item.photo) {
-    photoWrap.innerHTML = `<img src="${item.photo}" alt="${item.name}" style="width:100%;max-height:340px;object-fit:cover;margin-top:22px;display:block">`;
+    photoWrap.innerHTML = `<img class="detail-photo" src="${item.photo}" alt="${item.name}">`;
   }
 
   const scheduleEl = document.getElementById("k-schedule");

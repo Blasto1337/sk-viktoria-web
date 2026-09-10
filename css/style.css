@@ -320,6 +320,7 @@ img{max-width:100%;display:block}
 .back-link{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:14px;color:#fff}
 .back-link:hover{color:var(--gold)}
 .detail-lead{font-size:17px;color:var(--on-bg-muted);line-height:1.7;max-width:700px;margin-top:22px}
+.detail-photo{width:100%;max-width:700px;aspect-ratio:16/9;object-fit:cover;margin-top:22px;display:block}
 .detail-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;margin-top:32px;align-items:start}
 .detail-box{background:var(--gold);box-shadow:4px 4px 0 var(--navy);border-radius:0;padding:24px}
 .detail-box h2{font:600 20px 'Anton',sans-serif;color:var(--navy);margin-bottom:14px}

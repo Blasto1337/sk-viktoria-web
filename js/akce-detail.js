@@ -30,7 +30,7 @@
 
   const photoWrap = document.getElementById("a-photo-wrap");
   if (photoWrap && item.photo) {
-    photoWrap.innerHTML = `<img src="${item.photo}" alt="${item.title}" style="width:100%;max-height:340px;object-fit:cover;margin:18px 0;display:block">`;
+    photoWrap.innerHTML = `<img class="detail-photo" src="${item.photo}" alt="${item.title}">`;
   }
 
   const listEl = document.getElementById("a-list");
