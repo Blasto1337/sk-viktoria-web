@@ -21,10 +21,10 @@ akce.html               přehled akcí (filtry)
 akce-*.html             detail akcí (statické)
 akce-detail.html        detail akce přidané přes admin (?id=…)
 gallery.html            galerie (filtry)
-admin.html              administrační prototyp (aktuality / akce / kroužky / přihlášky)
+admin.html              administrace (přihlášení přes Supabase Auth; aktuality / akce / kroužky / přihlášky)
 css/style.css           veškeré styly veřejného webu, design tokeny v :root
 css/admin.css           styly adminu
-js/store.js             VTStore — datová vrstva nad localStorage
+js/store.js             VTStore — datová vrstva nad Supabase (REST + Auth + Storage, bez knihoven)
 js/render-public.js     vykreslí obsah z VTStore do veřejných stránek
 js/script.js            navigace, mobilní menu, drobné interakce
 js/akce.js, gallery.js  filtrování karet
@@ -37,11 +37,13 @@ podklady/               originální podklady od klientky (letáky, rozvrh, PDF,
 ## Jak kód funguje
 
 - **Obsah je psaný ručně v HTML.** Karty kroužků/akcí/galerie jsou statické. Změna obsahu = úprava HTML.
-- **VTStore (`js/store.js`)** je jediná datová vrstva; drží data v `localStorage` (klíče `vt_*`). Výchozí obsah je v `js/seed.js`; **po každé změně seed.js zvyš `SEED_VERSION` v store.js** — seed položky se pak v prohlížečích obnoví, položky přidané v adminu zůstanou.
-  Zbytek webu mluví jen s `VTStore`, nikdy přímo s `localStorage`. Až bude backend, mění se jen `store.js`.
+- **VTStore (`js/store.js`)** je jediná datová vrstva a mluví se Supabase (projekt „Blasto1337's Project", tabulky s prefixem `vik_`: `vik_courses` = kartičky kroužků, `vik_events` = akce, `vik_news` = aktuality, `vik_inquiries` = přihlášky z formuláře, `vik_admins` = správci; fotky v bucketu `vik-photos`). Čtení (`all()`/`get()`) je synchronní nad pamětí, která se plní při startu: veřejné stránky čekají na `VTStore.ready`, admin volá `VTStore.loadAdmin()` po přihlášení. Zápisy (`add`/`update`/`remove`) jsou async.
+  Veřejnost vidí jen publikovaný obsah a smí jen odeslat formulář (RLS). Nový správce: uživatel v Supabase Auth + řádek v `vik_admins`.
+  Když server není dostupný, veřejné stránky se vykreslí z poslední úspěšné kopie v localStorage, případně z `js/seed.js` (záložní obsah, `SEED_VERSION` se už nepoužívá).
+  Zbytek webu mluví jen s `VTStore`. Publishable klíč v `store.js` je určený do prohlížeče, data chrání RLS.
 - `render-public.js` pouze *přidává* to, co admin vložil navíc — statické karty nemaže ani nepřepisuje.
 - Všechny JS soubory jsou IIFE se `"use strict"`, bez modulů, bez závislostí.
-- Pořadí skriptů na stránce: `store.js` → `script.js` → `render-public.js` (+ stránkové skripty).
+- Pořadí skriptů na stránce: `seed.js` → `store.js` → `script.js` → `render-public.js` (+ stránkové skripty). Po `VTStore.ready` se teprve vykresluje.
 
 ## Design
 
@@ -227,6 +229,6 @@ Podrobná strategie je v Claude Projektu „Viktoria Tábor" → doc `claude/red
 - **Žádné pomlčky (—) v běžném českém textu na webu** (nadpisy, popisky, věty, meta description, hlášky v adminu). Místo nich čárka, dvojtečka, závorka nebo nová věta — podle kontextu. Datumové/číselné rozsahy (např. „3–20 let", „17:45–18:45") používají spojovník/en-dash `–`, ten se netýká, zůstává. `<title>` tagy a `document.title` oddělují stránku a web pomocí ` | ` (ne pomlčkou). Nadpisy typu „Místo · Podnázev" používají `·` (interpunkt), stejně jako zbytek webu (patička, tagy). Výjimka: `—` jako placeholder prázdné hodnoty v dynamických polích (např. `<span id="k-age">—</span>`, než se načte JS) zůstává, to není text.
 - Neměnit strukturu HTML víc, než je nutné — klient chce zachovat přehlednost.
 - Nezavádět build nástroje, frameworky ani npm bez domluvy.
-- Nový obsah přidávat do statického HTML, ne do VTStore (ten je jen pro admin prototyp).
+- Kroužky, akce a aktuality na přehledových stránkách spravuje admin (databáze). Statické stránky `kurz-*.html` a `akce-*.html` zůstávají ručně psané.
 - Po změnách zkontrolovat responsivitu (mobilní menu, karty, slider) a kontrast na tmavém pozadí.
 - Před commitem: `git status`, nepřidávat `.DS_Store`.

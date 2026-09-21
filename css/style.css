@@ -309,6 +309,8 @@ img{max-width:100%;display:block}
 .contact-form input:focus,.contact-form select:focus,.contact-form textarea:focus{
   outline:none;border-color:var(--navy);box-shadow:3px 3px 0 var(--navy);
 }
+.contact-form .form-consent{display:flex;align-items:flex-start;gap:10px;font-weight:600;line-height:1.4;margin-top:4px}
+.contact-form .form-consent input{width:auto;flex:0 0 auto;margin-top:2px;padding:0;accent-color:var(--gold)}
 .btn-submit{
   align-self:flex-start;background:var(--gold);color:var(--navy);padding:11px 28px;font-size:14px;margin-top:4px;border:none;
   box-shadow:4px 4px 0 var(--navy);transition:transform .15s ease,box-shadow .15s ease;

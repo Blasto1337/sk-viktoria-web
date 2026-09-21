@@ -252,7 +252,7 @@
 
       <form class="contact-form" id="contact-form" novalidate>
         <label for="f-name">Jméno</label>
-        <input id="f-name" name="name" type="text" placeholder="Jméno a příjmení" required>
+        <input id="f-name" name="name" type="text" placeholder="Jméno a příjmení" maxlength="150" required>
 
         <label for="f-category">Kategorie dotazu</label>
         <select id="f-category" name="category">
@@ -263,7 +263,12 @@
         <input id="f-email" name="email" type="email" placeholder="vas@email.cz" required>
 
         <label for="f-message">Vaše zpráva</label>
-        <textarea id="f-message" name="message" rows="4" placeholder="Napište nám pár slov…" required></textarea>
+        <textarea id="f-message" name="message" rows="4" placeholder="Napište nám pár slov…" maxlength="3000" required></textarea>
+
+        <label class="form-consent" for="f-consent">
+          <input id="f-consent" name="consent" type="checkbox" required>
+          <span>Souhlasím se zpracováním osobních údajů (jméno, e-mail, zpráva) za účelem vyřízení dotazu.</span>
+        </label>
 
         <button class="btn btn-submit" type="submit">Odeslat</button>
         <p class="form-note" id="form-note" role="status" aria-live="polite"></p>

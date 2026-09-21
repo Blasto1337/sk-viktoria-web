@@ -19,15 +19,34 @@
     <span class="brand-name">VFRESH DC</span>
   </a>
   <div class="admin-header-title">Administrace</div>
-  <a class="admin-back" href="index.html">← Zpět na web</a>
+  <div class="admin-header-right">
+    <span class="admin-user" id="admin-user" hidden></span>
+    <button type="button" class="admin-logout" id="admin-logout" hidden>Odhlásit se</button>
+    <a class="admin-back" href="index.html">← Zpět na web</a>
+  </div>
 </header>
 
 <div class="admin-banner">
-  Toto je funkční ukázka administrace pro prezentaci klientovi. Vše, co tu upravíte nebo přidáte, se hned zobrazí na veřejném webu (v tomto prohlížeči), data se zatím ukládají lokálně (localStorage), po schválení napojíme ostrou databázi a přihlašování.
-  <button type="button" id="reset-all">Obnovit web do původního stavu</button>
+  Změny se ukládají do databáze a hned se zobrazí na veřejném webu. Fotky se nahrávají do úložiště automaticky.
 </div>
 
-<main class="admin-main">
+<section class="admin-login" id="admin-login" hidden>
+  <form class="admin-form" id="form-login">
+    <h3>Přihlášení do administrace</h3>
+    <label>E-mail
+      <input type="email" name="email" autocomplete="username" required>
+    </label>
+    <label>Heslo
+      <input type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <button class="btn btn-submit" type="submit">Přihlásit se</button>
+    <p class="admin-login-note" id="login-note" role="status" aria-live="polite"></p>
+  </form>
+</section>
+
+<p class="admin-empty admin-loading" id="admin-loading" hidden>Načítám data…</p>
+
+<main class="admin-main" id="admin-main" hidden>
 
   <nav class="admin-tabs" id="admin-tabs">
     <button class="admin-tab active" data-tab="submissions">📥 Přihlášky <span class="admin-tab-count" id="count-submissions">0</span></button>

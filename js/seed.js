@@ -1,8 +1,9 @@
 /*
-  Default site content, seeded into VTStore on first load so every kroužek/
-  akce/aktualita is uniformly editable through the admin — not just items
-  added there. Seeded items carry `seed:true` and can't be deleted through
-  the admin (only edited), so the site never ends up with an empty grid.
+  Záložní obsah webu. Ostrá data jsou v Supabase (tabulky vik_courses,
+  vik_events, vik_news) a upravují se přes admin.html. Tento soubor se použije
+  jen tehdy, když se data nepodaří načíst ze serveru a v prohlížeči není žádná
+  dřívější kopie, aby web nikdy nezůstal prázdný. Při větší změně obsahu ho
+  udržujte přibližně v souladu s databází.
 */
 window.VT_SEED = {
   krouzky: [

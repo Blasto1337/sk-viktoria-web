@@ -15,10 +15,17 @@
   background:#fff6da;border-bottom:1px solid #f0e0a0;color:#6b5b16;
   padding:10px 24px;font-size:13px;text-align:center;line-height:1.5;
 }
-.admin-banner button{
-  border:none;background:none;color:#6b5b16;text-decoration:underline;
-  font:inherit;cursor:pointer;padding:0;margin-left:6px;
+.admin-header-right{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.admin-user{font-size:13px;color:var(--muted)}
+.admin-logout{
+  border:none;background:none;font:800 13px inherit;font-family:inherit;color:var(--navy);
+  cursor:pointer;padding:0;text-decoration:underline;
 }
+.admin-logout:hover{color:var(--teal)}
+
+.admin-login{max-width:420px;margin:48px auto;padding:0 24px}
+.admin-login-note{font-size:13px;min-height:18px;color:#c0392b;font-weight:700}
+.admin-loading{max-width:420px;margin:48px auto}
 
 .admin-main{max-width:1100px;margin:0 auto;padding:28px 24px 60px}
 

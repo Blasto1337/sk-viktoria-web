@@ -3,7 +3,7 @@
 
   if (!window.VTStore) {
     document.querySelector(".admin-main").innerHTML =
-      "<p class='admin-empty'>Administrace potřebuje localStorage, který se v tomto prohlížeči nepodařilo načíst.</p>";
+      "<p class='admin-empty'>Administraci se nepodařilo načíst. Zkuste stránku obnovit.</p>";
     return;
   }
 
@@ -22,12 +22,8 @@
   }
 
   // -------------------------------------------------------- photo fields --
-  // Photos are stored as data URLs directly in localStorage (no backend/file
-  // storage yet), which has a small quota shared by the whole site — an
-  // unresized phone photo (often several MB, ~33% bigger again once
-  // base64-encoded) can blow that quota on its own and make the save silently
-  // fail. Downscale + re-encode as JPEG on the client first so a typical
-  // photo ends up well under 300KB.
+  // Fotky se před nahráním zmenší a převedou na JPEG (telefonní fotky mají
+  // několik MB), do Supabase Storage se nahrají až při uložení formuláře.
   function compressImage(file, maxDim, quality) {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -48,7 +44,7 @@
         canvas.width = width;
         canvas.height = height;
         canvas.getContext("2d").drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL("image/jpeg", quality));
+        canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("Obrázek se nepodařilo zpracovat."))), "image/jpeg", quality);
       };
       img.onerror = () => {
         URL.revokeObjectURL(objectUrl);
@@ -58,21 +54,22 @@
     });
   }
 
-  // Wires a <input type="file" name="photo"> to a preview thumbnail + a
-  // "remove photo" button, and tracks the current value (an existing URL,
-  // a freshly-picked data URL, or null) independent of the file input's
-  // own value (which form.reset() clears but our tracked value shouldn't
-  // always follow — editing an item keeps its photo until you change it).
+  // Propojí <input type="file" name="photo"> s náhledem a tlačítkem pro odebrání.
+  // Aktuální hodnota je buď URL existující fotky, nebo čerstvě vybraný soubor
+  // (Blob), který se nahraje voláním commit(). Původní URL si pole pamatuje,
+  // aby šla po nahrazení nebo odebrání stará fotka uklidit ze Storage.
   function setupPhotoField(form, rowId, previewId) {
     const fileInput = form.querySelector('input[name="photo"]');
     const row = document.getElementById(rowId);
     const preview = document.getElementById(previewId);
-    let current = null;
+    let current = null;   // string (URL) | { blob, preview } | null
+    let original = null;  // URL, se kterou se formulář otevřel
 
-    function show(url) {
-      current = url || null;
+    function show(value) {
+      if (current && typeof current !== "string") URL.revokeObjectURL(current.preview);
+      current = value || null;
       if (current) {
-        preview.src = current;
+        preview.src = typeof current === "string" ? current : current.preview;
         row.hidden = false;
       } else {
         preview.src = "";
@@ -84,7 +81,8 @@
       const file = fileInput.files && fileInput.files[0];
       if (!file) return;
       try {
-        show(await compressImage(file, 1000, 0.75));
+        const blob = await compressImage(file, 1600, 0.82);
+        show({ blob, preview: URL.createObjectURL(blob) });
       } catch (e) {
         alert("Tuhle fotku se nepodařilo zpracovat, zkuste prosím jiný soubor.");
         fileInput.value = "";
@@ -97,23 +95,42 @@
     });
 
     return {
-      get: () => current,
-      set: (url) => {
+      set(url) {
         fileInput.value = "";
-        show(url);
+        original = url || null;
+        show(url || null);
+      },
+      // Nahraje případnou novou fotku a vrátí výslednou URL (nebo null).
+      async commit(folder) {
+        if (current && typeof current !== "string") {
+          return VTStore.uploadPhoto(current.blob, folder);
+        }
+        return current;
+      },
+      // Po úspěšném uložení smaže starou fotku, pokud byla nahrazena nebo odebrána.
+      cleanup(finalUrl) {
+        if (original && original !== finalUrl) VTStore.deletePhoto(original);
+        original = finalUrl || null;
       },
     };
   }
 
-  // Wraps a VTStore add/update call; on quota-exceeded (localStorage is
-  // full — the most likely cause once photos are involved) or any other
-  // write failure, alerts the user instead of silently doing nothing.
-  function trySave(fn) {
+  function friendlyError(e) {
+    if (e && (e.status === 401 || e.status === 403)) {
+      return "Nemáte oprávnění nebo vypršelo přihlášení. Přihlaste se prosím znovu.";
+    }
+    if (e && e.status) return `Uložení se nepovedlo (${e.message}).`;
+    return "Nepodařilo se spojit se serverem. Zkontrolujte připojení a zkuste to znovu.";
+  }
+
+  // Provede async zápis; při chybě ukáže srozumitelnou hlášku.
+  async function trySave(fn) {
     try {
-      fn();
+      await fn();
       return true;
     } catch (e) {
-      alert("Uložení se nepovedlo, úložiště prohlížeče je asi plné. Zkuste menší fotku, nebo smažte nějaké starší položky s fotkou.");
+      console.error(e);
+      alert(friendlyError(e));
       return false;
     }
   }
@@ -179,18 +196,20 @@
     });
   });
 
-  document.getElementById("submissions-list").addEventListener("click", (e) => {
+  document.getElementById("submissions-list").addEventListener("click", async (e) => {
     const btn = e.target.closest("button[data-action]");
     if (!btn) return;
     const id = btn.dataset.id;
     if (btn.dataset.action === "toggle-submission") {
       const s = VTStore.submissions.get(id);
-      VTStore.submissions.update(id, { status: s.status === "done" ? "new" : "done" });
+      const ok = await trySave(() => VTStore.submissions.update(id, { status: s.status === "done" ? "new" : "done" }));
+      if (!ok) return;
       renderSubmissions();
       updateCounts();
     } else if (btn.dataset.action === "delete-submission") {
       if (confirm("Smazat tuto přihlášku?")) {
-        VTStore.submissions.remove(id);
+        const ok = await trySave(() => VTStore.submissions.remove(id));
+        if (!ok) return;
         renderSubmissions();
         updateCounts();
       }
@@ -234,7 +253,7 @@
     list.innerHTML = items.map((a) => `
       <div class="admin-card" data-id="${a.id}">
         <div class="admin-card-main">
-          ${a.photo ? `<img class="admin-card-thumb" src="${a.photo}" alt="">` : ""}
+          ${a.photo ? `<img class="admin-card-thumb" src="${escapeHtml(a.photo)}" alt="">` : ""}
           <div class="admin-card-main-text">
             <div class="admin-card-title">${escapeHtml(a.date)} ${a.seed ? '<span class="seed-badge">základní</span>' : ""}</div>
             <p class="admin-card-message">${escapeHtml(a.text)}</p>
@@ -248,22 +267,24 @@
     `).join("");
   }
 
-  aktualitaForm.addEventListener("submit", (e) => {
+  aktualitaForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const f = e.target;
-    const patch = {
-      date: f.date.value.trim(),
-      text: f.text.value.trim(),
-      photo: aktualitaPhoto.get(),
-    };
-    const ok = trySave(() => {
+    const submitBtn = f.querySelector(".btn-submit");
+    submitBtn.disabled = true;
+    let finalPhoto = null;
+    const ok = await trySave(async () => {
+      finalPhoto = await aktualitaPhoto.commit("aktuality");
+      const patch = { date: f.date.value.trim(), text: f.text.value.trim(), photo: finalPhoto };
       if (editingAktualitaId) {
-        VTStore.aktuality.update(editingAktualitaId, patch);
+        await VTStore.aktuality.update(editingAktualitaId, patch);
       } else {
-        VTStore.aktuality.add(patch);
+        await VTStore.aktuality.add(patch);
       }
     });
+    submitBtn.disabled = false;
     if (!ok) return;
+    aktualitaPhoto.cleanup(finalPhoto);
     resetAktualitaForm();
     renderAktuality();
     updateCounts();
@@ -271,7 +292,7 @@
 
   aktualitaForm.querySelector("[data-cancel-edit]").addEventListener("click", resetAktualitaForm);
 
-  document.getElementById("aktuality-list").addEventListener("click", (e) => {
+  document.getElementById("aktuality-list").addEventListener("click", async (e) => {
     const editBtn = e.target.closest("button[data-action='edit-aktualita']");
     if (editBtn) {
       startEditAktualita(editBtn.dataset.id);
@@ -280,8 +301,12 @@
     const delBtn = e.target.closest("button[data-action='delete-aktualita']");
     if (delBtn) {
       if (confirm("Smazat tuto aktualitu?")) {
-        if (editingAktualitaId === delBtn.dataset.id) resetAktualitaForm();
-        VTStore.aktuality.remove(delBtn.dataset.id);
+        const id = delBtn.dataset.id;
+        const photo = (VTStore.aktuality.get(id) || {}).photo;
+        const ok = await trySave(() => VTStore.aktuality.remove(id));
+        if (!ok) return;
+        VTStore.deletePhoto(photo);
+        if (editingAktualitaId === id) resetAktualitaForm();
         renderAktuality();
         updateCounts();
       }
@@ -332,7 +357,7 @@
     list.innerHTML = items.map((a) => `
       <div class="admin-card" data-id="${a.id}">
         <div class="admin-card-main">
-          ${a.photo ? `<img class="admin-card-thumb" src="${a.photo}" alt="">` : ""}
+          ${a.photo ? `<img class="admin-card-thumb" src="${escapeHtml(a.photo)}" alt="">` : ""}
           <div class="admin-card-main-text">
             <div class="admin-card-title"><span class="tag tag-${a.color}">${escapeHtml(a.tag)}</span> ${escapeHtml(a.title)} ${a.seed ? '<span class="seed-badge">základní</span>' : ""}</div>
             <div class="admin-card-meta">${escapeHtml(a.date)}${a.location ? " · " + escapeHtml(a.location) : ""}${a.featured ? " · na hlavní straně" : ""}</div>
@@ -348,30 +373,36 @@
     `).join("");
   }
 
-  akceForm.addEventListener("submit", (e) => {
+  akceForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const f = e.target;
+    const submitBtn = f.querySelector(".btn-submit");
+    submitBtn.disabled = true;
     const bullets = f.bullets.value.split("\n").map((s) => s.trim()).filter(Boolean);
-    const patch = {
-      tag: f.tag.value.trim() || "AKCE",
-      color: f.color.value,
-      category: f.category.value,
-      title: f.title.value.trim(),
-      date: f.date.value.trim(),
-      location: f.location.value.trim(),
-      description: f.description.value.trim(),
-      bullets,
-      featured: f.featured.checked,
-      photo: akcePhoto.get(),
-    };
-    const ok = trySave(() => {
+    let finalPhoto = null;
+    const ok = await trySave(async () => {
+      finalPhoto = await akcePhoto.commit("akce");
+      const patch = {
+        tag: f.tag.value.trim() || "AKCE",
+        color: f.color.value,
+        category: f.category.value,
+        title: f.title.value.trim(),
+        date: f.date.value.trim(),
+        location: f.location.value.trim(),
+        description: f.description.value.trim(),
+        bullets,
+        featured: f.featured.checked,
+        photo: finalPhoto,
+      };
       if (editingAkceId) {
-        VTStore.akce.update(editingAkceId, patch);
+        await VTStore.akce.update(editingAkceId, patch);
       } else {
-        VTStore.akce.add(patch);
+        await VTStore.akce.add(patch);
       }
     });
+    submitBtn.disabled = false;
     if (!ok) return;
+    akcePhoto.cleanup(finalPhoto);
     resetAkceForm();
     renderAkce();
     updateCounts();
@@ -379,7 +410,7 @@
 
   akceForm.querySelector("[data-cancel-edit]").addEventListener("click", resetAkceForm);
 
-  document.getElementById("akce-list").addEventListener("click", (e) => {
+  document.getElementById("akce-list").addEventListener("click", async (e) => {
     const editBtn = e.target.closest("button[data-action='edit-akce']");
     if (editBtn) {
       startEditAkce(editBtn.dataset.id);
@@ -388,8 +419,12 @@
     const delBtn = e.target.closest("button[data-action='delete-akce']");
     if (delBtn) {
       if (confirm("Smazat tuto akci?")) {
-        if (editingAkceId === delBtn.dataset.id) resetAkceForm();
-        VTStore.akce.remove(delBtn.dataset.id);
+        const id = delBtn.dataset.id;
+        const photo = (VTStore.akce.get(id) || {}).photo;
+        const ok = await trySave(() => VTStore.akce.remove(id));
+        if (!ok) return;
+        VTStore.deletePhoto(photo);
+        if (editingAkceId === id) resetAkceForm();
         renderAkce();
         updateCounts();
       }
@@ -458,7 +493,7 @@
     list.innerHTML = items.map((k) => `
       <div class="admin-card" data-id="${k.id}">
         <div class="admin-card-main">
-          ${k.photo ? `<img class="admin-card-thumb" src="${k.photo}" alt="">` : `<span class="admin-card-thumb icon-preview" style="display:flex;align-items:center;justify-content:center;background:#f4f1e9">${window.vtIconSvg ? window.vtIconSvg(k.icon) : ""}</span>`}
+          ${k.photo ? `<img class="admin-card-thumb" src="${escapeHtml(k.photo)}" alt="">` : `<span class="admin-card-thumb icon-preview" style="display:flex;align-items:center;justify-content:center;background:#f4f1e9">${window.vtIconSvg ? window.vtIconSvg(k.icon) : ""}</span>`}
           <div class="admin-card-main-text">
             <div class="admin-card-title">${escapeHtml(k.name)} <span class="tag tag-teal">${escapeHtml(k.age || "Novinka")}</span> ${k.seed ? '<span class="seed-badge">základní</span>' : ""}</div>
             <div class="admin-card-meta">${escapeHtml(k.location || "")}${k.group === "vfresh" ? " · blok VFRESH DC" : " · blok Volnočasové aktivity"}${k.featured ? " · na hlavní straně" : ""}</div>
@@ -474,33 +509,39 @@
     `).join("");
   }
 
-  krouzekForm.addEventListener("submit", (e) => {
+  krouzekForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const f = e.target;
+    const submitBtn = f.querySelector(".btn-submit");
+    submitBtn.disabled = true;
     const schedule = f.schedule.value.split("\n").map((s) => s.trim()).filter(Boolean).map((line) => {
       const [label, time] = line.split("|").map((s) => (s || "").trim());
       return { label: label || "", time: time || "" };
     });
-    const patch = {
-      icon: iconSelect.value,
-      color: "teal",
-      group: f.group.value,
-      name: f.name.value.trim(),
-      age: f.age.value.trim() || "Novinka",
-      location: f.location.value.trim(),
-      description: f.description.value.trim(),
-      schedule,
-      featured: f.featured.checked,
-      photo: krouzekPhoto.get(),
-    };
-    const ok = trySave(() => {
+    let finalPhoto = null;
+    const ok = await trySave(async () => {
+      finalPhoto = await krouzekPhoto.commit("krouzky");
+      const patch = {
+        icon: iconSelect.value,
+        group: f.group.value,
+        name: f.name.value.trim(),
+        age: f.age.value.trim() || "Novinka",
+        location: f.location.value.trim(),
+        description: f.description.value.trim(),
+        schedule,
+        featured: f.featured.checked,
+        photo: finalPhoto,
+      };
       if (editingKrouzekId) {
-        VTStore.krouzky.update(editingKrouzekId, patch);
+        // barva karty se při úpravě nemění (formulář ji nenabízí)
+        await VTStore.krouzky.update(editingKrouzekId, patch);
       } else {
-        VTStore.krouzky.add(patch);
+        await VTStore.krouzky.add({ ...patch, color: "teal" });
       }
     });
+    submitBtn.disabled = false;
     if (!ok) return;
+    krouzekPhoto.cleanup(finalPhoto);
     resetKrouzekForm();
     renderKrouzky();
     updateCounts();
@@ -508,7 +549,7 @@
 
   krouzekForm.querySelector("[data-cancel-edit]").addEventListener("click", resetKrouzekForm);
 
-  document.getElementById("krouzky-list").addEventListener("click", (e) => {
+  document.getElementById("krouzky-list").addEventListener("click", async (e) => {
     const editBtn = e.target.closest("button[data-action='edit-krouzek']");
     if (editBtn) {
       startEditKrouzek(editBtn.dataset.id);
@@ -517,8 +558,12 @@
     const delBtn = e.target.closest("button[data-action='delete-krouzek']");
     if (delBtn) {
       if (confirm("Smazat tento kroužek?")) {
-        if (editingKrouzekId === delBtn.dataset.id) resetKrouzekForm();
-        VTStore.krouzky.remove(delBtn.dataset.id);
+        const id = delBtn.dataset.id;
+        const photo = (VTStore.krouzky.get(id) || {}).photo;
+        const ok = await trySave(() => VTStore.krouzky.remove(id));
+        if (!ok) return;
+        VTStore.deletePhoto(photo);
+        if (editingKrouzekId === id) resetKrouzekForm();
         renderKrouzky();
         updateCounts();
       }
@@ -526,15 +571,6 @@
   });
 
   // ----------------------------------------------------------------- misc --
-  document.getElementById("reset-all").addEventListener("click", () => {
-    if (!confirm("Opravdu obnovit web do původního stavu? Smažou se všechny úpravy a nově přidané položky (kroužky, akce, aktuality, přihlášky), vrátí se výchozí obsah webu.")) return;
-    VTStore.resetAllToSeed();
-    resetAktualitaForm();
-    resetAkceForm();
-    resetKrouzekForm();
-    renderAll();
-  });
-
   function renderAll() {
     renderSubmissions();
     renderAktuality();
@@ -543,5 +579,84 @@
     updateCounts();
   }
 
-  renderAll();
+  // ---------------------------------------------------------- přihlášení --
+  const loginSection = document.getElementById("admin-login");
+  const loginForm = document.getElementById("form-login");
+  const loginNote = document.getElementById("login-note");
+  const mainSection = document.getElementById("admin-main");
+  const loadingNote = document.getElementById("admin-loading");
+  const logoutBtn = document.getElementById("admin-logout");
+  const userLabel = document.getElementById("admin-user");
+
+  function showLogin(message) {
+    mainSection.hidden = true;
+    loadingNote.hidden = true;
+    logoutBtn.hidden = true;
+    userLabel.hidden = true;
+    loginSection.hidden = false;
+    loginNote.textContent = message || "";
+    loginForm.password.value = "";
+  }
+
+  async function start() {
+    loginSection.hidden = true;
+    loadingNote.hidden = false;
+    await VTStore.loadAdmin();
+    loadingNote.hidden = true;
+    mainSection.hidden = false;
+    const s = VTStore.auth.session();
+    userLabel.textContent = s ? s.email : "";
+    userLabel.hidden = !s;
+    logoutBtn.hidden = false;
+    renderAll();
+  }
+
+  // Ověří, že přihlášený uživatel je správce webu, a teprve pak načte data.
+  async function enter() {
+    try {
+      if (!(await VTStore.auth.isAdmin())) {
+        await VTStore.auth.signOut();
+        showLogin("Tento účet nemá přístup do administrace.");
+        return;
+      }
+      await start();
+    } catch (e) {
+      console.error(e);
+      if (e && (e.status === 401 || e.status === 403)) {
+        showLogin("Přihlášení vypršelo, přihlaste se prosím znovu.");
+      } else {
+        showLogin("Nepodařilo se spojit se serverem. Zkuste to prosím znovu.");
+      }
+    }
+  }
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = loginForm.querySelector(".btn-submit");
+    btn.disabled = true;
+    loginNote.textContent = "Přihlašuji…";
+    try {
+      await VTStore.auth.signIn(loginForm.email.value.trim(), loginForm.password.value);
+    } catch (err) {
+      btn.disabled = false;
+      loginNote.textContent = err && err.status === 400
+        ? "Nesprávný e-mail nebo heslo."
+        : "Přihlášení se nepovedlo. Zkontrolujte připojení a zkuste to znovu.";
+      return;
+    }
+    btn.disabled = false;
+    await enter();
+  });
+
+  logoutBtn.addEventListener("click", async () => {
+    await VTStore.auth.signOut();
+    window.location.reload();
+  });
+
+  if (VTStore.auth.session()) {
+    loadingNote.hidden = false;
+    enter();
+  } else {
+    showLogin();
+  }
 })();
