@@ -20,14 +20,15 @@ kurz-detail.html        detail kroužku přidaného přes admin (?id=…)
 akce.html               přehled akcí (filtry)
 akce-*.html             detail akcí (statické)
 akce-detail.html        detail akce přidané přes admin (?id=…)
-gallery.html            galerie (filtry)
-admin.html              administrace (přihlášení přes Supabase Auth; aktuality / akce / kroužky / přihlášky)
+gallery.html            galerie (fotky z databáze, lightbox)
+admin.html              administrace (přihlášení přes Supabase Auth; aktuality / akce / kroužky / galerie / přihlášky)
 css/style.css           veškeré styly veřejného webu, design tokeny v :root
 css/admin.css           styly adminu
 js/store.js             VTStore — datová vrstva nad Supabase (REST + Auth + Storage, bez knihoven)
 js/render-public.js     vykreslí obsah z VTStore do veřejných stránek
 js/script.js            navigace, mobilní menu, drobné interakce
-js/akce.js, gallery.js  filtrování karet
+js/akce.js           filtrování karet akcí
+js/gallery.js        vykreslení galerie z VTStore + lightbox
 js/kurz-detail.js, akce-detail.js   detail položek z VTStore
 js/admin.js             logika adminu
 assets/hero, akce, gallery   obrázky
@@ -36,8 +37,8 @@ podklady/               originální podklady od klientky (letáky, rozvrh, PDF,
 
 ## Jak kód funguje
 
-- **Obsah je psaný ručně v HTML.** Karty kroužků/akcí/galerie jsou statické. Změna obsahu = úprava HTML.
-- **VTStore (`js/store.js`)** je jediná datová vrstva a mluví se Supabase (projekt „Blasto1337's Project", tabulky s prefixem `vik_`: `vik_courses` = kartičky kroužků, `vik_events` = akce, `vik_news` = aktuality, `vik_inquiries` = přihlášky z formuláře, `vik_admins` = správci; fotky v bucketu `vik-photos`). Čtení (`all()`/`get()`) je synchronní nad pamětí, která se plní při startu: veřejné stránky čekají na `VTStore.ready`, admin volá `VTStore.loadAdmin()` po přihlášení. Zápisy (`add`/`update`/`remove`) jsou async.
+- **Proměnlivý obsah je v databázi.** Kroužky, akce, aktuality i fotky galerie se upravují v adminu; v HTML jsou ručně psané jen detailní stránky (`kurz-*.html`, `akce-*.html`) a statické texty. Videa v galerii zatím nejsou, řeší se zvlášť.
+- **VTStore (`js/store.js`)** je jediná datová vrstva a mluví se Supabase (projekt „Blasto1337's Project", tabulky s prefixem `vik_`: `vik_courses` = kartičky kroužků, `vik_events` = akce, `vik_news` = aktuality, `vik_gallery` = fotky galerie (pořadí `sort_order`, `published`), `vik_inquiries` = přihlášky z formuláře, `vik_admins` = správci; fotky v bucketu `vik-photos`). Čtení (`all()`/`get()`) je synchronní nad pamětí, která se plní při startu: veřejné stránky čekají na `VTStore.ready`, admin volá `VTStore.loadAdmin()` po přihlášení. Zápisy (`add`/`update`/`remove`) jsou async.
   Veřejnost vidí jen publikovaný obsah a smí jen odeslat formulář (RLS). Nový správce: uživatel v Supabase Auth + řádek v `vik_admins`.
   Když server není dostupný, veřejné stránky se vykreslí z poslední úspěšné kopie v localStorage, případně z `js/seed.js` (záložní obsah, `SEED_VERSION` se už nepoužívá).
   Zbytek webu mluví jen s `VTStore`. Publishable klíč v `store.js` je určený do prohlížeče, data chrání RLS.

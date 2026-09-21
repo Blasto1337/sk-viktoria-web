@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Galerie | SK Viktoria Tábor</title>
-<meta name="description" content="Fotky a videa z tréninků, táborů a závodů SK Viktoria Tábor.">
+<meta name="description" content="Fotky z tréninků, táborů a závodů SK Viktoria Tábor.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
@@ -43,15 +43,9 @@
     <img class="sec-deco sec-deco-r" src="assets/hero/icon-cassette.png" alt="" aria-hidden="true" style="right:1%;top:50%;transform:translateY(-50%) rotate(-8deg);width:48px">
     <div class="wrap">
       <h1>Galerie</h1>
-      <p>Fotky a videa z tréninků, táborů a závodů.</p>
+      <p>Fotky z tréninků, táborů a závodů.</p>
     </div>
   </section>
-
-  <div class="gallery-filters">
-    <button class="filter-btn active" data-filter="all">Vše</button>
-    <button class="filter-btn" data-filter="photo">Fotky</button>
-    <button class="filter-btn" data-filter="video">Videa</button>
-  </div>
 
   <section class="gallery-full">
     <img class="sec-deco sec-deco-l" src="assets/hero/icon-boombox.png" alt="" aria-hidden="true" style="left:1%;top:18%;transform:rotate(8deg);width:48px">
@@ -61,26 +55,8 @@
     <img class="sec-deco sec-deco-l" src="assets/hero/icon-cassette.png" alt="" aria-hidden="true" style="left:1%;top:82%;transform:rotate(9deg);width:48px">
     <img class="sec-deco sec-deco-r" src="assets/hero/icon-cap.png" alt="" aria-hidden="true" style="right:1%;top:82%;transform:rotate(8deg);width:48px">
     <div class="wrap">
-      <div class="gallery-grid gallery-grid-full" id="gallery-grid">
-
-        <button class="gallery-item" data-type="photo" data-src="assets/gallery/soutez-1.jpg"><img src="assets/gallery/soutez-1.jpg" alt="VFRESH DC na MIA Festivalu" loading="lazy"></button>
-        <button class="gallery-item" data-type="video"><div class="ph"><span>video</span></div><span class="video-badge" aria-hidden="true">▶</span></button>
-        <button class="gallery-item" data-type="photo" data-src="assets/gallery/soutez-2.jpg"><img src="assets/gallery/soutez-2.jpg" alt="VFRESH DC na MIA Festivalu" loading="lazy"></button>
-        <button class="gallery-item" data-type="photo" data-src="assets/gallery/soutez-3.jpg"><img src="assets/gallery/soutez-3.jpg" alt="VFRESH DC na MIA Festivalu" loading="lazy"></button>
-        <button class="gallery-item" data-type="video"><div class="ph"><span>video</span></div><span class="video-badge" aria-hidden="true">▶</span></button>
-        <button class="gallery-item" data-type="photo" data-src="assets/gallery/soutez-4.jpg"><img src="assets/gallery/soutez-4.jpg" alt="VFRESH DC na MIA Festivalu" loading="lazy"></button>
-        <button class="gallery-item" data-type="photo" data-src="assets/gallery/soutez-5.jpg"><img src="assets/gallery/soutez-5.jpg" alt="VFRESH DC na MIA Festivalu" loading="lazy"></button>
-        <button class="gallery-item" data-type="video"><div class="ph"><span>video</span></div><span class="video-badge" aria-hidden="true">▶</span></button>
-        <button class="gallery-item" data-type="photo" data-src="assets/akce/vfresh-dc.jpg"><img src="assets/akce/vfresh-dc.jpg" alt="VFRESH DC" loading="lazy"></button>
-        <button class="gallery-item" data-type="photo" data-src="assets/akce/dramaticky-klub.jpg"><img src="assets/akce/dramaticky-klub.jpg" alt="Dramatický klub" loading="lazy"></button>
-        <button class="gallery-item" data-type="video"><div class="ph"><span>video</span></div><span class="video-badge" aria-hidden="true">▶</span></button>
-        <button class="gallery-item" data-type="photo" data-src="assets/akce/sportuj-s-viktorkou.jpg"><img src="assets/akce/sportuj-s-viktorkou.jpg" alt="Sportuj s Viktorkou" loading="lazy"></button>
-        <button class="gallery-item" data-type="photo"><div class="ph"><span>foto</span></div></button>
-        <button class="gallery-item" data-type="photo"><div class="ph"><span>foto</span></div></button>
-        <button class="gallery-item" data-type="video"><div class="ph"><span>video</span></div><span class="video-badge" aria-hidden="true">▶</span></button>
-        <button class="gallery-item" data-type="photo"><div class="ph"><span>foto</span></div></button>
-
-      </div>
+      <div class="gallery-grid gallery-grid-full" id="gallery-grid"></div>
+      <p class="gallery-empty" id="gallery-empty" hidden>Fotky doplníme. Zatím se podívejte na naše <a href="akce.html">akce</a>.</p>
     </div>
   </section>
 
@@ -106,7 +82,7 @@
   <div class="lightbox-inner">
     <button class="lightbox-close" id="lightbox-close" aria-label="Zavřít">✕</button>
     <button class="lightbox-prev" id="lightbox-prev" aria-label="Předchozí">‹</button>
-    <div class="ph" id="lightbox-media"><span id="lightbox-label">foto</span></div>
+    <div class="lightbox-media" id="lightbox-media"></div>
     <button class="lightbox-next" id="lightbox-next" aria-label="Další">›</button>
   </div>
 </div>
@@ -119,6 +95,8 @@
   </div>
 </footer>
 
+<script src="js/seed.js"></script>
+<script src="js/store.js"></script>
 <script src="js/script.js"></script>
 <script src="js/gallery.js"></script>
 </body>

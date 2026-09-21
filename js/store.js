@@ -151,6 +151,12 @@
       table: "vik_news",
       fields: { date: "date_label", text: "body", photo: "photo_url" },
     },
+    galerie: {
+      table: "vik_gallery",
+      order: "sort_order.asc,created_at.desc",
+      sortKey: "sortOrder",
+      fields: { photo: "photo_url", caption: "caption", sortOrder: "sort_order", published: "published" },
+    },
     submissions: {
       table: "vik_inquiries",
       adminOnlyRead: true,
@@ -183,11 +189,20 @@
 
   function makeCollection(cfg) {
     let cache = [];
+    // Kolekce s ručním pořadím (galerie) drží paměť seřazenou podle sortKey.
+    function sortCache() {
+      if (!cfg.sortKey) return;
+      const k = cfg.sortKey;
+      cache = cache
+        .map((it, i) => ({ it, i }))
+        .sort((a, b) => ((a.it[k] || 0) - (b.it[k] || 0)) || (a.i - b.i))
+        .map((x) => x.it);
+    }
     return {
       all() { return cache.slice(); },
       get(id) { return cache.find((it) => it.id === id) || null; },
-      _set(rows) { cache = rows.map((r) => fromRow(cfg, r)); },
-      _setItems(items) { cache = items.slice(); },
+      _set(rows) { cache = rows.map((r) => fromRow(cfg, r)); sortCache(); },
+      _setItems(items) { cache = items.slice(); sortCache(); },
 
       async add(item) {
         const row = toRow(cfg, item);
@@ -202,6 +217,7 @@
         if (!out || !out.length) throw httpError(403, { message: "Položku se nepodařilo uložit." });
         const record = fromRow(cfg, out[0]);
         cache.unshift(record);
+        sortCache();
         return record;
       },
 
@@ -212,6 +228,7 @@
         if (!out || !out.length) throw httpError(403, { message: "Změna se neuložila (chybí oprávnění nebo položka neexistuje)." });
         const record = fromRow(cfg, out[0]);
         cache = cache.map((it) => (it.id === id ? record : it));
+        sortCache();
         return record;
       },
 
@@ -230,16 +247,17 @@
     aktuality: makeCollection(COLLECTIONS.aktuality),
     akce: makeCollection(COLLECTIONS.akce),
     krouzky: makeCollection(COLLECTIONS.krouzky),
+    galerie: makeCollection(COLLECTIONS.galerie),
     source: "none", // "live" | "cache" | "seed"
   };
 
   // ----------------------------------------------------------------- načtení --
-  const PUBLIC_NAMES = ["krouzky", "akce", "aktuality"];
-  const ALL_NAMES = ["krouzky", "akce", "aktuality", "submissions"];
+  const PUBLIC_NAMES = ["krouzky", "akce", "aktuality", "galerie"];
+  const ALL_NAMES = ["krouzky", "akce", "aktuality", "galerie", "submissions"];
 
   async function fetchCollections(names, admin) {
     const results = await Promise.all(names.map((name) =>
-      rest(`${COLLECTIONS[name].table}?select=*&order=created_at.desc`, { admin, timeout: LOAD_TIMEOUT_MS })
+      rest(`${COLLECTIONS[name].table}?select=*&order=${COLLECTIONS[name].order || "created_at.desc"}`, { admin, timeout: LOAD_TIMEOUT_MS })
     ));
     const data = {};
     names.forEach((name, i) => { data[name] = results[i] || []; });
@@ -249,19 +267,20 @@
   function loadFallback() {
     let cached = null;
     try { cached = JSON.parse(lsGet(CACHE_KEY) || "null"); } catch (e) { cached = null; }
-    if (cached && PUBLIC_NAMES.every((n) => Array.isArray(cached[n]))) {
-      PUBLIC_NAMES.forEach((n) => store[n]._set(cached[n]));
-      store.source = "cache";
-      return;
-    }
     const seed = window.VT_SEED || {};
+    // Kopie z prohlížeče, u kolekcí které v ní chybí (starší verze webu) záloha ze seed.js.
+    const hasCache = !!(cached && ["krouzky", "akce", "aktuality"].every((n) => Array.isArray(cached[n])));
     PUBLIC_NAMES.forEach((n) => {
+      if (hasCache && Array.isArray(cached[n])) {
+        store[n]._set(cached[n]);
+        return;
+      }
       const items = (seed[n] || []).map((it, i) => ({
         createdAt: new Date(Date.now() - i * 1000).toISOString(), ...it,
       }));
       store[n]._setItems(items);
     });
-    store.source = "seed";
+    store.source = hasCache ? "cache" : "seed";
   }
 
   async function loadPublic() {

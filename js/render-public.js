@@ -1,5 +1,5 @@
 /*
-  Renders kroužky/akce/aktuality onto the public pages from VTStore.
+  Renders kroužky/akce/aktuality/galerie onto the public pages from VTStore.
   Every item lives in the Supabase database (edited through admin.html) and is
   rendered from VTStore once VTStore.ready resolves; there is no separate
   hand-written HTML fallback for these grids/lists.
@@ -84,6 +84,19 @@
           if (card.dataset.filterType !== filter) card.classList.add("is-hidden");
         });
       }
+    }
+
+    // --- Galerie (náhled na hlavní stránce, prvních 8 fotek) --------------
+    const galleryPreview = document.getElementById("gallery-grid-preview");
+    if (galleryPreview) {
+      const photos = VTStore.galerie.all().filter((g) => g.published !== false && g.photo).slice(0, 8);
+      photos.forEach((g) => {
+        galleryPreview.appendChild(el(
+          `<a class="gallery-item" href="gallery.html"><img src="${escapeHtml(g.photo)}" alt="${escapeHtml(g.caption || "")}" loading="lazy"></a>`
+        ));
+      });
+      const gallerySection = document.getElementById("galerie");
+      if (gallerySection && !photos.length) gallerySection.hidden = true;
     }
 
     // --- Kroužky (courses) ------------------------------------------------

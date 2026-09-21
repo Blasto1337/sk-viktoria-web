@@ -1,6 +1,6 @@
 /*
   Záložní obsah webu. Ostrá data jsou v Supabase (tabulky vik_courses,
-  vik_events, vik_news) a upravují se přes admin.html. Tento soubor se použije
+  vik_events, vik_news, vik_gallery) a upravují se přes admin.html. Tento soubor se použije
   jen tehdy, když se data nepodaří načíst ze serveru a v prohlížeči není žádná
   dřívější kopie, aby web nikdy nezůstal prázdný. Při větší změně obsahu ho
   udržujte přibližně v souladu s databází.
@@ -95,6 +95,17 @@ window.VT_SEED = {
       photo: null,
       detailHref: "akce-silvestrovsky-beh.html",
     },
+  ],
+
+  galerie: [
+    { id: "g1", seed: true, sortOrder: 10, published: true, photo: "assets/gallery/soutez-1.jpg", caption: "VFRESH DC na MIA Festivalu" },
+    { id: "g2", seed: true, sortOrder: 20, published: true, photo: "assets/akce/vfresh-dc.jpg", caption: "VFRESH DC" },
+    { id: "g3", seed: true, sortOrder: 30, published: true, photo: "assets/gallery/soutez-2.jpg", caption: "VFRESH DC na MIA Festivalu" },
+    { id: "g4", seed: true, sortOrder: 40, published: true, photo: "assets/gallery/soutez-3.jpg", caption: "VFRESH DC na MIA Festivalu" },
+    { id: "g5", seed: true, sortOrder: 50, published: true, photo: "assets/akce/dramaticky-klub.jpg", caption: "Dramatický klub" },
+    { id: "g6", seed: true, sortOrder: 60, published: true, photo: "assets/gallery/soutez-4.jpg", caption: "VFRESH DC na MIA Festivalu" },
+    { id: "g7", seed: true, sortOrder: 70, published: true, photo: "assets/gallery/soutez-5.jpg", caption: "VFRESH DC na MIA Festivalu" },
+    { id: "g8", seed: true, sortOrder: 80, published: true, photo: "assets/akce/sportuj-s-viktorkou.jpg", caption: "Sportuj s Viktorkou" },
   ],
 
   aktuality: [

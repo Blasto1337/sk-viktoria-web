@@ -152,6 +152,7 @@
     document.getElementById("count-aktuality").textContent = VTStore.aktuality.all().length;
     document.getElementById("count-akce").textContent = VTStore.akce.all().length;
     document.getElementById("count-krouzky").textContent = VTStore.krouzky.all().length;
+    document.getElementById("count-galerie").textContent = VTStore.galerie.all().length;
   }
 
   // ---------------------------------------------------------- submissions --
@@ -570,12 +571,134 @@
     }
   });
 
+  // -------------------------------------------------------------- galerie --
+  const galerieForm = document.getElementById("form-galerie-upload");
+  const galerieList = document.getElementById("galerie-list");
+  const galerieProgress = document.getElementById("galerie-progress");
+
+  function renderGalerie() {
+    const empty = document.getElementById("galerie-empty");
+    const items = VTStore.galerie.all();
+    empty.hidden = items.length > 0;
+    galerieList.innerHTML = items.map((g, i) => `
+      <div class="gallery-admin-card${g.published ? "" : " is-unpublished"}" data-id="${g.id}">
+        <img src="${escapeHtml(g.photo)}" alt="${escapeHtml(g.caption || "")}" loading="lazy">
+        <div class="gallery-admin-body">
+          <input class="gallery-caption" type="text" value="${escapeHtml(g.caption || "")}" placeholder="Popisek fotky" maxlength="200" aria-label="Popisek fotky" data-id="${g.id}">
+          ${g.seed ? '<span class="seed-badge">základní</span>' : ""}
+          <div class="gallery-admin-actions">
+            <button class="btn-mini" data-action="move-left" data-id="${g.id}" title="Posunout dopředu" aria-label="Posunout dopředu"${i === 0 ? " disabled" : ""}>←</button>
+            <button class="btn-mini" data-action="move-right" data-id="${g.id}" title="Posunout dozadu" aria-label="Posunout dozadu"${i === items.length - 1 ? " disabled" : ""}>→</button>
+            <button class="btn-mini" data-action="toggle-galerie" data-id="${g.id}">${g.published ? "Skrýt" : "Zobrazit"}</button>
+            <button class="btn-mini btn-mini-danger" data-action="delete-galerie" data-id="${g.id}" aria-label="Smazat fotku">🗑</button>
+          </div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  galerieForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const files = [...galerieForm.photos.files];
+    if (!files.length) return;
+    const caption = galerieForm.caption.value.trim();
+    const submitBtn = galerieForm.querySelector(".btn-submit");
+    submitBtn.disabled = true;
+
+    // Nové fotky jdou na začátek galerie, ve stejném pořadí, v jakém byly vybrány.
+    const existing = VTStore.galerie.all().map((g) => g.sortOrder || 0);
+    const first = (existing.length ? Math.min(...existing) : 10) - 10 * files.length;
+    const failed = [];
+    let done = 0;
+
+    for (let i = 0; i < files.length; i++) {
+      galerieProgress.textContent = `Nahrávám ${i + 1} z ${files.length}…`;
+      let url = null;
+      try {
+        const blob = await compressImage(files[i], 1600, 0.82);
+        url = await VTStore.uploadPhoto(blob, "galerie");
+        await VTStore.galerie.add({ photo: url, caption: caption || null, sortOrder: first + 10 * i, published: true });
+        done++;
+        renderGalerie();
+        updateCounts();
+      } catch (err) {
+        console.error(err);
+        // Fotka se nahrála, ale řádek se neuložil: uklidíme ji z úložiště.
+        if (url) VTStore.deletePhoto(url);
+        failed.push({ name: files[i].name, err });
+      }
+    }
+
+    submitBtn.disabled = false;
+    galerieForm.reset();
+    if (failed.length) {
+      galerieProgress.textContent = `Nahráno ${done} z ${files.length}.`;
+      alert(`Nepodařilo se nahrát: ${failed.map((f) => f.name).join(", ")}.\n${friendlyError(failed[0].err)}`);
+    } else {
+      galerieProgress.textContent = done === 1 ? "Fotka je nahraná." : `Nahráno ${done} fotek.`;
+    }
+  });
+
+  galerieList.addEventListener("change", async (e) => {
+    const input = e.target.closest("input.gallery-caption");
+    if (!input) return;
+    const g = VTStore.galerie.get(input.dataset.id);
+    if (!g) return;
+    const value = input.value.trim();
+    if (value === (g.caption || "")) return;
+    const ok = await trySave(() => VTStore.galerie.update(g.id, { caption: value || null }));
+    if (!ok) input.value = g.caption || "";
+  });
+
+  async function moveGalerie(id, dir) {
+    const items = VTStore.galerie.all();
+    const i = items.findIndex((g) => g.id === id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= items.length) return;
+    const a = items[i];
+    const b = items[j];
+    let orderA = b.sortOrder;
+    let orderB = a.sortOrder;
+    if (orderA === orderB) orderA += dir; // stejné pořadí: posun o jedničku
+    const ok = await trySave(async () => {
+      await VTStore.galerie.update(a.id, { sortOrder: orderA });
+      await VTStore.galerie.update(b.id, { sortOrder: orderB });
+    });
+    if (ok) renderGalerie();
+  }
+
+  galerieList.addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-action]");
+    if (!btn || btn.disabled) return;
+    const id = btn.dataset.id;
+    const action = btn.dataset.action;
+    if (action === "move-left") {
+      await moveGalerie(id, -1);
+    } else if (action === "move-right") {
+      await moveGalerie(id, 1);
+    } else if (action === "toggle-galerie") {
+      const g = VTStore.galerie.get(id);
+      if (!g) return;
+      const ok = await trySave(() => VTStore.galerie.update(id, { published: !g.published }));
+      if (ok) renderGalerie();
+    } else if (action === "delete-galerie") {
+      if (!confirm("Smazat tuto fotku z galerie?")) return;
+      const photo = (VTStore.galerie.get(id) || {}).photo;
+      const ok = await trySave(() => VTStore.galerie.remove(id));
+      if (!ok) return;
+      VTStore.deletePhoto(photo);
+      renderGalerie();
+      updateCounts();
+    }
+  });
+
   // ----------------------------------------------------------------- misc --
   function renderAll() {
     renderSubmissions();
     renderAktuality();
     renderAkce();
     renderKrouzky();
+    renderGalerie();
     updateCounts();
   }
 

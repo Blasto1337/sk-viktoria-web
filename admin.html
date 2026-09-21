@@ -53,6 +53,7 @@
     <button class="admin-tab" data-tab="aktuality">📢 Aktuality <span class="admin-tab-count" id="count-aktuality">0</span></button>
     <button class="admin-tab" data-tab="akce">🎉 Akce <span class="admin-tab-count" id="count-akce">0</span></button>
     <button class="admin-tab" data-tab="krouzky">🏅 Aktivity <span class="admin-tab-count" id="count-krouzky">0</span></button>
+    <button class="admin-tab" data-tab="galerie">📷 Galerie <span class="admin-tab-count" id="count-galerie">0</span></button>
   </nav>
 
   <!-- ================= PŘIHLÁŠKY ================= -->
@@ -229,6 +230,29 @@
         <p class="admin-empty" id="krouzky-empty" hidden>Zatím žádné kroužky.</p>
       </div>
     </div>
+  </section>
+
+  <!-- ================= GALERIE ================= -->
+  <section class="admin-panel" id="panel-galerie" data-panel="galerie" hidden>
+    <div class="admin-panel-head"><h2>Galerie fotek</h2></div>
+
+    <form class="admin-form gallery-upload" id="form-galerie-upload">
+      <h3>Přidat fotky</h3>
+      <label>Vyberte jednu nebo více fotek
+        <input type="file" name="photos" accept="image/*" multiple required>
+        <span class="hint">Fotky se před nahráním samy zmenší. Nové se zobrazí na začátku galerie, pořadí pak upravíte šipkami. Videa se řeší zvlášť.</span>
+      </label>
+      <label>Popisek (nepovinné, použije se u všech vybraných fotek)
+        <input type="text" name="caption" placeholder="např. Soutěž MIA Festival">
+      </label>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-submit" type="submit">Nahrát fotky</button>
+        <span class="gallery-progress" id="galerie-progress" role="status" aria-live="polite"></span>
+      </div>
+    </form>
+
+    <div class="gallery-admin-grid" id="galerie-list"></div>
+    <p class="admin-empty" id="galerie-empty" hidden>V galerii zatím nejsou žádné fotky.</p>
   </section>
 
 </main>
