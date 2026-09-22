@@ -30,6 +30,7 @@
     const tagEl = document.getElementById("a-tag");
     tagEl.textContent = item.tag || "AKCE";
     tagEl.className = `tag tag-${escapeHtml(item.color || "teal")}`;
+    document.getElementById("a-root").className = `detail-accent-${escapeHtml(item.color || "teal")}`;
 
     document.getElementById("a-title").textContent = item.title;
     document.getElementById("a-date").textContent = item.date || "—";

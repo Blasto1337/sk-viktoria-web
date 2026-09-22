@@ -28,6 +28,7 @@
     document.title = `${item.name} | SK Viktoria Tábor`;
 
     document.getElementById("k-hero").className = `course-hero course-${escapeHtml(item.color || "teal")}`;
+    document.getElementById("k-root").className = `detail-accent-${escapeHtml(item.color || "teal")}`;
     document.getElementById("k-name").textContent = item.name;
     document.getElementById("k-age").textContent = item.age || "Novinka";
     document.getElementById("k-desc").textContent = item.description || "";
