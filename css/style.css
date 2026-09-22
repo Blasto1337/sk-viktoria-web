@@ -151,11 +151,6 @@ img{max-width:100%;display:block}
 .course-arrow{font-weight:800;font-size:15px;color:inherit;transition:transform .15s ease}
 .course-card:hover .course-arrow{transform:translateX(4px)}
 
-/* split: schedule + news */
-.split{padding:40px 0;position:relative}
-.split-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:28px;align-items:start}
-.split h2{font:700 30px 'Anton',sans-serif;color:#fff;margin-bottom:16px}
-
 .schedule-list{display:flex;flex-direction:column;gap:10px}
 .schedule-list li{
   background:var(--gold);border-radius:0;padding:13px 18px;box-shadow:4px 4px 0 var(--navy);
@@ -164,16 +159,74 @@ img{max-width:100%;display:block}
 .schedule-list b{color:var(--navy)}
 .schedule-list span{color:var(--navy);opacity:.75;font-size:14px}
 
-/* aktuality: short operational announcements */
-.alerts-list{display:flex;flex-direction:column;gap:10px}
-.alert-item{
-  background:var(--gold);border-radius:0;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;
-  box-shadow:4px 4px 0 var(--navy);
+/* aktuality: nejnovější jako velká karta, ostatní kompaktně */
+.news-section{padding:40px 0 24px}
+.news-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:stretch}
+.news-grid.is-single{grid-template-columns:1fr}
+.alert-item.is-featured{
+  background:var(--cream-2);color:var(--navy);border-radius:16px;overflow:hidden;
+  box-shadow:5px 5px 0 var(--navy);display:flex;flex-direction:column;
 }
-.alert-icon{font-size:20px;line-height:1;flex:none;color:var(--navy)}
+.alert-photo{width:100%;height:190px;object-fit:cover}
+.alert-body{padding:24px 26px 26px;display:flex;flex-direction:column;align-items:flex-start;flex:1}
+.alert-flag{
+  background:var(--red);color:#fff;font:600 11px 'Anton',sans-serif;letter-spacing:.8px;text-transform:uppercase;
+  padding:4px 12px;border-radius:999px;margin-bottom:12px;
+}
+.is-featured .alert-date{font:600 26px 'Anton',sans-serif;letter-spacing:.4px;color:var(--navy);margin-bottom:8px}
+.is-featured p{font-size:16px;line-height:1.6;color:var(--navy);margin-bottom:20px;flex:1}
+.alert-rest{display:flex;flex-direction:column;gap:12px}
+.alert-rest .alert-item{
+  background:rgba(0,0,0,.24);border-radius:12px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start;
+  border:1px solid rgba(255,255,255,.1);
+}
+.alert-icon{line-height:1;flex:none;color:var(--gold);margin-top:2px}
 .alert-icon svg{width:22px;height:22px;display:block}
-.alert-date{font-weight:800;font-size:18px;color:var(--navy);margin-bottom:2px}
-.alert-item p{font-size:14px;color:var(--navy);opacity:.8;line-height:1.5}
+.alert-icon img{width:40px;height:40px;border-radius:50%;object-fit:cover;display:block}
+.alert-rest .alert-date{font-weight:800;font-size:14px;color:var(--gold);margin-bottom:4px;letter-spacing:.2px}
+.alert-rest p{font-size:14px;line-height:1.55;color:rgba(255,255,255,.88)}
+
+/* rozvrh: týden po dnech, barva podle programu */
+.timetable{--night:#161230;background:var(--night);padding:56px 0 48px;margin-top:32px;color:#fff}
+.kicker{font:600 12px 'Anton',sans-serif;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.timetable h2{font:700 34px 'Anton',sans-serif;color:#fff;margin-bottom:20px}
+.tt-vfresh{--c:#9b7dff}
+.tt-zumba{--c:#f2789f}
+.tt-volnocas{--c:#2fc4c4}
+.tt-filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+.tt-filter{
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  background:transparent;color:#fff;border:2px solid rgba(255,255,255,.35);border-radius:999px;
+  padding:8px 16px;font:600 13px 'Anton',sans-serif;letter-spacing:.5px;
+  transition:background .15s ease,border-color .15s ease;
+}
+.tt-filter i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.tt-filter:hover{border-color:#fff}
+.tt-filter.active{background:#fff;color:var(--navy);border-color:#fff}
+.tt-week{display:grid;grid-template-columns:repeat(var(--tt-cols,5),minmax(0,1fr));gap:16px;align-items:start}
+.tt-dayname{
+  font:600 19px 'Anton',sans-serif;letter-spacing:.6px;color:#fff;
+  padding-bottom:10px;margin-bottom:12px;border-bottom:2px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;gap:10px;
+}
+.tt-day.is-today .tt-dayname{border-bottom-color:var(--gold)}
+.tt-day.is-today .tt-dayname::after{
+  content:"dnes";background:var(--gold);color:var(--navy);font:600 10px 'Anton',sans-serif;
+  letter-spacing:.8px;text-transform:uppercase;padding:2px 9px;border-radius:999px;
+}
+.tt-slots{display:flex;flex-direction:column;gap:8px}
+.tt-slot{
+  display:grid;grid-template-columns:48px 1fr;column-gap:8px;align-items:center;
+  background:rgba(255,255,255,.07);border-left:4px solid var(--c);border-radius:8px;padding:10px 12px;
+  transition:opacity .15s ease;
+}
+.tt-slot time{grid-row:1 / span 2;font:600 17px 'Anton',sans-serif;color:#fff;letter-spacing:.3px}
+.tt-name{font-weight:800;font-size:15px;line-height:1.25;color:#fff}
+.tt-note{font-size:12px;line-height:1.35;color:rgba(255,255,255,.66)}
+.tt-slot.is-dim{opacity:.22}
+.tt-empty{font-size:13px;color:rgba(255,255,255,.4);padding:6px 2px}
+.tt-foot{margin-top:28px;font-size:13px;line-height:1.6;color:rgba(255,255,255,.7)}
+.tt-foot a{color:var(--gold);font-weight:800;white-space:nowrap}
 
 .tag{color:#fff;font-weight:800;font-size:10px;padding:2px 8px;border-radius:999px}
 .tag-teal{background:var(--teal)}
@@ -351,7 +404,8 @@ img{max-width:100%;display:block}
 /* responsive */
 @media (max-width:960px){
   .courses-grid{grid-template-columns:repeat(2,1fr)}
-  .split-grid,.contact-grid,.detail-grid,.about-grid{grid-template-columns:1fr}
+  .contact-grid,.detail-grid,.about-grid,.news-grid{grid-template-columns:1fr}
+  .tt-week{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
   .gallery-grid-preview,.gallery-grid-full{grid-template-columns:repeat(3,1fr)}
   .events-grid{grid-template-columns:repeat(2,1fr)}
   .hero-dancer img{height:clamp(110px,16vw,150px)}

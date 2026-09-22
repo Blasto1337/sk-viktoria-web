@@ -154,8 +154,14 @@
     galerie: {
       table: "vik_gallery",
       order: "sort_order.asc,created_at.desc",
-      sortKey: "sortOrder",
+      compare: (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0),
       fields: { photo: "photo_url", caption: "caption", sortOrder: "sort_order", published: "published" },
+    },
+    rozvrh: {
+      table: "vik_timetable",
+      order: "weekday.asc,start_time.asc",
+      compare: (a, b) => (a.weekday - b.weekday) || (timeMinutes(a.time) - timeMinutes(b.time)) || String(a.name).localeCompare(String(b.name), "cs"),
+      fields: { weekday: "weekday", time: "start_time", name: "name", note: "note", program: "program", published: "published" },
     },
     submissions: {
       table: "vik_inquiries",
@@ -166,6 +172,12 @@
       },
     },
   };
+
+  // "08:15:00" nebo "8:15" na minuty od půlnoci (pro řazení rozvrhu)
+  function timeMinutes(t) {
+    const m = /^(\d{1,2}):(\d{2})/.exec(String(t || ""));
+    return m ? Number(m[1]) * 60 + Number(m[2]) : 0;
+  }
 
   function toRow(cfg, item) {
     const row = {};
@@ -184,18 +196,19 @@
     });
     if (item.schedule == null && cfg.table === "vik_courses") item.schedule = [];
     if (item.bullets == null && cfg.table === "vik_events") item.bullets = [];
+    // Čas z databáze ("08:15:00") ukazujeme jako "8:15".
+    if (cfg.table === "vik_timetable" && item.time) item.time = item.time.replace(/^0(\d):/, "$1:").replace(/^(\d{1,2}:\d{2}):\d{2}$/, "$1");
     return item;
   }
 
   function makeCollection(cfg) {
     let cache = [];
-    // Kolekce s ručním pořadím (galerie) drží paměť seřazenou podle sortKey.
+    // Kolekce s vlastním řazením (galerie, rozvrh) drží paměť seřazenou přes cfg.compare.
     function sortCache() {
-      if (!cfg.sortKey) return;
-      const k = cfg.sortKey;
+      if (!cfg.compare) return;
       cache = cache
         .map((it, i) => ({ it, i }))
-        .sort((a, b) => ((a.it[k] || 0) - (b.it[k] || 0)) || (a.i - b.i))
+        .sort((a, b) => cfg.compare(a.it, b.it) || (a.i - b.i))
         .map((x) => x.it);
     }
     return {
@@ -248,12 +261,13 @@
     akce: makeCollection(COLLECTIONS.akce),
     krouzky: makeCollection(COLLECTIONS.krouzky),
     galerie: makeCollection(COLLECTIONS.galerie),
+    rozvrh: makeCollection(COLLECTIONS.rozvrh),
     source: "none", // "live" | "cache" | "seed"
   };
 
   // ----------------------------------------------------------------- načtení --
-  const PUBLIC_NAMES = ["krouzky", "akce", "aktuality", "galerie"];
-  const ALL_NAMES = ["krouzky", "akce", "aktuality", "galerie", "submissions"];
+  const PUBLIC_NAMES = ["krouzky", "akce", "aktuality", "galerie", "rozvrh"];
+  const ALL_NAMES = ["krouzky", "akce", "aktuality", "galerie", "rozvrh", "submissions"];
 
   async function fetchCollections(names, admin) {
     const results = await Promise.all(names.map((name) =>

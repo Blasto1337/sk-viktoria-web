@@ -136,3 +136,4 @@
 .gallery-admin-actions{display:flex;gap:6px;flex-wrap:wrap}
 .gallery-admin-actions .btn-mini{padding:4px 10px}
 .gallery-admin-card .seed-badge{align-self:flex-start}
+.admin-card.is-unpublished{opacity:.6}

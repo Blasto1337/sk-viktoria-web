@@ -152,6 +152,7 @@
     document.getElementById("count-aktuality").textContent = VTStore.aktuality.all().length;
     document.getElementById("count-akce").textContent = VTStore.akce.all().length;
     document.getElementById("count-krouzky").textContent = VTStore.krouzky.all().length;
+    document.getElementById("count-rozvrh").textContent = VTStore.rozvrh.all().length;
     document.getElementById("count-galerie").textContent = VTStore.galerie.all().length;
   }
 
@@ -571,6 +572,122 @@
     }
   });
 
+  // --------------------------------------------------------------- rozvrh --
+  const rozvrhForm = document.getElementById("form-rozvrh");
+  const rozvrhList = document.getElementById("rozvrh-list");
+  let editingRozvrhId = null;
+  const DAY_NAMES = { 1: "Pondělí", 2: "Úterý", 3: "Středa", 4: "Čtvrtek", 5: "Pátek", 6: "Sobota", 7: "Neděle" };
+  const PROGRAM_NAMES = { vfresh: "VFRESH DC", zumba: "Zumba & Dance", volnocas: "Volnočasové" };
+  const PROGRAM_TAGS = { vfresh: "tag-purple", zumba: "tag-red", volnocas: "tag-teal" };
+
+  // "8:15" -> "08:15" (pole <input type="time"> chce dvě číslice)
+  function padTime(t) {
+    const m = /^(\d{1,2}):(\d{2})/.exec(String(t || ""));
+    return m ? `${m[1].padStart(2, "0")}:${m[2]}` : "";
+  }
+
+  function resetRozvrhForm() {
+    editingRozvrhId = null;
+    rozvrhForm.reset();
+    document.getElementById("form-rozvrh-title").textContent = "Přidat trénink do rozvrhu";
+    rozvrhForm.querySelector(".btn-submit").textContent = "Přidat do rozvrhu";
+    rozvrhForm.querySelector("[data-cancel-edit]").hidden = true;
+    rozvrhForm.classList.remove("is-editing");
+  }
+
+  function startEditRozvrh(id, copy) {
+    const item = VTStore.rozvrh.get(id);
+    if (!item) return;
+    editingRozvrhId = copy ? null : id;
+    rozvrhForm.weekday.value = String(item.weekday);
+    rozvrhForm.time.value = padTime(item.time);
+    rozvrhForm.name.value = item.name || "";
+    rozvrhForm.note.value = item.note || "";
+    rozvrhForm.program.value = item.program || "volnocas";
+    rozvrhForm.published.checked = item.published !== false;
+    document.getElementById("form-rozvrh-title").textContent = copy ? "Přidat trénink (kopie)" : "Upravit trénink";
+    rozvrhForm.querySelector(".btn-submit").textContent = copy ? "Přidat do rozvrhu" : "Uložit změny";
+    rozvrhForm.querySelector("[data-cancel-edit]").hidden = false;
+    rozvrhForm.classList.toggle("is-editing", !copy);
+    rozvrhForm.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function renderRozvrh() {
+    const empty = document.getElementById("rozvrh-empty");
+    const items = VTStore.rozvrh.all();
+    empty.hidden = items.length > 0;
+    const days = [...new Set(items.map((r) => r.weekday))];
+    rozvrhList.innerHTML = days.map((d) => `
+      <h3 class="admin-subhead">${DAY_NAMES[d] || d}</h3>
+      ${items.filter((r) => r.weekday === d).map((r) => `
+        <div class="admin-card${r.published === false ? " is-unpublished" : ""}" data-id="${r.id}">
+          <div class="admin-card-main">
+            <div class="admin-card-main-text">
+              <div class="admin-card-title">${escapeHtml(r.time)} ${escapeHtml(r.name)} <span class="tag ${PROGRAM_TAGS[r.program] || "tag-teal"}">${escapeHtml(PROGRAM_NAMES[r.program] || r.program)}</span> ${r.seed ? '<span class="seed-badge">základní</span>' : ""}${r.published === false ? ' <span class="seed-badge">skryto</span>' : ""}</div>
+              ${r.note ? `<div class="admin-card-meta">${escapeHtml(r.note)}</div>` : ""}
+            </div>
+          </div>
+          <div class="admin-card-actions">
+            <button class="btn-mini" data-action="edit-rozvrh" data-id="${r.id}">✎ Upravit</button>
+            <button class="btn-mini" data-action="copy-rozvrh" data-id="${r.id}">⧉ Kopie</button>
+            <button class="btn-mini" data-action="toggle-rozvrh" data-id="${r.id}">${r.published === false ? "Zobrazit" : "Skrýt"}</button>
+            <button class="btn-mini btn-mini-danger" data-action="delete-rozvrh" data-id="${r.id}">🗑 Smazat</button>
+          </div>
+        </div>
+      `).join("")}
+    `).join("");
+  }
+
+  rozvrhForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const submitBtn = f.querySelector(".btn-submit");
+    submitBtn.disabled = true;
+    const patch = {
+      weekday: Number(f.weekday.value),
+      time: f.time.value,
+      name: f.name.value.trim(),
+      note: f.note.value.trim() || null,
+      program: f.program.value,
+      published: f.published.checked,
+    };
+    const ok = await trySave(async () => {
+      if (editingRozvrhId) await VTStore.rozvrh.update(editingRozvrhId, patch);
+      else await VTStore.rozvrh.add(patch);
+    });
+    submitBtn.disabled = false;
+    if (!ok) return;
+    resetRozvrhForm();
+    renderRozvrh();
+    updateCounts();
+  });
+
+  rozvrhForm.querySelector("[data-cancel-edit]").addEventListener("click", resetRozvrhForm);
+
+  rozvrhList.addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-action]");
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const action = btn.dataset.action;
+    if (action === "edit-rozvrh") {
+      startEditRozvrh(id, false);
+    } else if (action === "copy-rozvrh") {
+      startEditRozvrh(id, true);
+    } else if (action === "toggle-rozvrh") {
+      const r = VTStore.rozvrh.get(id);
+      if (!r) return;
+      const ok = await trySave(() => VTStore.rozvrh.update(id, { published: r.published === false }));
+      if (ok) renderRozvrh();
+    } else if (action === "delete-rozvrh") {
+      if (!confirm("Smazat tento trénink z rozvrhu?")) return;
+      const ok = await trySave(() => VTStore.rozvrh.remove(id));
+      if (!ok) return;
+      if (editingRozvrhId === id) resetRozvrhForm();
+      renderRozvrh();
+      updateCounts();
+    }
+  });
+
   // -------------------------------------------------------------- galerie --
   const galerieForm = document.getElementById("form-galerie-upload");
   const galerieList = document.getElementById("galerie-list");
@@ -698,6 +815,7 @@
     renderAktuality();
     renderAkce();
     renderKrouzky();
+    renderRozvrh();
     renderGalerie();
     updateCounts();
   }

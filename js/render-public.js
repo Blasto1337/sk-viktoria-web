@@ -1,5 +1,5 @@
 /*
-  Renders kroužky/akce/aktuality/galerie onto the public pages from VTStore.
+  Renders kroužky/akce/aktuality/galerie/rozvrh onto the public pages from VTStore.
   Every item lives in the Supabase database (edited through admin.html) and is
   rendered from VTStore once VTStore.ready resolves; there is no separate
   hand-written HTML fallback for these grids/lists.
@@ -23,23 +23,48 @@
 
   function render() {
     // --- Aktuality -----------------------------------------------------
+    // Nejnovější aktualita je velká karta s výzvou, ostatní jsou kompaktní řádky.
     const alertsList = document.getElementById("alerts-list");
     if (alertsList) {
       const bellIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>';
-      VTStore.aktuality.all().forEach((item) => {
-        const iconHtml = item.photo
-          ? `<img src="${escapeHtml(item.photo)}" alt="" style="width:22px;height:22px;object-fit:cover;border-radius:50%;display:block">`
-          : bellIcon;
+      const items = VTStore.aktuality.all();
+      const newsSection = document.getElementById("aktuality");
+      if (newsSection) newsSection.hidden = items.length === 0;
+
+      if (items.length) {
+        const [first, ...rest] = items;
         alertsList.appendChild(el(`
-          <div class="alert-item" data-vt-id="${item.id}">
-            <span class="alert-icon" aria-hidden="true">${iconHtml}</span>
-            <div>
-              <div class="alert-date">${escapeHtml(item.date)}</div>
-              <p>${escapeHtml(item.text)}</p>
+          <article class="alert-item is-featured" data-vt-id="${first.id}">
+            ${first.photo ? `<img class="alert-photo" src="${escapeHtml(first.photo)}" alt="" loading="lazy">` : ""}
+            <div class="alert-body">
+              <span class="alert-flag">Nejnovější</span>
+              <div class="alert-date">${escapeHtml(first.date)}</div>
+              <p>${escapeHtml(first.text)}</p>
+              <a class="btn btn-hero" href="#kontakt">Napsat nám</a>
             </div>
-          </div>
+          </article>
         `));
-      });
+        if (rest.length) {
+          const restBox = el('<div class="alert-rest"></div>');
+          rest.forEach((item) => {
+            const iconHtml = item.photo
+              ? `<img src="${escapeHtml(item.photo)}" alt="" loading="lazy">`
+              : bellIcon;
+            restBox.appendChild(el(`
+              <div class="alert-item" data-vt-id="${item.id}">
+                <span class="alert-icon" aria-hidden="true">${iconHtml}</span>
+                <div>
+                  <div class="alert-date">${escapeHtml(item.date)}</div>
+                  <p>${escapeHtml(item.text)}</p>
+                </div>
+              </div>
+            `));
+          });
+          alertsList.appendChild(restBox);
+        } else {
+          alertsList.classList.add("is-single");
+        }
+      }
     }
 
     // --- Akce (events) ---------------------------------------------------
@@ -82,6 +107,34 @@
         const filter = activeFilter.dataset.filter;
         eventsFull.querySelectorAll(".event-card").forEach((card) => {
           if (card.dataset.filterType !== filter) card.classList.add("is-hidden");
+        });
+      }
+    }
+
+    // --- Rozvrh (týden po dnech, barva podle programu) -----------------
+    const ttWeek = document.getElementById("tt-week");
+    if (ttWeek) {
+      const DAYS = { 1: "Pondělí", 2: "Úterý", 3: "Středa", 4: "Čtvrtek", 5: "Pátek", 6: "Sobota", 7: "Neděle" };
+      const slots = VTStore.rozvrh.all().filter((r) => r.published !== false);
+      const hasWeekend = slots.some((r) => r.weekday > 5);
+      const dayNumbers = hasWeekend ? [1, 2, 3, 4, 5, 6, 7] : [1, 2, 3, 4, 5];
+      const today = new Date().getDay() || 7; // JS: neděle = 0, rozvrh: neděle = 7
+      ttWeek.style.setProperty("--tt-cols", dayNumbers.length);
+      ttWeek.innerHTML = dayNumbers.map((d) => {
+        const list = slots.filter((r) => r.weekday === d);
+        const items = list.length
+          ? list.map((r) => {
+              const group = ["vfresh", "zumba", "volnocas"].includes(r.program) ? r.program : "volnocas";
+              return `<li class="tt-slot tt-${group}" data-group="${group}"><time>${escapeHtml(r.time)}</time><span class="tt-name">${escapeHtml(r.name)}</span>${r.note ? `<span class="tt-note">${escapeHtml(r.note)}</span>` : ""}</li>`;
+            }).join("")
+          : '<li class="tt-empty">bez tréninku</li>';
+        return `<div class="tt-day${d === today ? " is-today" : ""}" data-dow="${d}"><h3 class="tt-dayname">${DAYS[d]}</h3><ul class="tt-slots">${items}</ul></div>`;
+      }).join("");
+      // filtr zvolený před dokončením načtení dat se použije i na nové řádky
+      const activeFilter = document.querySelector(".tt-filter.active");
+      if (activeFilter && activeFilter.dataset.ttFilter !== "all") {
+        ttWeek.querySelectorAll(".tt-slot").forEach((slot) => {
+          slot.classList.toggle("is-dim", slot.dataset.group !== activeFilter.dataset.ttFilter);
         });
       }
     }

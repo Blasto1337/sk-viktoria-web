@@ -53,6 +53,7 @@
     <button class="admin-tab" data-tab="aktuality">📢 Aktuality <span class="admin-tab-count" id="count-aktuality">0</span></button>
     <button class="admin-tab" data-tab="akce">🎉 Akce <span class="admin-tab-count" id="count-akce">0</span></button>
     <button class="admin-tab" data-tab="krouzky">🏅 Aktivity <span class="admin-tab-count" id="count-krouzky">0</span></button>
+    <button class="admin-tab" data-tab="rozvrh">🗓 Rozvrh <span class="admin-tab-count" id="count-rozvrh">0</span></button>
     <button class="admin-tab" data-tab="galerie">📷 Galerie <span class="admin-tab-count" id="count-galerie">0</span></button>
   </nav>
 
@@ -228,6 +229,59 @@
       <div>
         <div class="admin-list" id="krouzky-list"></div>
         <p class="admin-empty" id="krouzky-empty" hidden>Zatím žádné kroužky.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ROZVRH ================= -->
+  <section class="admin-panel" id="panel-rozvrh" data-panel="rozvrh" hidden>
+    <div class="admin-panel-head"><h2>Rozvrh (Kdy trénujeme)</h2></div>
+    <div class="admin-columns">
+      <form class="admin-form" id="form-rozvrh" data-collection="rozvrh">
+        <h3 id="form-rozvrh-title">Přidat trénink do rozvrhu</h3>
+        <div class="field-row">
+          <label>Den
+            <select name="weekday">
+              <option value="1">Pondělí</option>
+              <option value="2">Úterý</option>
+              <option value="3">Středa</option>
+              <option value="4">Čtvrtek</option>
+              <option value="5">Pátek</option>
+              <option value="6">Sobota</option>
+              <option value="7">Neděle</option>
+            </select>
+          </label>
+          <label>Začátek
+            <input type="time" name="time" required>
+          </label>
+        </div>
+        <label>Název
+          <input type="text" name="name" placeholder="např. Mini Beat" required maxlength="80">
+        </label>
+        <label>Poznámka (věk, místo…)
+          <input type="text" name="note" placeholder="např. 5–8 let · ZŠ Helsinská" maxlength="120">
+          <span class="hint">Zobrazí se malým písmem pod názvem. Když není uvedeno místo, trénuje se v Centru Univerzita Tábor.</span>
+        </label>
+        <label>Program (určuje barvu a filtr)
+          <select name="program">
+            <option value="vfresh">VFRESH DC (fialová)</option>
+            <option value="zumba">Zumba &amp; Dance (růžová)</option>
+            <option value="volnocas">Volnočasové aktivity (tyrkysová)</option>
+          </select>
+        </label>
+        <label style="flex-direction:row;align-items:center;gap:8px">
+          <input type="checkbox" name="published" style="width:auto" checked>
+          Zobrazit na webu
+        </label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-submit" type="submit">Přidat do rozvrhu</button>
+          <button type="button" class="btn-cancel-edit" data-cancel-edit hidden>Zrušit úpravu</button>
+        </div>
+      </form>
+
+      <div>
+        <div class="admin-list" id="rozvrh-list"></div>
+        <p class="admin-empty" id="rozvrh-empty" hidden>Rozvrh je zatím prázdný.</p>
       </div>
     </div>
   </section>

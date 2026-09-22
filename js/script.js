@@ -18,6 +18,24 @@
     });
   }
 
+  // Rozvrh: filtr podle programu (dny a řádky vykresluje render-public.js).
+  const week = document.querySelector(".tt-week");
+  if (week) {
+    const filters = [...document.querySelectorAll(".tt-filter")];
+    filters.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        filters.forEach((b) => {
+          b.classList.toggle("active", b === btn);
+          b.setAttribute("aria-pressed", String(b === btn));
+        });
+        const group = btn.dataset.ttFilter;
+        week.querySelectorAll(".tt-slot").forEach((slot) => {
+          slot.classList.toggle("is-dim", group !== "all" && slot.dataset.group !== group);
+        });
+      });
+    });
+  }
+
   const form = document.getElementById("contact-form");
   const note = document.getElementById("form-note");
 

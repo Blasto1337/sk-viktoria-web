@@ -112,28 +112,27 @@
     </div>
   </section>
 
-  <section class="split" id="aktuality">
-    <img class="sec-deco sec-deco-l" src="assets/hero/icon-cap.png" alt="" aria-hidden="true" style="left:1%;top:50%;transform:translateY(-50%) rotate(-7deg);width:48px">
-    <img class="sec-deco sec-deco-r" src="assets/hero/icon-cassette.png" alt="" aria-hidden="true" style="right:1%;top:50%;transform:translateY(-50%) rotate(-8deg);width:48px">
-    <div class="wrap split-grid">
-
-      <div class="schedule">
-        <h2>Kdy trénujeme</h2>
-        <ul class="schedule-list">
-          <li><b>Pondělí</b><span>Zumba &amp; Dance Planá 17:45</span></li>
-          <li><b>Úterý</b><span>Viktoriánek 9:30 · DVK crew 15:00 · Street děti (ZŠ Helsinská) 15:30 · Mini Beat 16:30 · A crew 17:30 · Zumba Tábor 19:00</span></li>
-          <li><b>Středa</b><span>Zumba Tábor 8:15 · Dramalab 14:00 · Dramáček 15:00 · Gymnastika 15:30 · Freshík 16:00 · Sportuj B (ZŠ Helsinská) 16:00 a 17:00 · JVK crew 17:00 · Fresh Mates 18:30</span></li>
-          <li><b>Čtvrtek</b><span>Viktoriánek 9:30 · Sportuj A 15:30 · DVK crew 16:30 · A crew 18:00</span></li>
-          <li><b>Pátek</b><span>JVK crew 15:00</span></li>
-        </ul>
-        <p style="margin-top:12px;font-size:13px;opacity:.8">Pokud není uvedeno jinak, trénujeme v Centru Univerzita Tábor, Vančurova 2904. Zkušební lekce zdarma celé září.</p>
-      </div>
-
-      <div class="news">
+  <section class="news-section" id="aktuality">
+    <div class="wrap">
+      <div class="section-head">
         <h2>Aktuality</h2>
-        <div class="alerts-list" id="alerts-list"></div>
       </div>
+      <div class="news-grid" id="alerts-list"></div>
+    </div>
+  </section>
 
+  <section class="timetable" id="rozvrh">
+    <div class="wrap">
+      <p class="kicker">Rozvrh 2026/27</p>
+      <h2>Kdy trénujeme</h2>
+      <div class="tt-filters" role="group" aria-label="Filtr rozvrhu">
+        <button type="button" class="tt-filter active" data-tt-filter="all">Vše</button>
+        <button type="button" class="tt-filter tt-vfresh" data-tt-filter="vfresh"><i aria-hidden="true"></i>VFRESH DC</button>
+        <button type="button" class="tt-filter tt-zumba" data-tt-filter="zumba"><i aria-hidden="true"></i>Zumba &amp; Dance</button>
+        <button type="button" class="tt-filter tt-volnocas" data-tt-filter="volnocas"><i aria-hidden="true"></i>Volnočasové aktivity</button>
+      </div>
+      <div class="tt-week" id="tt-week"></div>
+      <p class="tt-foot">Pokud není uvedeno jinak, trénujeme v Centru Univerzita Tábor, Vančurova 2904. Zkušební lekce zdarma celé září. <a href="#kontakt">Napište nám →</a></p>
     </div>
   </section>
 
