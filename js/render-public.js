@@ -78,7 +78,7 @@
         ? `<img src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.title)}" loading="lazy">`
         : `<div class="ph" aria-hidden="true"><span>foto</span></div>`;
       return `
-        <a class="event-card" href="${akceHref(item)}" data-filter-type="${escapeHtml(item.category || "nabor")}" data-vt-id="${item.id}">
+        <a class="event-card event-accent-${escapeHtml(item.color || "teal")}" href="${akceHref(item)}" data-filter-type="${escapeHtml(item.category || "nabor")}" data-vt-id="${item.id}">
           ${media}
           <div class="event-body">
             <div class="event-meta"><span class="tag ${tagClass}">${escapeHtml(item.tag || "AKCE")}</span><time>${escapeHtml(item.date)}</time></div>

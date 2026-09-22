@@ -50,8 +50,9 @@ podklady/               originální podklady od klientky (letáky, rozvrh, PDF,
 
 - Design tokeny jsou CSS proměnné v `css/style.css` `:root` (`--navy`, `--gold`, `--purple`, `--purple-deep`, `--stone`, `--cream`…). Barvy měň tam, ne inline.
 - **Dvě fialové:** `--purple:#7a5af8` (světlejší) je vyhrazená jen pro hero sekci na homepage (`.hero`, `.hero::before` — přes fotku tanečníků, opacity .74). `--purple-deep:#5946b2` (tmavší, zadaná klientkou 2026-09-10) je základní fialová pro zbytek webu — pozadí `body`, `.main-nav` hover/active, `.tag-purple`, `.course-hero` (detail kroužku/akce, mimo homepage hero).
-- Aktuální směr (viz git log): purpurové pozadí, černý nav/footer/marquee, **zlaté karty (`--gold`) s navy hard-shadow** (`4px 4px 0 var(--navy)`), ostré rohy (`border-radius:0`) na kartách, Anton nadpisy s letter-spacingem.
-- Karty kroužků/akcí/aktualit mají jednotný gold/navy vzhled — při přidávání nových prvků držet stejný styl.
+- Aktuální směr (viz git log): purpurové pozadí, černý nav/footer/marquee, Anton nadpisy s letter-spacingem.
+- **Karty kroužků a akcí (2026-09-22):** tmavé poloprůhledné karty (`--card-dark`/`--card-dark-strong`), zaoblené rohy (`border-radius:14px`), barevný akcentní pruh podle `item.color` (vlevo u kroužků, nahoře u akcí) přes CSS proměnnou `--accent`. Nahrazuje dřívější zlaté karty s navy hard-shadow (`4px 4px 0 var(--navy)`, ostré rohy) — ty zůstávají jen na statických `kurz-*.html`/`akce-*.html` detailech a v `.schedule-list` (Kdy trénujeme dřív, teď i jinde v textových seznamech). Benefity mají vlastní „stat chip" karty se stejným tmavým stylem a emoji jako ikonkami. Zlatá (`--gold`) zůstává pro tlačítka, tagy a akcenty (dělicí čára, „dnes" badge v rozvrhu), ne jako plocha karty.
+- Karty kroužků/akcí/aktualit mají držet jednotný vzhled — při přidávání nových prvků použít stejný přístup (tmavá karta + barevný accent).
 - Hero komunikuje "VFRESH STREET DANCE", cílová skupina 10–15 let.
 - Homepage má mezi hero a kroužky sekci „Kdo jsme" (`#o-nas`, `.about`) — fotka + krátký text (≤400 znaků) o SK Viktoria Tábor & VFRESH DC. Foto `assets/hero/dancers-hero.jpg` (původní hero foto, teď nepoužité jinde). Zdroj textu: e‑mail klientky "Fwd: Re: Prvni nastrel webu" (2026-09-06, v repu jen lokálně, 30 MB s přílohami — nekomitovat, obsah už je vytažený do `podklady/`).
 

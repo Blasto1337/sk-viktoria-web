@@ -17,6 +17,8 @@
   --gold:#ffcf5c;
   --stone:#000;
   --on-bg-muted:rgba(255,255,255,.82);
+  --card-dark:rgba(0,0,0,.22);
+  --card-dark-strong:rgba(0,0,0,.3);
   --radius:14px;
 }
 
@@ -126,29 +128,33 @@ img{max-width:100%;display:block}
 .courses{padding:40px 0;position:relative}
 .courses-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .course-card{
-  padding:30px 26px;min-height:210px;display:flex;flex-direction:column;justify-content:space-between;color:var(--navy);
-  cursor:pointer;border-radius:0;box-shadow:4px 4px 0 var(--navy);
-  transition:transform .15s ease,box-shadow .15s ease;
+  --accent:var(--teal);
+  padding:26px 24px;min-height:210px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;
+  cursor:pointer;border-radius:14px;background:var(--card-dark);border-left:4px solid var(--accent);
+  transition:transform .15s ease,background .15s ease;
 }
-.course-card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--navy);position:relative;z-index:1}
+.course-card:hover{transform:translateY(-3px);background:var(--card-dark-strong);position:relative;z-index:1}
 .course-card.has-photo{padding:0;overflow:hidden}
 .course-photo{width:100%;height:130px;flex:none}
 .course-photo img{width:100%;height:100%;object-fit:cover;display:block}
-.course-card.has-photo .course-card-body{padding:20px 22px 26px;display:flex;flex-direction:column;justify-content:space-between;flex:1;min-height:0}
-.course-red,
-.course-teal,
-.course-purple,
-.course-yellow,
-.course-blue,
-.course-pink{background:var(--gold)}
-.course-icon{font-size:34px}
-.course-icon svg{width:34px;height:34px;display:block}
-.course-card h3{font:600 22px 'Anton',sans-serif;margin-top:10px}
-.course-card p{font-size:13px;opacity:.9;margin-top:6px}
-.course-loc{font-size:12px;font-weight:700;opacity:.85;margin-top:8px}
+.course-card.has-photo .course-card-body{padding:18px 22px 22px;display:flex;flex-direction:column;justify-content:space-between;flex:1;min-height:0}
+.course-red{--accent:var(--red)}
+.course-teal{--accent:var(--teal)}
+.course-purple{--accent:var(--purple)}
+.course-yellow{--accent:var(--gold)}
+.course-blue{--accent:var(--blue)}
+.course-pink{--accent:var(--pink)}
+.course-icon{
+  width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.12);color:var(--accent);
+}
+.course-icon svg{width:23px;height:23px;display:block}
+.course-card h3{font:600 21px 'Anton',sans-serif;margin-top:12px}
+.course-card p{font-size:13px;color:rgba(255,255,255,.78);margin-top:6px;line-height:1.5}
+.course-loc{font-size:12px;font-weight:700;color:rgba(255,255,255,.62);margin-top:8px}
 .course-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
-.age-badge{background:rgba(30,37,64,.14);padding:4px 11px;border-radius:999px;font-weight:800;font-size:12px}
-.course-arrow{font-weight:800;font-size:15px;color:inherit;transition:transform .15s ease}
+.age-badge{background:rgba(255,255,255,.14);color:#fff;padding:4px 11px;border-radius:999px;font-weight:800;font-size:12px}
+.course-arrow{font-weight:800;font-size:15px;color:var(--accent);transition:transform .15s ease}
 .course-card:hover .course-arrow{transform:translateX(4px)}
 
 .schedule-list{display:flex;flex-direction:column;gap:10px}
@@ -238,18 +244,24 @@ img{max-width:100%;display:block}
 .events{padding:8px 0 40px;position:relative}
 .events-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .event-card{
-  background:var(--gold);border-radius:0;overflow:hidden;
-  box-shadow:4px 4px 0 var(--navy);transition:transform .15s ease,box-shadow .15s ease;
+  --accent:var(--teal);
+  display:block;background:var(--card-dark);border-radius:14px;overflow:hidden;border-top:4px solid var(--accent);
+  transition:transform .15s ease,background .15s ease;
 }
-.event-card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--navy)}
-.event-card .ph{width:100%;aspect-ratio:1/1;height:auto;border-radius:0}
+.event-card:hover{transform:translateY(-3px);background:var(--card-dark-strong)}
+.event-accent-teal{--accent:var(--teal)}
+.event-accent-purple{--accent:var(--purple)}
+.event-accent-red{--accent:var(--red)}
+.event-accent-blue{--accent:var(--blue)}
+.event-card .ph{width:100%;aspect-ratio:1/1;height:auto;border-radius:0;background:rgba(255,255,255,.06)}
+.event-card .ph span{background:rgba(255,255,255,.14);color:rgba(255,255,255,.7)}
 .event-card img{width:100%;aspect-ratio:1/1;height:auto;border-radius:0;object-fit:cover;display:block}
 .event-body{padding:16px}
-.event-body h3{font:600 17px 'Anton',sans-serif;color:var(--navy);margin-top:6px}
-.event-body p{font-size:13px;color:var(--navy);opacity:.8;margin-top:8px;line-height:1.5}
+.event-body h3{font:600 17px 'Anton',sans-serif;color:#fff;margin-top:8px}
+.event-body p{font-size:13px;color:rgba(255,255,255,.78);margin-top:8px;line-height:1.5}
 .event-card.is-hidden{display:none}
 .event-meta{display:flex;gap:8px;align-items:center}
-.event-meta time{font-size:12px;color:#999}
+.event-meta time{font-size:12px;color:rgba(255,255,255,.55)}
 
 /* placeholders */
 .ph{
@@ -311,6 +323,32 @@ img{max-width:100%;display:block}
   display:flex;align-items:center;justify-content:center;
 }
 .logo-ph span{font:700 13px 'Anton',sans-serif;color:var(--navy)}
+
+/* benefity: hravé "stat" chipy místo tabulky */
+.benefits{padding:48px 0 40px}
+.benefit-groups{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:28px}
+.benefit-group{--accent:var(--teal)}
+.benefit-group-purple{--accent:var(--purple)}
+.benefit-group-teal{--accent:var(--teal)}
+.benefit-group h3{
+  font:600 16px 'Anton',sans-serif;letter-spacing:.4px;color:#fff;margin-bottom:14px;
+  display:flex;align-items:center;gap:9px;
+}
+.benefit-group h3::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--accent);flex:none}
+.benefit-chips{display:flex;flex-wrap:wrap;gap:10px}
+.benefit-chip{
+  background:var(--card-dark);border-radius:14px;padding:14px 16px;min-width:132px;flex:1 1 132px;
+  display:flex;flex-direction:column;gap:4px;border-bottom:3px solid var(--accent);
+  transition:transform .15s ease,background .15s ease;
+}
+.benefit-chip:hover{transform:translateY(-3px);background:var(--card-dark-strong)}
+.benefit-emoji{font-size:18px;line-height:1}
+.benefit-value{font:600 20px 'Anton',sans-serif;color:#fff}
+.benefit-label{font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.35}
+.benefit-ribbon{
+  margin:24px 0 8px;font-size:13px;color:rgba(255,255,255,.78);background:var(--card-dark);
+  display:inline-block;padding:10px 16px;border-radius:999px;
+}
 
 /* contact */
 .contact{padding:8px 0 48px;position:relative}
@@ -405,6 +443,7 @@ img{max-width:100%;display:block}
 @media (max-width:960px){
   .courses-grid{grid-template-columns:repeat(2,1fr)}
   .contact-grid,.detail-grid,.about-grid,.news-grid{grid-template-columns:1fr}
+  .benefit-groups{grid-template-columns:1fr;gap:20px}
   .tt-week{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
   .gallery-grid-preview,.gallery-grid-full{grid-template-columns:repeat(3,1fr)}
   .events-grid{grid-template-columns:repeat(2,1fr)}
