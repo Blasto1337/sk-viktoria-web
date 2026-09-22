@@ -113,7 +113,7 @@ img{max-width:100%;display:block}
 .section-divider{height:3px;background:var(--gold);border:none;border-radius:999px;margin:0}
 
 /* about */
-.about{padding:48px 0 8px;position:relative}
+.about{padding:48px 0 40px;position:relative}
 .about-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:40px;align-items:center}
 .about-photo{box-shadow:4px 4px 0 var(--navy)}
 .about-photo img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
