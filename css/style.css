@@ -95,10 +95,6 @@ img{max-width:100%;display:block}
 .hero h1{font-size:clamp(38px,7vw,64px);line-height:1.06;color:#fff;letter-spacing:normal}
 .hero h1 span{color:var(--gold)}
 .hero-lead{display:block;font-size:18px;color:rgba(255,255,255,.85);line-height:1.55;margin:16px auto 26px;max-width:560px}
-
-/* scattered decorative icons across page sections (site-wide, not just hero) */
-.sec-deco{position:absolute;z-index:-1;pointer-events:none}
-.sec-deco img{display:block;width:100%;height:auto}
 .btn-hero{
   background:var(--gold);color:var(--navy);padding:15px 34px;font-size:18px;
   box-shadow:4px 4px 0 var(--navy);
