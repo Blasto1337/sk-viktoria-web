@@ -321,9 +321,9 @@ img{max-width:100%;display:block}
   display:flex;align-items:center;gap:9px;
 }
 .benefit-group h3::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--accent);flex:none}
-.benefit-chips{display:flex;flex-wrap:wrap;gap:10px}
+.benefit-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
 .benefit-chip{
-  background:var(--card-dark);border-radius:14px;padding:14px 16px;min-width:132px;flex:1 1 132px;
+  background:var(--card-dark);border-radius:14px;padding:14px 16px;
   display:flex;flex-direction:column;gap:4px;border-bottom:3px solid var(--accent);
   transition:transform .15s ease,background .15s ease;
 }
