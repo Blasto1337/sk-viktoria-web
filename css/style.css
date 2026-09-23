@@ -433,6 +433,31 @@ img{max-width:100%;display:block}
 .detail-box .schedule-list li:last-child{border-bottom:none}
 .detail-box .schedule-list b{color:#fff}
 .detail-box .schedule-list span{color:rgba(255,255,255,.72)}
+.course-location{font-size:13px;color:rgba(255,255,255,.6);margin:-6px 0 18px}
+.course-slots{display:flex;flex-direction:column;gap:14px}
+.course-slot{display:flex;align-items:center;gap:14px}
+.course-slot-icon{
+  width:42px;height:42px;border-radius:11px;background:rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:center;flex:none;color:var(--accent, var(--gold));
+}
+.course-slot-icon svg{width:21px;height:21px;display:block}
+.course-slot-day{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--accent, var(--gold))}
+.course-slot-time{font:700 22px 'Oswald',sans-serif;color:#fff;letter-spacing:.3px;line-height:1.2}
+.course-slot-note{font-size:12.5px;color:rgba(255,255,255,.6)}
+.course-prices{display:flex;gap:10px;margin:18px 0 10px}
+.course-price{flex:1;background:rgba(255,255,255,.06);border-radius:12px;padding:12px 16px;text-align:center}
+.course-price-main{background:var(--red)}
+.course-price-value{font:700 20px 'Oswald',sans-serif;color:#fff}
+.course-price-label{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px}
+.course-price-main .course-price-label{color:rgba(255,255,255,.85)}
+.course-term{font-size:12.5px;color:rgba(255,255,255,.55)}
+.course-trial{
+  display:inline-block;margin:14px 0 4px;padding:7px 14px;
+  background:rgba(255,207,92,.12);border:1px solid rgba(255,207,92,.35);border-radius:999px;
+  font-size:13px;color:var(--gold);font-weight:700;
+}
+.course-trial b{color:#fff;font-weight:800}
+.detail-box .detail-note{margin-top:14px;font-size:13px;color:rgba(255,255,255,.65)}
 .detail-media{padding:40px 0 0;position:relative}
 .detail-media h2{font:600 24px 'Oswald',sans-serif;color:#fff;margin-bottom:18px}
 .detail-cta{margin:40px 0 8px;text-align:center}
