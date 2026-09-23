@@ -274,7 +274,7 @@ img{max-width:100%;display:block}
 #events-grid-preview .event-card .ph{width:240px;flex:none;aspect-ratio:1/1;height:auto}
 #events-grid-preview .event-body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;padding:28px 32px}
 
-#events-grid-preview .event-meta{align-items:baseline;gap:14px;flex-wrap:wrap}
+#events-grid-preview .event-meta{align-items:center;gap:14px;flex-wrap:wrap}
 #events-grid-preview .tag{font-size:11px;padding:3px 10px}
 #events-grid-preview .event-meta time{font:700 22px 'Oswald',sans-serif;color:var(--gold);letter-spacing:.3px}
 #events-grid-preview .event-meta .event-location{margin-left:auto}
