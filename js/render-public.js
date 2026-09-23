@@ -89,10 +89,38 @@
       `;
     }
 
+    // homepage: náhled akce rovnou s plným detailem (foto, popis/kroky, místo, CTA na přihlášku) -- žádná prokliková stránka
+    function eventDetailCardHtml(item) {
+      const tagClass = `tag-${item.color || "teal"}`;
+      const media = item.photo
+        ? `<img src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.title)}" loading="lazy">`
+        : `<div class="ph" aria-hidden="true"><span>foto</span></div>`;
+      const bullets = Array.isArray(item.bullets) ? item.bullets.filter(Boolean) : [];
+      const detailHtml = bullets.length
+        ? `<ul class="event-detail-list">${bullets.map((b) => `<li>${escapeHtml(b)}</li>`).join("")}</ul>`
+        : item.description
+          ? `<p>${escapeHtml(item.description)}</p>`
+          : "";
+      const locationHtml = item.location
+        ? `<span class="event-location"><span class="event-detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span>${escapeHtml(item.location)}</span>`
+        : "";
+      return `
+        <article class="event-card event-accent-${escapeHtml(item.color || "teal")}" data-vt-id="${item.id}">
+          ${media}
+          <div class="event-body">
+            <div class="event-meta"><span class="tag ${tagClass}">${escapeHtml(item.tag || "AKCE")}</span><time>${escapeHtml(item.date)}</time>${locationHtml}</div>
+            <h3>${escapeHtml(item.title)}</h3>
+            ${detailHtml}
+            <a class="btn btn-hero event-cta" href="#kontakt">Přihlásit se →</a>
+          </div>
+        </article>
+      `;
+    }
+
     const eventsPreview = document.getElementById("events-grid-preview");
     if (eventsPreview) {
       VTStore.akce.all().filter((item) => item.featured).forEach((item) => {
-        eventsPreview.appendChild(el(eventCardHtml(item, false)));
+        eventsPreview.appendChild(el(eventDetailCardHtml(item)));
       });
     }
 
@@ -139,18 +167,6 @@
       }
     }
 
-    // --- Galerie (náhled na hlavní stránce, prvních 8 fotek) --------------
-    const galleryPreview = document.getElementById("gallery-grid-preview");
-    if (galleryPreview) {
-      const photos = VTStore.galerie.all().filter((g) => g.published !== false && g.photo).slice(0, 8);
-      photos.forEach((g) => {
-        galleryPreview.appendChild(el(
-          `<a class="gallery-item" href="gallery.html"><img src="${escapeHtml(g.photo)}" alt="${escapeHtml(g.caption || "")}" loading="lazy"></a>`
-        ));
-      });
-      const gallerySection = document.getElementById("galerie");
-      if (gallerySection && !photos.length) gallerySection.hidden = true;
-    }
 
     // --- Kroužky (courses) ------------------------------------------------
     function krouzekHref(item) {

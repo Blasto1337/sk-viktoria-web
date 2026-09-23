@@ -113,15 +113,18 @@ img{max-width:100%;display:block}
 .section-divider{height:3px;background:var(--gold);border:none;border-radius:999px;margin:0}
 
 /* about */
-.about{padding:48px 0 40px;position:relative}
+.about{padding:56px 0;position:relative}
+#o-nas{--night:#161230;background:var(--night)}
 .about-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:40px;align-items:center}
 .about-photo{box-shadow:4px 4px 0 var(--navy)}
 .about-photo img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
-.about-text h2{font:600 30px 'Oswald',sans-serif;color:#fff;margin-bottom:14px}
+.about-text h2{font:700 40px 'Oswald',sans-serif;color:#fff;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px}
 .about-text p{font-size:17px;line-height:1.7;color:var(--on-bg-muted)}
 
 /* courses */
-.courses{padding:40px 0;position:relative}
+.courses{padding:56px 0;position:relative}
+#tanecni-kurzy{background:var(--purple-deep);color:#fff}
+#volnocasove-aktivity{--night:#161230;background:var(--night);color:#fff}
 .courses-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .course-card{
   --accent:var(--teal);
@@ -162,12 +165,12 @@ img{max-width:100%;display:block}
 .schedule-list span{color:var(--navy);opacity:.75;font-size:14px}
 
 /* aktuality: nejnovější jako velká karta, ostatní kompaktně */
-.news-section{padding:40px 0 24px}
+.news-section{background:var(--purple-deep);color:#fff;padding:56px 0}
 .news-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:stretch}
 .news-grid.is-single{grid-template-columns:1fr}
 .alert-item.is-featured{
-  background:var(--cream-2);color:var(--navy);border-radius:16px;overflow:hidden;
-  box-shadow:5px 5px 0 var(--navy);display:flex;flex-direction:column;
+  background:var(--card-dark);color:#fff;border-radius:16px;overflow:hidden;
+  border-left:4px solid var(--gold);display:flex;flex-direction:column;
 }
 .alert-photo{width:100%;height:190px;object-fit:cover}
 .alert-body{padding:24px 26px 26px;display:flex;flex-direction:column;align-items:flex-start;flex:1}
@@ -175,8 +178,8 @@ img{max-width:100%;display:block}
   background:var(--red);color:#fff;font:600 11px 'Oswald',sans-serif;letter-spacing:.8px;text-transform:uppercase;
   padding:4px 12px;border-radius:999px;margin-bottom:12px;
 }
-.is-featured .alert-date{font:600 26px 'Oswald',sans-serif;letter-spacing:.4px;color:var(--navy);margin-bottom:8px}
-.is-featured p{font-size:16px;line-height:1.6;color:var(--navy);margin-bottom:20px;flex:1}
+.is-featured .alert-date{font:600 26px 'Oswald',sans-serif;letter-spacing:.4px;color:var(--gold);margin-bottom:8px}
+.is-featured p{font-size:16px;line-height:1.6;color:rgba(255,255,255,.88);margin-bottom:20px;flex:1}
 .alert-rest{display:flex;flex-direction:column;gap:12px}
 .alert-rest .alert-item{
   background:rgba(0,0,0,.24);border-radius:12px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start;
@@ -189,9 +192,9 @@ img{max-width:100%;display:block}
 .alert-rest p{font-size:14px;line-height:1.55;color:rgba(255,255,255,.88)}
 
 /* rozvrh: týden po dnech, barva podle programu */
-.timetable{--night:#161230;background:var(--night);padding:56px 0 48px;margin-top:32px;color:#fff}
+.timetable{--night:#161230;background:var(--night);padding:56px 0;color:#fff}
 .kicker{font:600 12px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
-.timetable h2{font:700 34px 'Oswald',sans-serif;color:#fff;margin-bottom:20px}
+.timetable h2{font:700 40px 'Oswald',sans-serif;color:#fff;margin-bottom:20px;text-transform:uppercase;letter-spacing:1px}
 .tt-vfresh{--c:#9b7dff}
 .tt-zumba{--c:#f2789f}
 .tt-volnocas{--c:#2fc4c4}
@@ -237,7 +240,8 @@ img{max-width:100%;display:block}
 .tag-blue{background:var(--blue)}
 
 /* akce: events (tábory, závody, lokální akce) */
-.events{padding:8px 0 40px;position:relative}
+.events{padding:56px 0;position:relative}
+#akce{background:var(--purple-deep);color:#fff}
 .events-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .event-card{
   --accent:var(--teal);
@@ -259,6 +263,29 @@ img{max-width:100%;display:block}
 .event-meta{display:flex;gap:8px;align-items:center}
 .event-meta time{font-size:12px;color:rgba(255,255,255,.55)}
 
+/* homepage: náhled akcí pod sebou, střídavě foto/text, s jasnou hierarchií
+   (datum a název jsou teď hlavní vizuální kotva karty, detail/bullety jsou podřízený text)
+   -- jen #events-grid-preview, akce.html grid beze změny */
+#events-grid-preview{display:flex;flex-direction:column;gap:20px}
+#events-grid-preview .event-card{display:flex;align-items:stretch;border-top:none;border-left:4px solid var(--accent)}
+#events-grid-preview .event-card:nth-child(2n){flex-direction:row-reverse}
+#events-grid-preview .event-card:hover{transform:none;background:var(--card-dark)}
+#events-grid-preview .event-card img,
+#events-grid-preview .event-card .ph{width:240px;flex:none;aspect-ratio:1/1;height:auto}
+#events-grid-preview .event-body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;padding:28px 32px}
+
+#events-grid-preview .event-meta{align-items:baseline;gap:14px;flex-wrap:wrap}
+#events-grid-preview .tag{font-size:11px;padding:3px 10px}
+#events-grid-preview .event-meta time{font:700 22px 'Oswald',sans-serif;color:var(--gold);letter-spacing:.3px}
+#events-grid-preview .event-meta .event-location{margin-left:auto}
+
+#events-grid-preview .event-body h3{font:700 26px 'Oswald',sans-serif}
+#events-grid-preview .event-location{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:rgba(255,255,255,.65);white-space:nowrap}
+#events-grid-preview .event-location .event-detail-icon{width:15px;height:15px}
+
+#events-grid-preview .event-cta{align-self:flex-start;padding:8px 18px;font-size:12px;box-shadow:2px 2px 0 var(--navy)}
+#events-grid-preview .event-cta:hover{box-shadow:3px 3px 0 var(--navy)}
+
 /* placeholders */
 .ph{
   background:repeating-linear-gradient(-45deg,#e7e2d8,#e7e2d8 10px,#efebe2 10px,#efebe2 20px);
@@ -269,12 +296,11 @@ img{max-width:100%;display:block}
 
 /* section head (title + "more" link) */
 .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap}
-.section-head h2{font:600 28px 'Oswald',sans-serif;color:#fff}
+.section-head h2{font:700 36px 'Oswald',sans-serif;color:#fff;text-transform:uppercase;letter-spacing:1px}
 .link-more{font-weight:700;font-size:14px;color:#fff}
 .link-more:hover{color:var(--gold)}
 
 /* gallery */
-.gallery-preview{padding:8px 0 40px;position:relative}
 .gallery-grid{display:grid;gap:14px}
 .gallery-grid-preview{grid-template-columns:repeat(4,1fr)}
 .gallery-item{display:block;border-radius:0;overflow:hidden;transition:transform .15s ease}
@@ -311,7 +337,8 @@ img{max-width:100%;display:block}
 .lightbox-next{right:-16px;top:50%;transform:translateY(-50%)}
 
 /* benefity: hravé "stat" chipy místo tabulky */
-.benefits{padding:48px 0 40px}
+.benefits{padding:56px 0}
+#benefity{--night:#161230;background:var(--night);color:#fff}
 .benefit-groups{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:28px}
 .benefit-group{--accent:var(--teal)}
 .benefit-group-purple{--accent:var(--purple)}
@@ -339,8 +366,8 @@ img{max-width:100%;display:block}
 .benefit-ribbon svg{width:16px;height:16px;flex:none;color:var(--gold)}
 
 /* contact: vlastní tmavá sekce jako rozvrh, kontrastní vůči fialovému pozadí */
-.contact{--night:#161230;background:var(--night);padding:56px 0 52px;margin-top:32px;color:#fff}
-.contact h2{font:600 30px 'Oswald',sans-serif;color:#fff;margin-bottom:24px}
+.contact{background:var(--purple-deep);padding:56px 0;color:#fff}
+.contact h2{font:700 38px 'Oswald',sans-serif;color:#fff;margin-bottom:24px;text-transform:uppercase;letter-spacing:1px}
 .contact-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:32px;align-items:start}
 .contact-card{background:rgba(255,255,255,.06);border-radius:16px;padding:26px 28px;border-left:4px solid var(--gold)}
 .contact-card p{color:rgba(255,255,255,.82);font-size:14px;line-height:1.6}
@@ -453,6 +480,11 @@ img{max-width:100%;display:block}
 }
 
 @media (max-width:720px){
+  #events-grid-preview .event-card,
+  #events-grid-preview .event-card:nth-child(2n){flex-direction:column}
+  #events-grid-preview .event-card img,
+  #events-grid-preview .event-card .ph{width:100%;aspect-ratio:16/9}
+  .section-head h2,.about-text h2,.timetable h2,.contact h2{font-size:28px}
   .main-nav{
     position:absolute;top:100%;left:0;right:0;background:var(--stone);
     flex-direction:column;align-items:stretch;padding:14px 24px 20px;gap:10px;
