@@ -101,15 +101,6 @@ img{max-width:100%;display:block}
 }
 .btn-hero:hover{box-shadow:6px 6px 0 var(--navy);transform:translate(-2px,-2px);background:#ffd873}
 
-/* marquee strip */
-.strip{background:var(--stone);overflow:hidden;padding:12px 0}
-.strip-track{
-  display:flex;gap:36px;white-space:nowrap;width:max-content;
-  font:600 15px 'Oswald',sans-serif;letter-spacing:1px;color:#fff;
-  animation:marquee 22s linear infinite;
-}
-@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@media (prefers-reduced-motion: reduce){.strip-track{animation:none}}
 .section-divider{height:3px;background:var(--gold);border:none;border-radius:999px;margin:0}
 
 /* about */
