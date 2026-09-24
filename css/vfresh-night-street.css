@@ -1,0 +1,97 @@
+/*
+  VFRESH DC — "Night Street" téma (varianta 1b z návrhu klienta).
+  Override vrstva nad css/style.css: nemění HTML strukturu ani sdílené
+  komponenty jinde na webu, jen přebarvuje kurz-vfresh-dc.html, když má
+  <body> třídu .vfresh-night (viz js/theme-switcher.js). Bez override
+  třídy tento soubor nedělá nic.
+
+  Přepínání: ?dev v URL zobrazí panel vpravo dole, volba se pamatuje
+  v localStorage (i pro návštěvníky bez ?dev — tak si klient/admin
+  může nechat vybrané téma trvale zapnuté).
+*/
+
+.vfresh-night{
+  --ns-bg:#0e0e0f;
+  --ns-ink:#f1f0ec;
+  --ns-accent:#c6f432;
+  --ns-line:rgba(241,240,236,.12);
+  --ns-panel:#18181a;
+}
+
+body.vfresh-night{background:var(--ns-bg);color:var(--ns-ink)}
+
+/* header / nav */
+.vfresh-night .site-header{background:var(--ns-bg);border-bottom:1px solid var(--ns-line)}
+.vfresh-night .brand-name{color:var(--ns-ink)}
+.vfresh-night .main-nav a{border-radius:0;border-color:rgba(241,240,236,.3);color:var(--ns-ink)}
+.vfresh-night .main-nav a:hover,
+.vfresh-night .main-nav a.active{background:var(--ns-accent);color:var(--ns-bg);border-color:var(--ns-accent)}
+.vfresh-night .nav-cta{background:var(--ns-accent)!important;border-color:var(--ns-accent)!important;color:var(--ns-bg)!important;border-radius:0;box-shadow:none}
+.vfresh-night .nav-cta:hover{background:#d8ff5c!important}
+.vfresh-night .nav-toggle{border-color:var(--ns-ink)}
+.vfresh-night .nav-toggle span{background:var(--ns-ink)}
+
+/* hero */
+.vfresh-night .course-hero{background:var(--ns-bg);text-align:left;padding:80px 0 56px;border-bottom:1px solid var(--ns-line)}
+.vfresh-night .course-hero h1{
+  display:block;background:none;box-shadow:none;padding:0;border-radius:0;color:var(--ns-ink);
+  font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;
+  font-size:clamp(52px,9vw,140px);line-height:.85;letter-spacing:-.01em;
+}
+.vfresh-night .course-hero-tags{justify-content:flex-start}
+.vfresh-night .course-hero .age-badge{
+  background:transparent;border:1.5px solid rgba(241,240,236,.35);border-radius:0;color:var(--ns-ink);
+  text-transform:uppercase;letter-spacing:.08em;font-family:'JetBrains Mono',monospace;font-size:12px;padding:8px 14px;
+}
+
+/* detail sekce (Rozvrh, Kde trénujeme, Tancujeme, Proč VFRESH DC, Benefity) */
+.vfresh-night .detail{padding-top:64px}
+.vfresh-night .back-link{color:var(--ns-ink);font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.vfresh-night .back-link:hover{color:var(--ns-accent)}
+.vfresh-night .detail-lead{color:rgba(241,240,236,.78)}
+.vfresh-night .detail-lead b{color:var(--ns-ink)}
+.vfresh-night .detail-box{background:var(--ns-panel);border-radius:0;border-left:none;border-top:2px solid var(--ns-accent)}
+.vfresh-night .detail-box h2{
+  font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:0;
+  font-size:32px;color:var(--ns-ink);
+}
+.vfresh-night .detail-box p{color:rgba(241,240,236,.75)}
+.vfresh-night .detail-box .schedule-list li{border-bottom-color:var(--ns-line)}
+.vfresh-night .detail-box .schedule-list b{color:var(--ns-ink);font-weight:800}
+.vfresh-night .detail-box .schedule-list span{color:rgba(241,240,236,.65)}
+
+/* dvě volné h2/p psané inline stylem přímo v HTML — přebít lze jen přes !important */
+.vfresh-night section#nabor > .wrap > h2,
+.vfresh-night section#benefity > .wrap > h2{
+  font-family:'Anton',sans-serif!important;font-weight:400!important;text-transform:uppercase!important;
+  letter-spacing:0!important;font-size:36px!important;color:var(--ns-ink)!important;
+}
+.vfresh-night section#nabor > .wrap > p:last-child{
+  color:var(--ns-accent)!important;font-family:'Anton',sans-serif!important;
+  font-weight:400!important;text-transform:uppercase!important;letter-spacing:0!important;
+}
+
+/* fotky a videa */
+.vfresh-night .detail-media h2{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;font-size:36px;color:var(--ns-ink)}
+.vfresh-night .gallery-item img,
+.vfresh-night .gallery-item .ph{border-radius:0;filter:grayscale(1) contrast(1.1);transition:filter .2s ease}
+.vfresh-night .gallery-item:hover img{filter:none}
+
+/* CTA na konci stránky */
+.vfresh-night .detail-cta{background:var(--ns-accent);color:var(--ns-bg);padding:48px 0;margin:64px 0 0;text-align:left}
+.vfresh-night .detail-cta .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
+.vfresh-night .detail-cta p{color:var(--ns-bg);font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;font-size:32px;margin:0}
+.vfresh-night .btn-hero{background:var(--ns-bg);color:var(--ns-ink);border-radius:0;box-shadow:none}
+.vfresh-night .btn-hero:hover{background:#000;color:var(--ns-ink);transform:none;box-shadow:none}
+.vfresh-night .detail-cta-alt{margin-top:0}
+.vfresh-night .detail-cta-alt a{color:var(--ns-bg);font-weight:800}
+.vfresh-night .detail-cta-alt a:hover{color:#000}
+
+@media (max-width:1024px){
+  .vfresh-night .course-hero h1{font-size:clamp(44px,10vw,90px)}
+}
+
+@media (max-width:640px){
+  .vfresh-night .course-hero{padding:56px 0 40px}
+  .vfresh-night .detail-cta .wrap{flex-direction:column;align-items:flex-start}
+}
