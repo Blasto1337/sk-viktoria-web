@@ -67,7 +67,8 @@ h1,h2,h3{font-family:'Fredoka',system-ui,sans-serif;letter-spacing:0}
 
 /* sekce: střídání krémová / bílá / jemně tyrkysová */
 #o-nas{background:var(--bg-alt)}
-#volnocasove-aktivity,#tanecni-kurzy{background:var(--bg);color:var(--ink)}
+#volnocasove-aktivity{background:var(--bg);color:var(--ink)}
+#tanecni-kurzy{background:#f3effe;color:var(--ink)} /* jemně fialová: skupina VFRESH DC s vlastním webem */
 #akce{background:var(--bg-alt);color:var(--ink)}
 .timetable{background:var(--bg-soft);color:var(--ink)}
 .news-section{background:var(--bg);color:var(--ink)}
@@ -117,9 +118,12 @@ h1,h2,h3{font-family:'Fredoka',system-ui,sans-serif;letter-spacing:0}
 .alert-icon,.alert-rest .alert-date{color:var(--teal)}
 .alert-rest p{color:var(--ink)}
 
+.section-lead{margin:-6px 0 24px}
+
 /* rozvrh */
 .tt-zumba{--c:var(--pink)}
 .tt-volnocas{--c:var(--teal)}
+.tt-vfresh{--c:var(--purple)}
 .tt-filter{color:var(--navy);border-color:rgba(30,37,64,.25);font-family:'Nunito',sans-serif;font-weight:800}
 .tt-filter:hover{border-color:var(--navy)}
 .tt-filter.active{background:var(--navy);color:#fff;border-color:var(--navy)}
