@@ -17,8 +17,8 @@
       document.getElementById("k-root").innerHTML = `
         <section class="detail">
           <div class="wrap">
-            <a class="back-link" href="krouzky.html">← Zpět na kroužky</a>
-            <p class="detail-lead">Tento kroužek jsme nenašli. Možná byl odebrán nebo je odkaz neplatný.</p>
+            <a class="back-link" href="krouzky.html">← Zpět na aktivity</a>
+            <p class="detail-lead">Tuto aktivitu jsme nenašli. Možná byla odebrána nebo je odkaz neplatný.</p>
           </div>
         </section>
       `;

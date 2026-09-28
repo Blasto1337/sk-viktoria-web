@@ -60,6 +60,8 @@ podklady/               originální podklady od klientky (letáky, rozvrh, PDF,
 - Podstránky (kroužky, akce, galerie, detaily) mají fialový pás s eyebrow a velkým nadpisem, dál stejné karty/řádky jako homepage.
 - **Admin je na `/admin/`** (`admin/index.html`, styly `css/admin.css` samostatně ve stejném vizuálu). Z webu na něj nevede žádný odkaz.
 
+- **Názvosloví: „aktivity“, ne „kroužky“** (2026-09-28): nabídka zahrnuje i aktivity pro dospělé (Zumba), takže na webu i v adminu píšeme „aktivita/aktivity“. Výjimka: oficiální název krajského programu „Pomáháme s kroužky pro jihočeské děti“. Názvy souborů (`krouzky.html`, `kurz-*.html`) a klíčů v kódu zůstávají kvůli odkazům.
+
 ### Databáze (sloupce přidané pro 1a)
 - `vik_courses`: `when_label` (kdy, krátce), `photo_hint`, `hero`, `hero_lead`, `hero_order`.
 - `vik_events`: `age_label` (pro koho), `photo_hint`, `hero`, `hero_lead`, `hero_order`.

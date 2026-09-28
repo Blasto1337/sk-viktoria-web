@@ -76,7 +76,7 @@
   function heroSlides() {
     const byOrder = (a, b) => (a.heroOrder ?? 100) - (b.heroOrder ?? 100);
     const courses = VTStore.krouzky.all().filter((k) => k.hero && !isVfresh(k)).map((k) => ({
-      order: k.heroOrder, type: "Kroužek", title: k.name, lead: k.heroLead || k.description,
+      order: k.heroOrder, type: "Aktivita", title: k.name, lead: k.heroLead || k.description,
       age: k.age, when: k.when, place: k.location, photo: k.photo, hint: k.photoHint,
       cta: "Zkušební lekce zdarma", ctaHref: contactHref(k.name),
       more: "Zjistit víc", moreHref: krouzekHref(k),
@@ -92,9 +92,9 @@
     if (slides.length) return slides;
     // Bez vybraných snímků: jeden úvodní snímek o klubu.
     return [{
-      type: "Nábor", title: "Hýbeme se celý rok", lead: "Kroužky pro děti od 1,5 roku i pro rodiče: gymnastika, pohybové hry, divadlo, cvičení s dětmi a Zumba.",
+      type: "Nábor", title: "Hýbeme se celý rok", lead: "Aktivity pro děti od 1,5 roku i pro rodiče: gymnastika, pohybové hry, divadlo, cvičení s dětmi a Zumba.",
       age: "od 1,5 roku", when: "celý týden", place: "Tábor a Planá n. L.", hint: "děti a rodiče při cvičení v sále",
-      cta: "Zkušební lekce zdarma", ctaHref: "#kontakt", more: "Všechny kroužky", moreHref: "krouzky.html",
+      cta: "Zkušební lekce zdarma", ctaHref: "#kontakt", more: "Všechny aktivity", moreHref: "krouzky.html",
     }];
   }
 

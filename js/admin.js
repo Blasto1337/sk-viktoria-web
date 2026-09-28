@@ -490,8 +490,8 @@
     krouzekPhoto.set(null);
     iconSelect.value = "star";
     refreshIconPreview();
-    document.getElementById("form-krouzek-title").textContent = "Přidat kroužek";
-    krouzekForm.querySelector(".btn-submit").textContent = "Přidat kroužek";
+    document.getElementById("form-krouzek-title").textContent = "Přidat aktivitu";
+    krouzekForm.querySelector(".btn-submit").textContent = "Přidat aktivitu";
     krouzekForm.querySelector("[data-cancel-edit]").hidden = true;
     krouzekForm.classList.remove("is-editing");
   }
@@ -514,7 +514,7 @@
     krouzekForm.when.value = item.when || "";
     fillHero(krouzekForm, item);
     krouzekPhoto.set(item.photo || null);
-    document.getElementById("form-krouzek-title").textContent = "Upravit kroužek";
+    document.getElementById("form-krouzek-title").textContent = "Upravit aktivitu";
     krouzekForm.querySelector(".btn-submit").textContent = "Uložit změny";
     krouzekForm.querySelector("[data-cancel-edit]").hidden = false;
     krouzekForm.classList.add("is-editing");
@@ -595,7 +595,7 @@
     }
     const delBtn = e.target.closest("button[data-action='delete-krouzek']");
     if (delBtn) {
-      if (confirm("Smazat tento kroužek?")) {
+      if (confirm("Smazat tuto aktivitu?")) {
         const id = delBtn.dataset.id;
         const photo = (VTStore.krouzky.get(id) || {}).photo;
         const ok = await trySave(() => VTStore.krouzky.remove(id));
@@ -613,7 +613,7 @@
   const rozvrhList = document.getElementById("rozvrh-list");
   let editingRozvrhId = null;
   const DAY_NAMES = { 1: "Pondělí", 2: "Úterý", 3: "Středa", 4: "Čtvrtek", 5: "Pátek", 6: "Sobota", 7: "Neděle" };
-  const PROGRAM_NAMES = { vfresh: "VFRESH DC", zumba: "Zumba & Dance", volnocas: "Kroužky" };
+  const PROGRAM_NAMES = { vfresh: "VFRESH DC", zumba: "Zumba & Dance", volnocas: "Aktivity" };
   const PROGRAM_TAGS = { vfresh: "tag-purple", zumba: "tag-red", volnocas: "tag-teal" };
 
   // "8:15" -> "08:15" (pole <input type="time"> chce dvě číslice)
