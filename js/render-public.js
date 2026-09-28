@@ -1,8 +1,7 @@
 /*
-  Renders kroužky/akce/aktuality/galerie/rozvrh onto the public pages from VTStore.
-  Every item lives in the Supabase database (edited through admin.html) and is
-  rendered from VTStore once VTStore.ready resolves; there is no separate
-  hand-written HTML fallback for these grids/lists.
+  Vykreslí obsah z VTStore (Supabase / záloha) do veřejných stránek:
+  hero slider, kroužky, akce, rozvrh, aktuality a výběr kategorie ve formuláři.
+  Každý blok se vykreslí jen tam, kde na stránce existuje jeho kontejner.
 */
 (() => {
   "use strict";
@@ -15,248 +14,328 @@
     return t.content.firstElementChild;
   }
 
-  function escapeHtml(str) {
+  function esc(str) {
     return String(str ?? "").replace(/[&<>"']/g, (c) => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
     }[c]));
   }
 
-  // Odkazy na druhý web (např. „Web VFRESH DC ↗“) berou adresu z VTStore.siteUrls.
+  // Obrázek, nebo placeholder s popisem, jaká fotka se hodí (admin: „Popis fotky“).
+  function mediaHtml(photo, hint, alt, extraClass) {
+    const cls = extraClass ? ` class="${extraClass}"` : "";
+    if (photo) return `<img${cls} src="${esc(photo)}" alt="${esc(alt || "")}" loading="lazy">`;
+    const label = hint ? `foto: ${hint}` : `foto: ${alt || "doplníme"}`;
+    return `<div class="ph${extraClass ? " " + extraClass : ""}" role="img" aria-label="${esc(alt || "")}"><span>${esc(label)}</span></div>`;
+  }
+
+  // Odkazy na druhý web (Web VFRESH DC ↗) berou adresu z VTStore.siteUrls.
   document.querySelectorAll("[data-vt-site-link]").forEach((link) => {
     const url = VTStore.siteUrls && VTStore.siteUrls[link.dataset.vtSiteLink];
     if (url) link.href = url;
   });
 
-  function render() {
-    // --- Aktuality -----------------------------------------------------
-    // Nejnovější aktualita je velká karta s výzvou, ostatní jsou kompaktní řádky.
-    const alertsList = document.getElementById("alerts-list");
-    if (alertsList) {
-      const bellIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>';
-      const items = VTStore.aktuality.all();
-      const newsSection = document.getElementById("aktuality");
-      if (newsSection) newsSection.hidden = items.length === 0;
+  // ------------------------------------------------------------- data --
+  const isVfresh = (k) => k.group === "vfresh";
 
-      if (items.length) {
-        const [first, ...rest] = items;
-        alertsList.appendChild(el(`
-          <article class="alert-item is-featured" data-vt-id="${first.id}">
-            ${first.photo ? `<img class="alert-photo" src="${escapeHtml(first.photo)}" alt="" loading="lazy">` : ""}
-            <div class="alert-body">
-              <span class="alert-flag">Nejnovější</span>
-              <div class="alert-date">${escapeHtml(first.date)}</div>
-              <p>${escapeHtml(first.text)}</p>
-              <a class="btn btn-hero" href="#kontakt">Napsat nám</a>
-            </div>
-          </article>
-        `));
-        if (rest.length) {
-          const restBox = el('<div class="alert-rest"></div>');
-          rest.forEach((item) => {
-            const iconHtml = item.photo
-              ? `<img src="${escapeHtml(item.photo)}" alt="" loading="lazy">`
-              : bellIcon;
-            restBox.appendChild(el(`
-              <div class="alert-item" data-vt-id="${item.id}">
-                <span class="alert-icon" aria-hidden="true">${iconHtml}</span>
-                <div>
-                  <div class="alert-date">${escapeHtml(item.date)}</div>
-                  <p>${escapeHtml(item.text)}</p>
-                </div>
-              </div>
-            `));
-          });
-          alertsList.appendChild(restBox);
-        } else {
-          alertsList.classList.add("is-single");
-        }
-      }
-    }
+  function krouzekHref(item) {
+    return VTStore.hrefFor(item, `kurz-detail.html?id=${encodeURIComponent(item.id)}`);
+  }
+  function akceHref(item) {
+    return item.detailHref || `akce-detail.html?id=${encodeURIComponent(item.id)}`;
+  }
+  function contactHref(name) {
+    const base = document.getElementById("contact-form") ? "" : "index.html";
+    return `${base}?kurzname=${encodeURIComponent(name)}#kontakt`;
+  }
 
-    // --- Akce (events) ---------------------------------------------------
-    function akceHref(item) {
-      return item.detailHref || `akce-detail.html?id=${encodeURIComponent(item.id)}`;
-    }
+  // Datum akce z textu („16. 9. 2026“, „28.10.2026“) pro řazení a velké číslo dne.
+  const MONTHS = ["led", "úno", "bře", "dub", "kvě", "čvn", "čvc", "srp", "zář", "říj", "lis", "pro"];
+  function parseDate(label) {
+    const m = /(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})?/.exec(String(label || ""));
+    if (!m) return null;
+    const year = m[3] ? Number(m[3]) : new Date().getFullYear();
+    return { day: Number(m[1]), month: Number(m[2]), date: new Date(year, Number(m[2]) - 1, Number(m[1])) };
+  }
+  // Nadcházející akce vzestupně, potom proběhlé od nejnovější. Nic se neskrývá (to řeší admin).
+  function sortEvents(items) {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    return items
+      .map((it, i) => ({ it, i, d: parseDate(it.date) }))
+      .sort((a, b) => {
+        if (!a.d && !b.d) return a.i - b.i;
+        if (!a.d) return 1;
+        if (!b.d) return -1;
+        const aPast = a.d.date < today, bPast = b.d.date < today;
+        if (aPast !== bPast) return aPast ? 1 : -1;
+        return aPast ? b.d.date - a.d.date : a.d.date - b.d.date;
+      })
+      .map((x) => x.it);
+  }
 
-    function eventCardHtml(item, withDescription) {
-      const tagClass = `tag-${item.color || "teal"}`;
-      const media = item.photo
-        ? `<img src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.title)}" loading="lazy">`
-        : `<div class="ph" aria-hidden="true"><span>foto</span></div>`;
-      return `
-        <a class="event-card event-accent-${escapeHtml(item.color || "teal")}" href="${akceHref(item)}" data-filter-type="${escapeHtml(item.category || "nabor")}" data-vt-id="${item.id}">
-          ${media}
-          <div class="event-body">
-            <div class="event-meta"><span class="tag ${tagClass}">${escapeHtml(item.tag || "AKCE")}</span><time>${escapeHtml(item.date)}</time></div>
-            <h3>${escapeHtml(item.title)}</h3>
-            ${withDescription && item.description ? `<p>${escapeHtml(item.description)}</p>` : ""}
-          </div>
-        </a>
-      `;
-    }
+  // ------------------------------------------------------ hero slider --
+  function heroSlides() {
+    const byOrder = (a, b) => (a.heroOrder ?? 100) - (b.heroOrder ?? 100);
+    const courses = VTStore.krouzky.all().filter((k) => k.hero && !isVfresh(k)).map((k) => ({
+      order: k.heroOrder, type: "Kroužek", title: k.name, lead: k.heroLead || k.description,
+      age: k.age, when: k.when, place: k.location, photo: k.photo, hint: k.photoHint,
+      cta: "Zkušební lekce zdarma", ctaHref: contactHref(k.name),
+      more: "Zjistit víc", moreHref: krouzekHref(k),
+    }));
+    const events = VTStore.akce.all().filter((a) => a.hero).map((a) => ({
+      order: a.heroOrder, type: a.category === "nabor" ? "Nábor" : "Akce", title: a.title,
+      lead: a.heroLead || a.description, age: a.age, when: a.date, place: a.location,
+      photo: a.photo, hint: a.photoHint,
+      cta: a.category === "nabor" ? "Přihlásit se" : "Chci přijít", ctaHref: contactHref(a.title),
+      more: "Detail akce", moreHref: akceHref(a),
+    }));
+    const slides = [...courses, ...events].sort((a, b) => byOrder({ heroOrder: a.order }, { heroOrder: b.order }));
+    if (slides.length) return slides;
+    // Bez vybraných snímků: jeden úvodní snímek o klubu.
+    return [{
+      type: "Nábor", title: "Hýbeme se celý rok", lead: "Kroužky pro děti od 1,5 roku i pro rodiče: gymnastika, pohybové hry, divadlo, cvičení s dětmi a Zumba.",
+      age: "od 1,5 roku", when: "celý týden", place: "Tábor a Planá n. L.", hint: "děti a rodiče při cvičení v sále",
+      cta: "Zkušební lekce zdarma", ctaHref: "#kontakt", more: "Všechny kroužky", moreHref: "krouzky.html",
+    }];
+  }
 
-    // homepage: náhled akce rovnou s plným detailem (foto, popis/kroky, místo, CTA na přihlášku) -- žádná prokliková stránka
-    function eventDetailCardHtml(item) {
-      const tagClass = `tag-${item.color || "teal"}`;
-      const media = item.photo
-        ? `<img src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.title)}" loading="lazy">`
-        : `<div class="ph" aria-hidden="true"><span>foto</span></div>`;
-      const bullets = Array.isArray(item.bullets) ? item.bullets.filter(Boolean) : [];
-      const detailHtml = bullets.length
-        ? `<ul class="event-detail-list">${bullets.map((b) => `<li>${escapeHtml(b)}</li>`).join("")}</ul>`
-        : item.description
-          ? `<p>${escapeHtml(item.description)}</p>`
-          : "";
-      const locationHtml = item.location
-        ? `<span class="event-location"><span class="event-detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span>${escapeHtml(item.location)}</span>`
-        : "";
-      return `
-        <article class="event-card event-accent-${escapeHtml(item.color || "teal")}" data-vt-id="${item.id}">
-          ${media}
-          <div class="event-body">
-            <div class="event-meta"><span class="tag ${tagClass}">${escapeHtml(item.tag || "AKCE")}</span><time>${escapeHtml(item.date)}</time>${locationHtml}</div>
-            <h3>${escapeHtml(item.title)}</h3>
-            ${detailHtml}
-            <a class="btn btn-hero event-cta" href="#kontakt">Přihlásit se →</a>
-          </div>
-        </article>
-      `;
-    }
+  function renderHero() {
+    const textBox = document.getElementById("hero-slides");
+    const mediaBox = document.getElementById("hero-media");
+    if (!textBox || !mediaBox) return;
+    const slides = heroSlides();
+    const pad = (n) => String(n).padStart(2, "0");
 
-    const eventsPreview = document.getElementById("events-grid-preview");
-    if (eventsPreview) {
-      VTStore.akce.all().filter((item) => item.featured).forEach((item) => {
-        eventsPreview.appendChild(el(eventDetailCardHtml(item)));
+    textBox.innerHTML = slides.map((s, i) => `
+      <div class="hero-slide${i === 0 ? " is-active" : ""}" role="group" aria-roledescription="slide" aria-label="${i + 1} z ${slides.length}"${i === 0 ? "" : ' aria-hidden="true"'}>
+        <div class="hero-tags"><span class="hero-type">${esc(s.type)}</span><span class="hero-season">Sezóna 2026/27</span></div>
+        ${i === 0 ? `<h1>${esc(s.title)}</h1>` : `<h2 class="h1-like">${esc(s.title)}</h2>`}
+        ${s.lead ? `<p class="hero-lead">${esc(s.lead)}</p>` : ""}
+        <dl class="hero-meta">
+          ${s.age ? `<div><dt>Pro koho</dt><dd>${esc(s.age)}</dd></div>` : ""}
+          ${s.when ? `<div><dt>Kdy</dt><dd>${esc(s.when)}</dd></div>` : ""}
+          ${s.place ? `<div><dt>Kde</dt><dd>${esc(s.place)}</dd></div>` : ""}
+        </dl>
+        <div class="hero-actions">
+          <a class="btn btn-gold btn-lg" href="${esc(s.ctaHref)}"${i === 0 ? "" : ' tabindex="-1"'}>${esc(s.cta)}</a>
+          <a class="btn btn-outline-light btn-lg" href="${esc(s.moreHref)}"${i === 0 ? "" : ' tabindex="-1"'}>${esc(s.more)}</a>
+        </div>
+      </div>`).join("");
+    mediaBox.innerHTML = slides.map((s, i) => mediaHtml(s.photo, s.hint, s.title, i === 0 ? "is-active" : "")).join("");
+
+    const controls = document.getElementById("hero-controls");
+    if (slides.length < 2) return;
+    controls.hidden = false;
+    const dots = document.getElementById("hero-dots");
+    dots.innerHTML = slides.map((_, i) => `<button type="button" class="hero-dot${i === 0 ? " is-active" : ""}" aria-label="Snímek ${i + 1}"></button>`).join("");
+    const counter = document.getElementById("hero-counter");
+
+    const textLayers = [...textBox.children];
+    const mediaLayers = [...mediaBox.children];
+    const dotBtns = [...dots.children];
+    let current = 0;
+    let timer = null;
+    let paused = false;
+    const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function go(n) {
+      current = (n + slides.length) % slides.length;
+      textLayers.forEach((l, i) => {
+        const on = i === current;
+        l.classList.toggle("is-active", on);
+        l.setAttribute("aria-hidden", String(!on));
+        l.querySelectorAll("a").forEach((a) => { if (on) a.removeAttribute("tabindex"); else a.setAttribute("tabindex", "-1"); });
       });
+      mediaLayers.forEach((l, i) => l.classList.toggle("is-active", i === current));
+      dotBtns.forEach((d, i) => d.classList.toggle("is-active", i === current));
+      counter.innerHTML = `${pad(current + 1)} <span>/ ${pad(slides.length)}</span>`;
     }
-
-    const eventsFull = document.getElementById("events-grid");
-    if (eventsFull) {
-      VTStore.akce.all().forEach((item) => {
-        eventsFull.appendChild(el(eventCardHtml(item, true)));
-      });
-      // re-apply the current filter so newly injected cards obey it too
-      const activeFilter = document.querySelector(".filter-btn.active");
-      if (activeFilter && activeFilter.dataset.filter !== "all") {
-        const filter = activeFilter.dataset.filter;
-        eventsFull.querySelectorAll(".event-card").forEach((card) => {
-          if (card.dataset.filterType !== filter) card.classList.add("is-hidden");
-        });
-      }
+    function restart() {
+      clearInterval(timer);
+      if (reduced) return;
+      timer = setInterval(() => { if (!paused) go(current + 1); }, 6500);
     }
+    document.getElementById("hero-prev").addEventListener("click", () => { go(current - 1); restart(); });
+    document.getElementById("hero-next").addEventListener("click", () => { go(current + 1); restart(); });
+    dotBtns.forEach((d, i) => d.addEventListener("click", () => { go(i); restart(); }));
+    const hero = document.getElementById("hero");
+    hero.addEventListener("mouseenter", () => { paused = true; });
+    hero.addEventListener("mouseleave", () => { paused = false; });
+    hero.addEventListener("focusin", () => { paused = true; });
+    hero.addEventListener("focusout", (e) => { if (!hero.contains(e.relatedTarget)) paused = false; });
+    go(0);
+    restart();
+  }
 
-    // --- Rozvrh (týden po dnech, barva podle programu) -----------------
-    const ttWeek = document.getElementById("tt-week");
-    if (ttWeek) {
-      const DAYS = { 1: "Pondělí", 2: "Úterý", 3: "Středa", 4: "Čtvrtek", 5: "Pátek", 6: "Sobota", 7: "Neděle" };
-      const slots = VTStore.rozvrh.all().filter((r) => r.published !== false);
-      const hasWeekend = slots.some((r) => r.weekday > 5);
-      const dayNumbers = hasWeekend ? [1, 2, 3, 4, 5, 6, 7] : [1, 2, 3, 4, 5];
-      const today = new Date().getDay() || 7; // JS: neděle = 0, rozvrh: neděle = 7
-      ttWeek.style.setProperty("--tt-cols", dayNumbers.length);
-      ttWeek.innerHTML = dayNumbers.map((d) => {
-        const list = slots.filter((r) => r.weekday === d);
-        const items = list.length
-          ? list.map((r) => {
-              const group = ["vfresh", "zumba", "volnocas"].includes(r.program) ? r.program : "volnocas";
-              return `<li class="tt-slot tt-${group}" data-group="${group}"><time>${escapeHtml(r.time)}</time><span class="tt-name">${escapeHtml(r.name)}</span>${r.note ? `<span class="tt-note">${escapeHtml(r.note)}</span>` : ""}</li>`;
-            }).join("")
-          : '<li class="tt-empty">bez tréninku</li>';
-        return `<div class="tt-day${d === today ? " is-today" : ""}" data-dow="${d}"><h3 class="tt-dayname">${DAYS[d]}</h3><ul class="tt-slots">${items}</ul></div>`;
-      }).join("");
-      // filtr zvolený před dokončením načtení dat se použije i na nové řádky
-      const activeFilter = document.querySelector(".tt-filter.active");
-      if (activeFilter && activeFilter.dataset.ttFilter !== "all") {
-        ttWeek.querySelectorAll(".tt-slot").forEach((slot) => {
-          slot.classList.toggle("is-dim", slot.dataset.group !== activeFilter.dataset.ttFilter);
-        });
-      }
-    }
-
-
-    // --- Kroužky (courses) ------------------------------------------------
-    function krouzekHref(item) {
-      // Kroužek z druhého webu (VFRESH DC na hlavním webu) vede na jeho vlastní web.
-      return VTStore.hrefFor(item, `kurz-detail.html?id=${encodeURIComponent(item.id)}`);
-    }
-
-    function courseCardHtml(item) {
-      const iconSvg = window.vtIconSvg ? window.vtIconSvg(item.icon) : "";
-      const hasPhoto = !!item.photo;
-      const external = VTStore.isExternal(item);
-      const photoHtml = hasPhoto
-        ? `<div class="course-photo"><img src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.name)}" loading="lazy"></div>`
-        : "";
-      const body = `
-        <div${hasPhoto ? ' class="course-card-body"' : ""}>
-          <div>
-            <div class="course-icon" aria-hidden="true">${iconSvg}</div>
-            <h3>${escapeHtml(item.name)}</h3>
-            <p>${escapeHtml(item.description || "")}</p>
-            ${item.location ? `<div class="course-loc">📍 ${escapeHtml(item.location)}</div>` : ""}
-          </div>
+  // ------------------------------------------------------------ kroužky --
+  function courseCardHtml(item) {
+    return `
+      <a class="course-card" href="${esc(krouzekHref(item))}" data-vt-id="${item.id}">
+        <div class="course-media">
+          ${mediaHtml(item.photo, item.photoHint, item.name)}
+          ${item.age ? `<span class="age-badge">${esc(item.age)}</span>` : ""}
+        </div>
+        <div class="course-body">
+          <h3>${esc(item.name)}</h3>
+          ${item.description ? `<p>${esc(item.description)}</p>` : ""}
           <div class="course-foot">
-            <span class="age-badge">${escapeHtml(item.age || "Novinka")}</span>
-            ${external
-              ? '<span class="course-arrow course-arrow-ext">web VFRESH DC ↗</span>'
-              : '<span class="course-arrow" aria-hidden="true">→</span>'}
+            <span class="course-when">${esc(item.when || "")}</span>
+            <span class="course-place">${esc(item.location || "")}</span>
           </div>
         </div>
-      `;
-      return `
-        <a class="course-card course-${escapeHtml(item.color || "teal")}${hasPhoto ? " has-photo" : ""}" href="${krouzekHref(item)}" data-vt-id="${item.id}">
-          ${photoHtml}${body}
-        </a>
-      `;
+      </a>`;
+  }
+
+  function vfreshCardHtml(vfreshItems, withList) {
+    const url = (VTStore.siteUrls && VTStore.siteUrls.vfresh) || "#";
+    const list = withList && vfreshItems.length
+      ? `<ul class="vfresh-list">${vfreshItems.map((k) => `<li>${esc(k.name)}${k.age ? ` · ${esc(k.age)}` : ""}</li>`).join("")}</ul>`
+      : "";
+    return `
+      <a class="course-card course-card-vfresh" href="${esc(url)}">
+        <span class="eyebrow">Taneční kurzy</span>
+        <div>
+          <h3>VFRESH DC</h3>
+          <p style="margin-top:12px">Street dance pro děti i dospělé od 3 let. Od taneční školičky FRESHÍK po soutěžní crew.</p>
+        </div>
+        ${list}
+        <span class="vfresh-link">Web VFRESH DC ↗</span>
+      </a>`;
+  }
+
+  function renderCourses() {
+    const all = VTStore.krouzky.all();
+    const vfreshItems = all.filter(isVfresh);
+    const preview = document.getElementById("courses-grid-preview");
+    if (preview) {
+      preview.innerHTML = all.filter((k) => k.featured && !isVfresh(k)).map(courseCardHtml).join("") + vfreshCardHtml(vfreshItems, false);
     }
-
-    const coursesVfresh = document.getElementById("courses-grid-vfresh");
-    if (coursesVfresh) {
-      VTStore.krouzky.all().filter((item) => item.group === "vfresh").forEach((item) => {
-        coursesVfresh.appendChild(el(courseCardHtml(item)));
-      });
-    }
-
-    const coursesGrid = document.getElementById("courses-grid");
-    if (coursesGrid) {
-      VTStore.krouzky.all().filter((item) => (item.group || "volnocas") !== "vfresh").forEach((item) => {
-        coursesGrid.appendChild(el(courseCardHtml(item)));
-      });
-    }
-
-    const coursesPreviewVfresh = document.getElementById("courses-grid-preview-vfresh");
-    if (coursesPreviewVfresh) {
-      VTStore.krouzky.all().filter((item) => item.featured && item.group === "vfresh").forEach((item) => {
-        coursesPreviewVfresh.appendChild(el(courseCardHtml(item)));
-      });
-    }
-
-    const coursesPreviewVolnocas = document.getElementById("courses-grid-preview-volnocas");
-    if (coursesPreviewVolnocas) {
-      VTStore.krouzky.all().filter((item) => item.featured && (item.group || "volnocas") !== "vfresh").forEach((item) => {
-        coursesPreviewVolnocas.appendChild(el(courseCardHtml(item)));
-      });
-    }
-
-    // Contact form category dropdown — present only on the homepage, but
-    // independent of which (if any) courses grid exists on this page.
-    const categorySelect = document.getElementById("f-category");
-    if (categorySelect) {
-      const jineOption = [...categorySelect.options].find((o) => o.value === "Jiné");
-      VTStore.krouzky.all().forEach((item) => {
-        if (jineOption && [...categorySelect.options].some((o) => o.value === item.name)) return;
-        const opt = document.createElement("option");
-        opt.value = item.name;
-        opt.textContent = `${item.name} (${item.age || "Novinka"})`;
-        if (jineOption) categorySelect.insertBefore(opt, jineOption);
-        else categorySelect.appendChild(opt);
-      });
-
-      const kurzname = new URLSearchParams(window.location.search).get("kurzname");
-      if (kurzname) categorySelect.value = kurzname;
+    const full = document.getElementById("courses-grid");
+    if (full) {
+      full.innerHTML = all.filter((k) => !isVfresh(k)).map(courseCardHtml).join("") + vfreshCardHtml(vfreshItems, true);
     }
   }
 
-  // Data se načítají ze Supabase, vykreslujeme až po načtení.
+  // --------------------------------------------------------------- akce --
+  function eventRowHtml(item) {
+    const d = parseDate(item.date);
+    const dateHtml = d
+      ? `<div class="event-date"><span class="event-day">${d.day}</span><span class="event-mon">${MONTHS[d.month - 1] || ""}</span></div>`
+      : `<div class="event-date"><span class="event-date-text">${esc(item.date || "")}</span></div>`;
+    return `
+      <a class="event-row" href="${esc(akceHref(item))}" data-filter-type="${esc(item.category || "nabor")}" data-vt-id="${item.id}">
+        ${dateHtml}
+        <span class="tag-pill">${esc(item.tag || "Akce")}</span>
+        <div class="event-main">
+          <h3>${esc(item.title)}</h3>
+          ${item.description ? `<p>${esc(item.description)}</p>` : ""}
+          ${item.location ? `<p class="event-place">📍 ${esc(item.location)}</p>` : ""}
+        </div>
+        <span class="event-link">Detail akce →</span>
+      </a>`;
+  }
+
+  function renderEvents() {
+    const preview = document.getElementById("events-grid-preview");
+    if (preview) {
+      const items = sortEvents(VTStore.akce.all().filter((a) => a.featured));
+      preview.innerHTML = items.length ? items.map(eventRowHtml).join("") : '<p class="lead">Akce brzy doplníme.</p>';
+    }
+    const full = document.getElementById("events-grid");
+    if (full) {
+      full.innerHTML = sortEvents(VTStore.akce.all()).map(eventRowHtml).join("");
+      const active = document.querySelector(".filter-btn.active");
+      if (active && active.dataset.filter !== "all") {
+        full.querySelectorAll(".event-row").forEach((row) => row.classList.toggle("is-hidden", row.dataset.filterType !== active.dataset.filter));
+      }
+    }
+  }
+
+  // ------------------------------------------------------------- rozvrh --
+  function renderTimetable() {
+    const week = document.getElementById("tt-week");
+    if (!week) return;
+    const DAYS = { 1: "Pondělí", 2: "Úterý", 3: "Středa", 4: "Čtvrtek", 5: "Pátek", 6: "Sobota", 7: "Neděle" };
+    const slots = VTStore.rozvrh.all().filter((r) => r.published !== false);
+    const hasWeekend = slots.some((r) => r.weekday > 5);
+    const days = hasWeekend ? [1, 2, 3, 4, 5, 6, 7] : [1, 2, 3, 4, 5];
+    const today = new Date().getDay() || 7;
+    week.style.setProperty("--tt-cols", days.length);
+    week.innerHTML = days.map((d) => {
+      const list = slots.filter((r) => r.weekday === d);
+      const items = list.length
+        ? list.map((r) => {
+            const group = ["vfresh", "zumba", "volnocas"].includes(r.program) ? r.program : "volnocas";
+            return `<li class="tt-slot tt-${group}" data-group="${group}"><time>${esc(r.time)}</time><span class="tt-name">${esc(r.name)}</span>${r.note ? `<span class="tt-note">${esc(r.note)}</span>` : ""}</li>`;
+          }).join("")
+        : '<li class="tt-empty">Žádná lekce</li>';
+      return `<div class="tt-day${d === today ? " is-today" : ""}"><h3 class="tt-dayname">${DAYS[d]}</h3><ul class="tt-slots">${items}</ul></div>`;
+    }).join("");
+    const active = document.querySelector(".tt-filter.active");
+    if (active && active.dataset.ttFilter !== "all") {
+      week.querySelectorAll(".tt-slot").forEach((s) => s.classList.toggle("is-dim", s.dataset.group !== active.dataset.ttFilter));
+    }
+  }
+
+  // ---------------------------------------------------------- aktuality --
+  function renderNews() {
+    const list = document.getElementById("alerts-list");
+    if (!list) return;
+    const items = VTStore.aktuality.all();
+    const section = document.getElementById("aktuality");
+    list.innerHTML = items.length ? items.map((n) => {
+      // Bez nadpisu se jako nadpis použije první věta textu.
+      let title = n.title;
+      let text = n.text || "";
+      if (!title) {
+        const m = /^(.+?[.!?:])\s+(.*)$/s.exec(text);
+        title = m ? m[1].replace(/[:.]$/, "") : text;
+        text = m ? m[2] : "";
+      }
+      return `
+        <article class="news-item" data-vt-id="${n.id}">
+          ${n.date ? `<div class="news-date">${esc(n.date)}</div>` : ""}
+          <h3>${esc(title)}</h3>
+          ${text ? `<p>${esc(text)}</p>` : ""}
+          ${n.photo ? `<img src="${esc(n.photo)}" alt="" loading="lazy">` : ""}
+        </article>`;
+    }).join("") : '<p class="lead" style="margin-top:24px">Zatím žádné novinky.</p>';
+    if (section) section.hidden = false;
+  }
+
+  // ------------------------------------------------ formulář: kategorie --
+  function renderCategories() {
+    const select = document.getElementById("f-category");
+    if (!select) return;
+    const jine = [...select.options].find((o) => o.value === "Jiné");
+    VTStore.krouzky.all().forEach((item) => {
+      if ([...select.options].some((o) => o.value === item.name)) return;
+      const opt = document.createElement("option");
+      opt.value = item.name;
+      opt.textContent = `${item.name}${item.age ? ` (${item.age})` : ""}`;
+      if (jine) select.insertBefore(opt, jine); else select.appendChild(opt);
+    });
+    const params = new URLSearchParams(window.location.search);
+    // ?kurz=zumba (odkazy ze statických stránek kroužků) nebo ?kurzname=Název
+    const KURZ = { gymnastika: "Sportovní gymnastika", telovychova: "Sportuj s VIKTORKOU", zumba: "Zumba & Dance", "dramaticky-klub": "Dramatický klub", viktorianek: "Viktoriánek" };
+    const kurzname = params.get("kurzname") || KURZ[params.get("kurz")];
+    if (kurzname) {
+      if (![...select.options].some((o) => o.value === kurzname)) {
+        const opt = document.createElement("option");
+        opt.value = kurzname; opt.textContent = kurzname;
+        select.insertBefore(opt, jine || null);
+      }
+      select.value = kurzname;
+    }
+  }
+
+  function render() {
+    renderHero();
+    renderCourses();
+    renderEvents();
+    renderTimetable();
+    renderNews();
+    renderCategories();
+  }
+
   VTStore.ready.then(render);
 })();

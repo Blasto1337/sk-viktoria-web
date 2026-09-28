@@ -4,210 +4,164 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SK Viktoria Tábor | kroužky a sport pro děti i rodiče</title>
-<meta name="description" content="SK Viktoria Tábor: sportovní gymnastika, Sportuj s VIKTORKOU, dramatický klub, Viktoriánek pro rodiče s dětmi a Zumba &amp; Dance. Kroužky od 1,5 roku v Táboře a Plané nad Lužnicí, nová sezóna 2026/27.">
+<meta name="description" content="SK Viktoria Tábor, rodinný sportovní klub od roku 1990: Viktoriánek pro rodiče s dětmi, Sportuj s VIKTORKOU, sportovní gymnastika, dramatický klub a Zumba &amp; Dance. Kroužky od 1,5 roku v Táboře a Plané nad Lužnicí.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/family.css">
 </head>
 <body>
 
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="brand" href="#top">
-      <span class="brand-badge" aria-hidden="true">SK</span>
-      <span class="brand-name">VIKTORIA TÁBOR</span>
+    <a class="brand" href="index.html">
+      <span class="brand-mark" aria-hidden="true">V</span>
+      <span class="brand-text"><span class="brand-name">SK Viktoria</span><span class="brand-sub">Tábor · od 1990</span></span>
     </a>
-
-    <nav class="main-nav" id="main-nav">
+    <nav class="main-nav" id="main-nav" aria-label="Hlavní menu">
       <a href="krouzky.html">Kroužky</a>
       <a href="akce.html">Akce</a>
       <a href="#rozvrh">Rozvrh</a>
       <a href="gallery.html">Galerie</a>
       <a href="#aktuality">Aktuality</a>
       <a href="#kontakt">Kontakt</a>
-      <a href="tel:+420607825318" aria-label="Zavolat">📞 Zavolat</a>
-      <a href="mailto:lena.cimpova@seznam.cz" aria-label="Napsat e-mail">✉ E-mail</a>
-      <a class="btn btn-cta nav-cta" href="#kontakt">Přihláška <span aria-hidden="true">✦</span></a>
     </nav>
-
-    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Otevřít menu">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="header-right">
+      <a class="header-phone" href="tel:+420607825318">607 825 318</a>
+      <a class="btn btn-gold nav-cta" href="#kontakt">Přihláška</a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Otevřít menu"><span></span><span></span><span></span></button>
+    </div>
   </div>
 </header>
 
 <main id="top">
 
-  <section class="hero">
-    <div class="hero-shape hero-shape-circle" aria-hidden="true"></div>
-    <div class="hero-shape hero-shape-square" aria-hidden="true"></div>
-    <div class="hero-shape hero-shape-dot1" aria-hidden="true"></div>
-    <div class="hero-shape hero-shape-dot2" aria-hidden="true"></div>
-    <div class="hero-shape hero-shape-dot3" aria-hidden="true"></div>
-    <div class="hero-shape hero-shape-tri1" aria-hidden="true"></div>
-    <div class="hero-shape hero-shape-tri2" aria-hidden="true"></div>
-    <div class="wrap hero-inner">
-      <span class="hero-eyebrow">NOVÁ SEZÓNA 2026/27</span>
-      <h1>Hýbeme se<br><span>celý rok!</span></h1>
-      <p class="hero-lead">Kroužky pro děti od 1,5 roku i pro rodiče: gymnastika, pohybové hry, divadlo, cvičení s dětmi a Zumba. Přijďte na zkušební lekci zdarma, stačí tenisky a dobrá nálada.</p>
-      <a class="btn btn-hero" href="#kontakt">Chci na zkušební lekci</a>
+  <!-- Hero slider: snímky jsou kroužky a akce, které mají v adminu zaškrtnuté „Zobrazit v hero“. -->
+  <section class="hero" id="hero" aria-roledescription="carousel" aria-label="Kroužky a akce">
+    <div class="wrap hero-grid">
+      <div class="hero-text">
+        <div class="hero-slides" id="hero-slides" aria-live="polite"></div>
+        <div class="hero-controls" id="hero-controls" hidden>
+          <span class="hero-counter" id="hero-counter">01 <span>/ 01</span></span>
+          <div class="hero-dots" id="hero-dots"></div>
+          <div class="hero-arrows">
+            <button type="button" class="hero-arrow" id="hero-prev" aria-label="Předchozí">←</button>
+            <button type="button" class="hero-arrow hero-arrow-next" id="hero-next" aria-label="Další">→</button>
+          </div>
+        </div>
+      </div>
+      <div class="hero-media" id="hero-media"></div>
     </div>
   </section>
-
 
   <section class="about" id="o-nas">
     <div class="wrap about-grid">
-      <div class="about-photo">
-        <img src="assets/akce/sportuj-s-viktorkou.jpg" alt="Děti na kroužku Sportuj s VIKTORKOU" loading="lazy">
-      </div>
+      <h2>Rodinný sportovní klub, kde děti objevují <em class="accent">radost z pohybu</em>.</h2>
       <div class="about-text">
-        <h2>Kdo jsme</h2>
-        <p>Jsme SK Viktoria Tábor, rodinný sportovní klub s tradicí od roku 1990. Děti u nás objevují radost z pohybu, od prvních krůčků ve Viktoriánku přes pohybové hry a gymnastiku až po divadlo. Pro rodiče máme Zumbu s hlídáním dětí. Zkušení lektoři, přátelská parta a zázemí v Centru Univerzita Tábor.</p>
+        <p>Od prvních krůčků ve Viktoriánku přes pohybové hry a gymnastiku až po divadlo. Pro rodiče máme Zumbu s hlídáním dětí. Zkušení lektoři, přátelská parta a zázemí v Centru Univerzita Tábor.</p>
+        <div class="about-history">
+          <strong>Od roku 1990 vedeme táborské děti ke sportu a pohybu.</strong>
+          <span>Víc než tři desetiletí zkušeností, dnes v novém zázemí Centra Univerzita Tábor.</span>
+        </div>
       </div>
     </div>
   </section>
-  <section class="courses" id="volnocasove-aktivity">
+
+  <section class="section" id="krouzky" style="padding-top:0">
     <div class="wrap">
       <div class="section-head">
-        <h2>Kroužky</h2>
+        <div><span class="eyebrow">Kroužky 2026/27</span><h2>Pro každý věk</h2></div>
         <a class="link-more" href="krouzky.html">Všechny kroužky →</a>
       </div>
-      <div class="courses-grid" id="courses-grid-preview-volnocas"></div>
+      <div class="courses-grid" id="courses-grid-preview"></div>
     </div>
   </section>
-  <section class="courses" id="tanecni-kurzy">
+
+  <section class="section events-section" id="akce">
     <div class="wrap">
       <div class="section-head">
-        <h2>Taneční kurzy VFRESH DC</h2>
-        <a class="link-more" href="https://www.vfreshdc.cz/" data-vt-site-link="vfresh">Web VFRESH DC ↗</a>
-      </div>
-      <p class="detail-lead section-lead">Street dance pro děti i dospělé od 3 let. Taneční skupina VFRESH DC patří k SK Viktoria a má vlastní web s rozvrhem crew a přihláškami.</p>
-      <div class="courses-grid" id="courses-grid-preview-vfresh"></div>
-    </div>
-  </section>
-  <section class="events" id="akce">
-    <div class="wrap">
-      <div class="section-head">
-        <h2>Akce</h2>
+        <div><span class="eyebrow">Akce</span><h2>Nejbližší akce</h2></div>
         <a class="link-more" href="akce.html">Všechny akce →</a>
       </div>
-      <div class="events-grid" id="events-grid-preview"></div>
+      <div class="events-list" id="events-grid-preview"></div>
     </div>
   </section>
 
-  <section class="timetable" id="rozvrh">
+  <section class="section timetable" id="rozvrh">
     <div class="wrap">
-      <p class="kicker">Rozvrh 2026/27</p>
-      <h2>Kdy trénujeme</h2>
-      <div class="tt-filters" role="group" aria-label="Filtr rozvrhu">
-        <button type="button" class="tt-filter active" data-tt-filter="all">Vše</button>
-        <button type="button" class="tt-filter tt-vfresh" data-tt-filter="vfresh"><i aria-hidden="true"></i>VFRESH DC</button>
-        <button type="button" class="tt-filter tt-zumba" data-tt-filter="zumba"><i aria-hidden="true"></i>Zumba &amp; Dance</button>
-        <button type="button" class="tt-filter tt-volnocas" data-tt-filter="volnocas"><i aria-hidden="true"></i>Kroužky</button>
+      <div class="section-head">
+        <div><span class="eyebrow on-dark">Rozvrh 2026/27</span><h2>Kdy trénujeme</h2></div>
+        <div class="filters" role="group" aria-label="Filtr rozvrhu">
+          <button type="button" class="tt-filter active" data-tt-filter="all">Vše</button>
+          <button type="button" class="tt-filter" data-tt-filter="volnocas">Kroužky</button>
+          <button type="button" class="tt-filter" data-tt-filter="zumba">Zumba &amp; Dance</button>
+          <button type="button" class="tt-filter" data-tt-filter="vfresh">VFRESH DC</button>
+        </div>
       </div>
       <div class="tt-week" id="tt-week"></div>
-      <p class="tt-foot">Pokud není uvedeno jinak, trénujeme v Centru Univerzita Tábor, Vančurova 2904. Zkušební lekce zdarma celé září. <a href="#kontakt">Napište nám →</a></p>
+      <p class="tt-foot">Pokud není uvedeno jinak, trénujeme v Centru Univerzita Tábor, Vančurova 2904. <b>Zkušební lekce zdarma celé září.</b></p>
     </div>
   </section>
 
-  <section class="news-section" id="aktuality">
-    <div class="wrap">
-      <div class="section-head">
+  <section class="section" id="aktuality">
+    <div class="wrap news-members">
+      <div>
+        <span class="eyebrow">Novinky z klubu</span>
         <h2>Aktuality</h2>
+        <div class="news-list" id="alerts-list"></div>
       </div>
-      <div class="news-grid" id="alerts-list"></div>
+      <div class="members" id="benefity">
+        <span class="eyebrow">Pro členy Viktoria z.s.</span>
+        <h2>Vyplatí se být s námi</h2>
+        <p class="members-lead">Členství se vyplatí celé rodině.</p>
+        <div class="perks">
+          <div class="perk"><b>20 %</b><span>Sourozenecká sleva</span></div>
+          <div class="perk"><b>20 %</b><span>Sleva na druhý kurz</span></div>
+          <div class="perk"><b>20 %</b><span>Lekce Zumba &amp; Dance</span></div>
+          <div class="perk"><b>20 %</b><span>Masáže</span></div>
+          <div class="perk"><b>15 %</b><span>Příměstské pobyty a akce</span></div>
+          <div class="perk"><b>Sleva</b><span>Herna Safari a restaurace</span></div>
+        </div>
+        <p class="members-note">Od září lze čerpat příspěvek Jihočeského kraje „Pomáháme s kroužky pro jihočeské děti“.</p>
+      </div>
     </div>
   </section>
 
-  <section class="benefits" id="benefity">
-    <div class="wrap">
-      <p class="kicker">Pro členy</p>
-      <div class="section-head">
-        <h2>Vyplatí se být s námi</h2>
-      </div>
-      <p class="detail-lead" style="margin-top:0">Členství ve Viktoria z.s. se vyplatí celé rodině.</p>
-      <div class="benefit-groups">
-        <div class="benefit-group benefit-group-teal">
-          <h3>Členové Viktoria z.s.</h3>
-          <div class="benefit-chips">
-          <div class="benefit-chip">
-            <span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
-            <span class="benefit-value">20 %</span>
-            <span class="benefit-label">Sourozenecká sleva</span>
-          </div>
-          <div class="benefit-chip">
-            <span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m6.08 9.5-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.59"/><path d="m6.08 14.5-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.59"/></svg></span>
-            <span class="benefit-value">20 %</span>
-            <span class="benefit-label">Sleva na druhý kurz</span>
-          </div>
-          <div class="benefit-chip">
-            <span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>
-            <span class="benefit-value">20 %</span>
-            <span class="benefit-label">Lekce Zumba &amp; Dance</span>
-          </div>
-          <div class="benefit-chip">
-            <span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span>
-            <span class="benefit-value">20 %</span>
-            <span class="benefit-label">Masáže</span>
-          </div>
-          <div class="benefit-chip">
-            <span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 21 14 3"/><path d="M20.5 21 10 3"/><path d="M15.5 21 12 15l-3.5 6"/><path d="M2 21h20"/></svg></span>
-            <span class="benefit-value">15 %</span>
-            <span class="benefit-label">Příměstské pobyty a akce</span>
-          </div>
-          <div class="benefit-chip">
-            <span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8"/><path d="M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8"/></svg></span>
-            <span class="benefit-value">Sleva</span>
-            <span class="benefit-label">Herna Safari a restaurace</span>
-          </div>
-          </div>
-        </div>
-      </div>
-      <p class="benefit-ribbon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>Od září navíc lze čerpat příspěvek Jihočeského kraje „Pomáháme s kroužky pro jihočeské děti".</p>
-    </div>
-  </section>
-  <section class="contact" id="kontakt">
-    <div class="wrap">
-      <p class="kicker">Máte dotaz?</p>
-      <h2>Ozvěte se nám</h2>
-      <div class="contact-grid">
-      <div class="contact-info">
-        <div class="contact-card">
-          <p>Máte dotaz ke kroužku, přihlášce nebo zkušebnímu tréninku? Ozveme se co nejdřív.</p>
-          <ul class="contact-details">
-            <li><span class="contact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg></span><a href="tel:+420607825318">+420 607 825 318</a></li>
-            <li><span class="contact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span><a href="mailto:lena.cimpova@seznam.cz">lena.cimpova@seznam.cz</a></li>
-            <li><span class="contact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span><span>SK Viktoria z.s., Centrum Univerzita Tábor, Vančurova 2904, Tábor</span></li>
-          </ul>
-        </div>
+  <section class="section contact" id="kontakt" style="padding-top:0">
+    <div class="wrap contact-grid">
+      <div>
+        <span class="eyebrow">Máte dotaz?</span>
+        <h2>Ozvěte se nám</h2>
+        <p class="lead">Ke kroužku, přihlášce nebo zkušební lekci. Ozveme se co nejdřív, většinou ještě ten den.</p>
+        <ul class="contact-details">
+          <li><span class="contact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg></span><a href="tel:+420607825318">+420 607 825 318</a></li>
+          <li><span class="contact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span><a href="mailto:lena.cimpova@seznam.cz">lena.cimpova@seznam.cz</a></li>
+          <li><span class="contact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span><span>Centrum Univerzita Tábor, Vančurova 2904</span></li>
+        </ul>
       </div>
 
       <form class="contact-form" id="contact-form" novalidate>
-        <label for="f-name">Jméno</label>
-        <input id="f-name" name="name" type="text" placeholder="Jméno a příjmení" maxlength="150" required>
-
-        <label for="f-category">Kategorie dotazu</label>
-        <select id="f-category" name="category">
-          <option value="Jiné">Jiné</option>
-        </select>
-
-        <label for="f-email">E-mailová adresa</label>
-        <input id="f-email" name="email" type="email" placeholder="vas@email.cz" required>
-
-        <label for="f-message">Vaše zpráva</label>
-        <textarea id="f-message" name="message" rows="4" placeholder="Napište nám pár slov…" maxlength="3000" required></textarea>
-
+        <div class="form-row">
+          <div class="field"><label for="f-name">Jméno</label><input id="f-name" name="name" type="text" placeholder="Jméno a příjmení" maxlength="150" required></div>
+          <div class="field"><label for="f-email">E-mail</label><input id="f-email" name="email" type="email" placeholder="vas@email.cz" required></div>
+        </div>
+        <div class="field">
+          <label for="f-category">Kategorie dotazu</label>
+          <select id="f-category" name="category">
+            <option value="Jiné">Jiné</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-message">Vaše zpráva</label>
+          <textarea id="f-message" name="message" rows="5" placeholder="Věk dítěte, o který kroužek máte zájem, dotaz…" maxlength="3000" required></textarea>
+        </div>
         <label class="form-consent" for="f-consent">
           <input id="f-consent" name="consent" type="checkbox" required>
           <span>Souhlasím se zpracováním osobních údajů (jméno, e-mail, zpráva) za účelem vyřízení dotazu.</span>
         </label>
-
-        <button class="btn btn-submit" type="submit">Odeslat</button>
+        <button class="btn btn-submit" type="submit">Odeslat zprávu</button>
         <p class="form-note" id="form-note" role="status" aria-live="polite"></p>
       </form>
-      </div>
     </div>
   </section>
 
@@ -215,9 +169,8 @@
 
 <footer class="site-footer">
   <div class="wrap footer-inner">
-    <span>SK Viktoria z.s. · Centrum Univerzita Tábor, Vančurova 2904 · +420 607 825 318 · lena.cimpova@seznam.cz</span>
+    <span><span class="footer-brand">SK Viktoria z.s.</span> · Vančurova 2904, Tábor · <a href="tel:+420607825318">+420 607 825 318</a></span>
     <span>© 2026 SK Viktoria Tábor</span>
-    <a href="admin.html" style="opacity:.55">Administrace</a>
   </div>
 </footer>
 

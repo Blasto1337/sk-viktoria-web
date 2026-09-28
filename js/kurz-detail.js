@@ -35,8 +35,15 @@
     document.getElementById("k-location").textContent = item.location || "Bude upřesněno.";
 
     const photoWrap = document.getElementById("k-photo-wrap");
-    if (photoWrap && item.photo) {
-      photoWrap.innerHTML = `<img class="detail-photo" src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.name)}">`;
+    if (photoWrap) {
+      photoWrap.innerHTML = item.photo
+        ? `<img class="detail-photo" src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.name)}">`
+        : `<div class="ph detail-photo"><span>foto: ${escapeHtml(item.photoHint || item.name)}</span></div>`;
+    }
+    const tags = document.querySelector("#k-hero .course-hero-tags");
+    if (tags) {
+      if (item.when) tags.insertAdjacentHTML("beforeend", `<span class="age-badge">${escapeHtml(item.when)}</span>`);
+      if (item.location) tags.insertAdjacentHTML("beforeend", `<span class="age-badge">📍 ${escapeHtml(item.location)}</span>`);
     }
 
     const scheduleEl = document.getElementById("k-schedule");

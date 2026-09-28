@@ -13,6 +13,12 @@
     }[c]));
   }
 
+  // Admin běží v podsložce /admin/, relativní cesty webu (assets/…, kurz-….html) potřebují ../
+  function pub(url) {
+    const u = String(url || "");
+    return !u || /^(?:[a-z]+:|\/|#|\.\.\/)/i.test(u) ? u : "../" + u;
+  }
+
   function fmtDate(iso) {
     try {
       return new Date(iso).toLocaleString("cs-CZ", { day: "numeric", month: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" });
@@ -69,7 +75,7 @@
       if (current && typeof current !== "string") URL.revokeObjectURL(current.preview);
       current = value || null;
       if (current) {
-        preview.src = typeof current === "string" ? current : current.preview;
+        preview.src = typeof current === "string" ? pub(current) : current.preview;
         row.hidden = false;
       } else {
         preview.src = "";
@@ -238,6 +244,7 @@
     if (!item) return;
     editingAktualitaId = id;
     aktualitaForm.date.value = item.date || "";
+    aktualitaForm.title.value = item.title || "";
     aktualitaForm.text.value = item.text || "";
     aktualitaPhoto.set(item.photo || null);
     document.getElementById("form-aktualita-title").textContent = `Upravit aktualitu`;
@@ -255,9 +262,10 @@
     list.innerHTML = items.map((a) => `
       <div class="admin-card" data-id="${a.id}">
         <div class="admin-card-main">
-          ${a.photo ? `<img class="admin-card-thumb" src="${escapeHtml(a.photo)}" alt="">` : ""}
+          ${a.photo ? `<img class="admin-card-thumb" src="${escapeHtml(pub(a.photo))}" alt="">` : ""}
           <div class="admin-card-main-text">
-            <div class="admin-card-title">${escapeHtml(a.date)} ${a.seed ? '<span class="seed-badge">základní</span>' : ""}</div>
+            <div class="admin-card-title">${escapeHtml(a.title || "(bez nadpisu)")} ${a.seed ? '<span class="seed-badge">základní</span>' : ""}</div>
+            <div class="admin-card-meta">${escapeHtml(a.date || "")}</div>
             <p class="admin-card-message">${escapeHtml(a.text)}</p>
           </div>
         </div>
@@ -277,7 +285,7 @@
     let finalPhoto = null;
     const ok = await trySave(async () => {
       finalPhoto = await aktualitaPhoto.commit("aktuality");
-      const patch = { date: f.date.value.trim(), text: f.text.value.trim(), photo: finalPhoto };
+      const patch = { date: f.date.value.trim(), title: f.title.value.trim() || null, text: f.text.value.trim(), photo: finalPhoto };
       if (editingAktualitaId) {
         await VTStore.aktuality.update(editingAktualitaId, patch);
       } else {
@@ -315,6 +323,26 @@
     }
   });
 
+  // Pole pro hero slider (kroužky i akce mají stejná: hero, heroLead, heroOrder).
+  function fillHero(form, item) {
+    form.hero.checked = !!item.hero;
+    form.heroLead.value = item.heroLead || "";
+    form.heroOrder.value = item.heroOrder ?? 100;
+    form.photoHint.value = item.photoHint || "";
+  }
+  function readHero(form) {
+    const order = parseInt(form.heroOrder.value, 10);
+    return {
+      hero: form.hero.checked,
+      heroLead: form.heroLead.value.trim() || null,
+      heroOrder: Number.isFinite(order) ? order : 100,
+      photoHint: form.photoHint.value.trim() || null,
+    };
+  }
+  function heroMeta(item) {
+    return item.hero ? ` · v hero (pořadí ${item.heroOrder ?? 100})` : "";
+  }
+
   // ----------------------------------------------------------------- akce --
   const akceForm = document.getElementById("form-akce");
   const akcePhoto = setupPhotoField(akceForm, "akce-photo-row", "akce-photo-preview");
@@ -343,6 +371,8 @@
     akceForm.description.value = item.description || "";
     akceForm.bullets.value = Array.isArray(item.bullets) ? item.bullets.join("\n") : "";
     akceForm.featured.checked = !!item.featured;
+    akceForm.age.value = item.age || "";
+    fillHero(akceForm, item);
     akcePhoto.set(item.photo || null);
     document.getElementById("form-akce-title").textContent = "Upravit akci";
     akceForm.querySelector(".btn-submit").textContent = "Uložit změny";
@@ -359,15 +389,15 @@
     list.innerHTML = items.map((a) => `
       <div class="admin-card" data-id="${a.id}">
         <div class="admin-card-main">
-          ${a.photo ? `<img class="admin-card-thumb" src="${escapeHtml(a.photo)}" alt="">` : ""}
+          ${a.photo ? `<img class="admin-card-thumb" src="${escapeHtml(pub(a.photo))}" alt="">` : ""}
           <div class="admin-card-main-text">
             <div class="admin-card-title"><span class="tag tag-${a.color}">${escapeHtml(a.tag)}</span> ${escapeHtml(a.title)} ${a.seed ? '<span class="seed-badge">základní</span>' : ""}</div>
-            <div class="admin-card-meta">${escapeHtml(a.date)}${a.location ? " · " + escapeHtml(a.location) : ""}${a.featured ? " · na hlavní straně" : ""}</div>
+            <div class="admin-card-meta">${escapeHtml(a.date)}${a.location ? " · " + escapeHtml(a.location) : ""}${a.featured ? " · na hlavní straně" : ""}${heroMeta(a)}</div>
             <p class="admin-card-message">${escapeHtml(a.description || "")}</p>
           </div>
         </div>
         <div class="admin-card-actions">
-          <a class="btn-mini" href="${a.detailHref || `akce-detail.html?id=${encodeURIComponent(a.id)}`}" target="_blank" rel="noopener">👁 Náhled</a>
+          <a class="btn-mini" href="${escapeHtml(pub(a.detailHref || `akce-detail.html?id=${encodeURIComponent(a.id)}`))}" target="_blank" rel="noopener">👁 Náhled</a>
           <button class="btn-mini" data-action="edit-akce" data-id="${a.id}">✎ Upravit</button>
           <button class="btn-mini btn-mini-danger" data-action="delete-akce" data-id="${a.id}">🗑 Smazat</button>
         </div>
@@ -394,6 +424,8 @@
         description: f.description.value.trim(),
         bullets,
         featured: f.featured.checked,
+        age: f.age.value.trim() || null,
+        ...readHero(f),
         photo: finalPhoto,
       };
       if (editingAkceId) {
@@ -479,6 +511,8 @@
       ? item.schedule.map((row) => `${row.label || ""} | ${row.time || ""}`).join("\n")
       : "";
     krouzekForm.featured.checked = !!item.featured;
+    krouzekForm.when.value = item.when || "";
+    fillHero(krouzekForm, item);
     krouzekPhoto.set(item.photo || null);
     document.getElementById("form-krouzek-title").textContent = "Upravit kroužek";
     krouzekForm.querySelector(".btn-submit").textContent = "Uložit změny";
@@ -495,15 +529,15 @@
     list.innerHTML = items.map((k) => `
       <div class="admin-card" data-id="${k.id}">
         <div class="admin-card-main">
-          ${k.photo ? `<img class="admin-card-thumb" src="${escapeHtml(k.photo)}" alt="">` : `<span class="admin-card-thumb icon-preview" style="display:flex;align-items:center;justify-content:center;background:#f4f1e9">${window.vtIconSvg ? window.vtIconSvg(k.icon) : ""}</span>`}
+          ${k.photo ? `<img class="admin-card-thumb" src="${escapeHtml(pub(k.photo))}" alt="">` : `<span class="admin-card-thumb icon-preview" style="display:flex;align-items:center;justify-content:center;background:#f4f1e9">${window.vtIconSvg ? window.vtIconSvg(k.icon) : ""}</span>`}
           <div class="admin-card-main-text">
             <div class="admin-card-title">${escapeHtml(k.name)} <span class="tag tag-teal">${escapeHtml(k.age || "Novinka")}</span> ${k.seed ? '<span class="seed-badge">základní</span>' : ""}</div>
-            <div class="admin-card-meta">${escapeHtml(k.location || "")}${k.group === "vfresh" ? " · blok VFRESH DC" : " · blok Volnočasové aktivity"}${k.featured ? " · na hlavní straně" : ""}</div>
+            <div class="admin-card-meta">${escapeHtml(k.location || "")}${k.when ? " · " + escapeHtml(k.when) : ""}${k.group === "vfresh" ? " · VFRESH DC" : ""}${k.featured ? " · na hlavní straně" : ""}${heroMeta(k)}</div>
             <p class="admin-card-message">${escapeHtml(k.description || "")}</p>
           </div>
         </div>
         <div class="admin-card-actions">
-          <a class="btn-mini" href="${k.detailHref || `kurz-detail.html?id=${encodeURIComponent(k.id)}`}" target="_blank" rel="noopener">👁 Náhled</a>
+          <a class="btn-mini" href="${escapeHtml(pub(VTStore.hrefFor(k, `kurz-detail.html?id=${encodeURIComponent(k.id)}`)))}" target="_blank" rel="noopener">👁 Náhled</a>
           <button class="btn-mini" data-action="edit-krouzek" data-id="${k.id}">✎ Upravit</button>
           <button class="btn-mini btn-mini-danger" data-action="delete-krouzek" data-id="${k.id}">🗑 Smazat</button>
         </div>
@@ -532,6 +566,8 @@
         description: f.description.value.trim(),
         schedule,
         featured: f.featured.checked,
+        when: f.when.value.trim() || null,
+        ...readHero(f),
         photo: finalPhoto,
       };
       if (editingKrouzekId) {
@@ -577,7 +613,7 @@
   const rozvrhList = document.getElementById("rozvrh-list");
   let editingRozvrhId = null;
   const DAY_NAMES = { 1: "Pondělí", 2: "Úterý", 3: "Středa", 4: "Čtvrtek", 5: "Pátek", 6: "Sobota", 7: "Neděle" };
-  const PROGRAM_NAMES = { vfresh: "VFRESH DC", zumba: "Zumba & Dance", volnocas: "Volnočasové" };
+  const PROGRAM_NAMES = { vfresh: "VFRESH DC", zumba: "Zumba & Dance", volnocas: "Kroužky" };
   const PROGRAM_TAGS = { vfresh: "tag-purple", zumba: "tag-red", volnocas: "tag-teal" };
 
   // "8:15" -> "08:15" (pole <input type="time"> chce dvě číslice)
@@ -699,7 +735,7 @@
     empty.hidden = items.length > 0;
     galerieList.innerHTML = items.map((g, i) => `
       <div class="gallery-admin-card${g.published ? "" : " is-unpublished"}" data-id="${g.id}">
-        <img src="${escapeHtml(g.photo)}" alt="${escapeHtml(g.caption || "")}" loading="lazy">
+        <img src="${escapeHtml(pub(g.photo))}" alt="${escapeHtml(g.caption || "")}" loading="lazy">
         <div class="gallery-admin-body">
           <input class="gallery-caption" type="text" value="${escapeHtml(g.caption || "")}" placeholder="Popisek fotky" maxlength="200" aria-label="Popisek fotky" data-id="${g.id}">
           ${g.seed ? '<span class="seed-badge">základní</span>' : ""}

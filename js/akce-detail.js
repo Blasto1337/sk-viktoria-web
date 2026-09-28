@@ -29,7 +29,7 @@
 
     const tagEl = document.getElementById("a-tag");
     tagEl.textContent = item.tag || "AKCE";
-    tagEl.className = `tag tag-${escapeHtml(item.color || "teal")}`;
+    tagEl.className = "tag";
     document.getElementById("a-root").className = `detail-accent-${escapeHtml(item.color || "teal")}`;
 
     document.getElementById("a-title").textContent = item.title;
@@ -37,8 +37,10 @@
     document.getElementById("a-location").textContent = item.location || "Bude upřesněno";
 
     const photoWrap = document.getElementById("a-photo-wrap");
-    if (photoWrap && item.photo) {
-      photoWrap.innerHTML = `<img class="detail-photo" src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.title)}">`;
+    if (photoWrap) {
+      photoWrap.innerHTML = item.photo
+        ? `<img class="detail-photo" src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.title)}">`
+        : `<div class="ph detail-photo"><span>foto: ${escapeHtml(item.photoHint || item.title)}</span></div>`;
     }
 
     const listEl = document.getElementById("a-list");

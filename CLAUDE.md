@@ -4,7 +4,7 @@ Redesign webu sportovního klubu pro děti v Táboře. Klient: SK Viktoria Tábo
 Jádrem klubu je taneční složka — **VFRESH DC / street dance** — a ta má být na webu dominantní.
 Repo: https://github.com/Blasto1337/sk-viktoria-web
 
-> **Rozdělení na dva weby (2026-09-28):** tohle repo je hlavní web SK Viktoria (rodinný světlý vzhled, `css/family.css` nad `css/style.css`; gymnastika, Sportuj s VIKTORKOU, dramaťák, Viktoriánek, Zumba). Taneční VFRESH DC má vlastní repo ve složce `VFRESH CZ/` (tmavá verze Night Street, `<html data-site="vfresh">`). Obě sdílí Supabase i admin (admin zůstává zde); každý řádek v DB má sloupec `site` (viktoria / vfresh / both), `js/store.js` podle webu filtruje `site=in.(<web>,both)`, admin načítá vše. Text níže o dominanci VFRESH DC se týká už jen webu VFRESH. Hlavní web je rozcestník celé nabídky: kurzy a rozvrh VFRESH DC mají v DB `site = both`, takže se ukazují i tady (sekce „Taneční kurzy VFRESH DC“, filtr VFRESH v rozvrhu), ale karty vedou na web VFRESH přes `VTStore.hrefFor()`. Adresy obou webů jsou v `SITE_URLS` v `js/store.js` (vfreshdc.cz zatím předpoklad, doplnit po koupi domén). Web VFRESH je od 2026-09-28 one-page podle návrhu „Noční street“ (vlastní `css/vfresh.css` a `js/vfresh.js`), karty VFRESH z hlavního webu vedou na jeho `#rozvrh`. Sdílené soubory `js/store.js` a `js/seed.js` držet v obou repech shodné.
+> **Rozdělení na dva weby (2026-09-28):** tohle repo je hlavní web SK Viktoria (vizuál 1a fialová & zlatá, viz Design; gymnastika, Sportuj s VIKTORKOU, dramaťák, Viktoriánek, Zumba). Taneční VFRESH DC má vlastní repo ve složce `VFRESH CZ/` (tmavá verze Night Street, `<html data-site="vfresh">`). Obě sdílí Supabase i admin (admin zůstává zde); každý řádek v DB má sloupec `site` (viktoria / vfresh / both), `js/store.js` podle webu filtruje `site=in.(<web>,both)`, admin načítá vše. Text níže o dominanci VFRESH DC se týká už jen webu VFRESH. Hlavní web je rozcestník celé nabídky: kurzy a rozvrh VFRESH DC mají v DB `site = both`, takže se ukazují i tady (karta VFRESH DC mezi kroužky, filtr VFRESH v rozvrhu), ale karty vedou na web VFRESH přes `VTStore.hrefFor()`. Adresy obou webů jsou v `SITE_URLS` v `js/store.js` (vfreshdc.cz zatím předpoklad, doplnit po koupi domén). Web VFRESH je od 2026-09-28 one-page podle návrhu „Noční street“ (vlastní `css/vfresh.css` a `js/vfresh.js`), karty VFRESH z hlavního webu vedou na jeho `#rozvrh`. Sdílené soubory `js/store.js` a `js/seed.js` držet v obou repech shodné.
 
 ## Stack
 
@@ -23,7 +23,7 @@ akce.html               přehled akcí (filtry)
 akce-*.html             detail akcí (statické)
 akce-detail.html        detail akce přidané přes admin (?id=…)
 gallery.html            galerie (fotky z databáze, lightbox)
-admin.html              administrace (přihlášení přes Supabase Auth; aktuality / akce / kroužky / rozvrh / galerie / přihlášky)
+admin/index.html        administrace (URL /admin/) (přihlášení přes Supabase Auth; aktuality / akce / kroužky / rozvrh / galerie / přihlášky)
 css/style.css           veškeré styly veřejného webu, design tokeny v :root
 css/admin.css           styly adminu
 js/store.js             VTStore — datová vrstva nad Supabase (REST + Auth + Storage, bez knihoven)
@@ -44,21 +44,26 @@ podklady/               originální podklady od klientky (letáky, rozvrh, PDF,
   Veřejnost vidí jen publikovaný obsah a smí jen odeslat formulář (RLS). Nový správce: uživatel v Supabase Auth + řádek v `vik_admins`.
   Když server není dostupný, veřejné stránky se vykreslí z poslední úspěšné kopie v localStorage, případně z `js/seed.js` (záložní obsah, `SEED_VERSION` se už nepoužívá).
   Zbytek webu mluví jen s `VTStore`. Publishable klíč v `store.js` je určený do prohlížeče, data chrání RLS.
-- `render-public.js` pouze *přidává* to, co admin vložil navíc — statické karty nemaže ani nepřepisuje.
+- `render-public.js` vykresluje hero slider, karty kroužků, řádky akcí, rozvrh, aktuality a kategorie formuláře z VTStore.
 - Všechny JS soubory jsou IIFE se `"use strict"`, bez modulů, bez závislostí.
 - Pořadí skriptů na stránce: `seed.js` → `store.js` → `script.js` → `render-public.js` (+ stránkové skripty). Po `VTStore.ready` se teprve vykresluje.
 
-## Design
+## Design (redesign 1a, 2026-09-28)
 
-- Design tokeny jsou CSS proměnné v `css/style.css` `:root` (`--navy`, `--gold`, `--purple`, `--purple-deep`, `--stone`, `--cream`…). Barvy měň tam, ne inline.
-- **Dvě fialové:** `--purple:#7a5af8` (světlejší) je vyhrazená jen pro hero sekci na homepage (`.hero`, `.hero::before` — přes fotku tanečníků, opacity .74). `--purple-deep:#5946b2` (tmavší, zadaná klientkou 2026-09-10) je základní fialová pro zbytek webu — pozadí `body`, `.main-nav` hover/active, `.tag-purple`, `.course-hero` (detail kroužku/akce, mimo homepage hero).
-- Aktuální směr (redesign 2026-09, viz git log): purpurové pozadí (`--purple-deep`), černý nav/footer/marquee, Anton nadpisy s letter-spacingem.
-- **Tmavé karty (2026-09-22):** karty kroužků/akcí/benefitů/detailních boxů (`.course-card`, `.event-card`, `.benefit-chip`, `.detail-box`, `.event-detail-card`) mají tmavé poloprůhledné pozadí (`--card-dark`/`--card-dark-strong`), zaoblené rohy (`border-radius:14px`) a barevný akcentní pruh přes CSS proměnnou `--accent` (vlevo u kroužků/detail-boxů, nahoře u akcí). Na kartách z databáze (homepage, přehledy) se `--accent` odvozuje z `item.color`; na detailních stránkách (`kurz-*.html`/`akce-*.html`) ho nastavuje modifikátor `.detail-accent-{barva}` na `<main>` (u DB řízených `kurz-detail.html`/`akce-detail.html` ho nastavuje JS podle `item.color`). Nahrazuje dřívější zlaté karty s navy hard-shadow (`4px 4px 0 var(--navy)`, ostré rohy) i na detailních stránkách, které dřív zůstávaly v starém stylu. Benefity mají vlastní „stat chip" karty se stejným tmavým stylem a emoji jako ikonkami. Zlatá (`--gold`) zůstává jen jako akcentová barva (tlačítka jako `.btn-hero`, tagy, kicker popisky, dělicí čára, „dnes" badge v rozvrhu, hero nadpis `.course-hero h1`), ne jako plocha karty.
-- Karty kroužků/akcí/aktualit/detailů mají držet jednotný vzhled — při přidávání nových prvků použít stejný přístup (tmavá karta + barevný accent).
-- Sekce Kontakt (`#kontakt`) má vlastní kontrastní tmavě navy pozadí (`--night:#161230`), stejně jako sekce Rozvrh, místo aby seděla přímo na fialovém pozadí stránky.
-- Sekce „V naší činnosti nás podporují" (loga partnerů) byla z webu odstraněna (2026-09-22), loga nebyla klientkou potvrzená.
-- Hero komunikuje "VFRESH STREET DANCE", cílová skupina 10–15 let.
-- Homepage má mezi hero a kroužky sekci „Kdo jsme" (`#o-nas`, `.about`) — fotka + krátký text (≤400 znaků) o SK Viktoria Tábor & VFRESH DC. Foto `assets/hero/dancers-hero.jpg` (původní hero foto, teď nepoužité jinde). Zdroj textu: e‑mail klientky "Fwd: Re: Prvni nastrel webu" (2026-09-06, v repu jen lokálně, 30 MB s přílohami — nekomitovat, obsah už je vytažený do `podklady/`).
+- Podklad: `design_handoff_viktoria_1a/README.md` (+ referenční HTML, varianta **1a** fialová & zlatá). Publikum hlavně maminky: na kartě vždy věk → kdy → kde → jedno CTA.
+- Veškeré styly veřejného webu jsou v `css/style.css`, tokeny v `:root` (`--purple-800` hlavní fialová, `--gold-500` CTA/akcenty na fialové, `--gold-700` akcenty a malý text na krémové, `--cream` pozadí, `--sand` sekce akcí). `css/family.css` a styly Oswald/Nunito jsou pryč.
+- **Písmo: Archivo** (stejná rodina jako web VFRESH DC, propojení obou projektů). Nadpisy Archivo zúžené (`font-stretch:80%`) a tučné 800, kurzíva pro zvýrazněná slova; text Archivo v normální šířce. Načítá se z Google Fonts s osou `wdth`.
+- Homepage: hero slider → Kdo jsme (silné prohlášení o historii od 1990, bez čísel) → Kroužky (karty + fialová karta VFRESH DC s odkazem na web VFRESH) → Nejbližší akce (řádky s velkým datem) → Rozvrh (fialový pás, filtr Vše/Kroužky/Zumba/VFRESH) → Aktuality + zlatý panel Členství → Kontakt → patička.
+- **Hero slider** (`js/render-public.js`): snímky = kroužky a akce se zaškrtnutým „Zobrazit v hero“ v adminu, řazené podle „Pořadí ve slideru“. Typ: kroužek → „Kroužek“, akce s kategorií `nabor` → „Nábor“, jinak „Akce“. Autoplay 6,5 s, pauza při najetí/fokusu, respektuje `prefers-reduced-motion`.
+- **Fotky:** kde fotka chybí, zobrazí se pruhovaný placeholder s popisem, jaká fotka se hodí (pole „Popis fotky“ = `photo_hint`). Klientka fotky dodá, nahrají se v adminu.
+- **Akce se neskrývají**, ani proběhlé: řazení nadcházející vzestupně, pak proběhlé od nejnovější. Mazání starých akcí je na adminovi. Nápady do budoucna jsou v `NAPADY.md`.
+- Podstránky (kroužky, akce, galerie, detaily) mají fialový pás s eyebrow a velkým nadpisem, dál stejné karty/řádky jako homepage.
+- **Admin je na `/admin/`** (`admin/index.html`, styly `css/admin.css` samostatně ve stejném vizuálu). Z webu na něj nevede žádný odkaz.
+
+### Databáze (sloupce přidané pro 1a)
+- `vik_courses`: `when_label` (kdy, krátce), `photo_hint`, `hero`, `hero_lead`, `hero_order`.
+- `vik_events`: `age_label` (pro koho), `photo_hint`, `hero`, `hero_lead`, `hero_order`.
+- `vik_news.title` se nově používá (nadpis aktuality; bez něj se vezme první věta textu).
 
 ## Zadání klienta (aktualizace 2026-09-07)
 

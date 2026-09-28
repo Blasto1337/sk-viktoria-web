@@ -13,7 +13,7 @@
 
       const filter = btn.dataset.filter;
       // Karty se doplňují po načtení dat (render-public.js), proto je hledáme až při kliknutí.
-      grid.querySelectorAll(".event-card").forEach((item) => {
+      grid.querySelectorAll(".event-row").forEach((item) => {
         const show = filter === "all" || item.dataset.filterType === filter;
         item.classList.toggle("is-hidden", !show);
       });

@@ -65,13 +65,13 @@
 
       if (!name || !email || !message) {
         note.textContent = "Vyplňte prosím jméno, e-mail a zprávu.";
-        note.style.color = "#e8483d";
+        note.style.color = "#b3261e";
         return;
       }
 
       if (!consent) {
         note.textContent = "Pro odeslání potvrďte prosím souhlas se zpracováním osobních údajů.";
-        note.style.color = "#e8483d";
+        note.style.color = "#b3261e";
         return;
       }
 
@@ -98,7 +98,7 @@
       note.textContent = saved
         ? "Přihláška uložena a otevírá se e-mailový klient s vyplněnou zprávou…"
         : "Přihlášku se nepodařilo uložit, ale otevírá se e-mailový klient s vyplněnou zprávou…";
-      note.style.color = "#ffcf5c";
+      note.style.color = "#2a1646";
       form.reset();
       if (submitBtn) submitBtn.disabled = false;
 
