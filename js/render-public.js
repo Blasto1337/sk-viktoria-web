@@ -314,19 +314,51 @@
       opt.textContent = `${item.name}${item.age ? ` (${item.age})` : ""}`;
       if (jine) select.insertBefore(opt, jine); else select.appendChild(opt);
     });
-    const params = new URLSearchParams(window.location.search);
-    // ?kurz=zumba (odkazy ze statických stránek kroužků) nebo ?kurzname=Název
-    const KURZ = { gymnastika: "Sportovní gymnastika", telovychova: "Sportuj s VIKTORKOU", zumba: "Zumba & Dance", "dramaticky-klub": "Dramatický klub", viktorianek: "Viktoriánek" };
-    const kurzname = params.get("kurzname") || KURZ[params.get("kurz")];
-    if (kurzname) {
-      if (![...select.options].some((o) => o.value === kurzname)) {
-        const opt = document.createElement("option");
-        opt.value = kurzname; opt.textContent = kurzname;
-        select.insertBefore(opt, jine || null);
-      }
-      select.value = kurzname;
-    }
+    selectCategory(categoryFromUrl(new URL(window.location.href)));
   }
+
+  // ?kurz=zumba (odkazy ze statických stránek kroužků) nebo ?kurzname=Název
+  const KURZ = { gymnastika: "Sportovní gymnastika", telovychova: "Sportuj s VIKTORKOU", zumba: "Zumba & Dance", "dramaticky-klub": "Dramatický klub", viktorianek: "Viktoriánek" };
+  function categoryFromUrl(url) {
+    return url.searchParams.get("kurzname") || KURZ[url.searchParams.get("kurz")] || null;
+  }
+  function selectCategory(name) {
+    const select = document.getElementById("f-category");
+    if (!select || !name) return;
+    if (![...select.options].some((o) => o.value === name)) {
+      const jine = [...select.options].find((o) => o.value === "Jiné");
+      const opt = document.createElement("option");
+      opt.value = name; opt.textContent = name;
+      select.insertBefore(opt, jine || null);
+    }
+    select.value = name;
+  }
+
+  // ------------------------------------- odkazy na kontaktní formulář --
+  // Na stránce s formulářem (homepage) se odkaz „…#kontakt“ nenačítá znovu:
+  // jen předvyplní kroužek a plynule sjede k formuláři. Dřív odkaz s ?kurzname
+  // stránku znovu načetl a skok na #kontakt proběhl dřív, než se vykreslil
+  // obsah z databáze, takže stránka skončila jinde.
+  function scrollToContact(smooth) {
+    const target = document.getElementById("kontakt");
+    if (!target) return;
+    target.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
+    const name = document.getElementById("f-name");
+    if (name && smooth) setTimeout(() => name.focus({ preventScroll: true }), 600);
+  }
+
+  document.addEventListener("click", (e) => {
+    const link = e.target.closest("a[href]");
+    if (!link || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (!document.getElementById("contact-form")) return;
+    const url = new URL(link.getAttribute("href"), window.location.href);
+    const samePage = url.origin === window.location.origin && url.pathname.replace(/index\.html$/, "") === window.location.pathname.replace(/index\.html$/, "");
+    if (!samePage || url.hash !== "#kontakt") return;
+    e.preventDefault();
+    selectCategory(categoryFromUrl(url));
+    history.replaceState(null, "", url.search ? `${url.search}#kontakt` : "#kontakt");
+    scrollToContact(true);
+  });
 
   function render() {
     renderHero();
@@ -335,6 +367,12 @@
     renderTimetable();
     renderNews();
     renderCategories();
+    // Příchod z jiné stránky na index.html#kontakt (nebo jinou kotvu): po vykreslení
+    // obsahu z databáze se pozice posune, proto na kotvu skočíme znovu.
+    if (window.location.hash.length > 1) {
+      const target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
+      if (target) requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
+    }
   }
 
   VTStore.ready.then(render);
