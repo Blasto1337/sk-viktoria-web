@@ -4,11 +4,14 @@
   jen tehdy, když se data nepodaří načíst ze serveru a v prohlížeči není žádná
   dřívější kopie, aby web nikdy nezůstal prázdný. Při větší změně obsahu ho
   udržujte přibližně v souladu s databází.
+
+  Každá položka má site stejně jako v DB (viktoria / vfresh / both), store.js
+  z ní vezme jen to, co patří na aktuální web.
 */
 window.VT_SEED = {
   krouzky: [
     {
-      id: "vfresh-dc", seed: true, group: "vfresh", featured: true,
+      id: "vfresh-dc", seed: true, site: "vfresh", group: "vfresh", featured: true,
       icon: "dance", color: "purple",
       name: "VFRESH DC",
       age: "3–20 let", location: "CUT Tábor, Vančurova 2904",
@@ -16,7 +19,7 @@ window.VT_SEED = {
       photo: null, detailHref: "kurz-vfresh-dc.html",
     },
     {
-      id: "zumba", seed: true, group: "vfresh", featured: true,
+      id: "zumba", seed: true, site: "viktoria", group: "volnocas", featured: true,
       icon: "pulse", color: "pink",
       name: "Zumba & Dance",
       age: "dospělí", location: "Tábor (CUT) & Planá n. L.",
@@ -24,7 +27,7 @@ window.VT_SEED = {
       photo: null, detailHref: "kurz-zumba.html",
     },
     {
-      id: "street-deti", seed: true, group: "vfresh", featured: false,
+      id: "street-deti", seed: true, site: "vfresh", group: "vfresh", featured: false,
       icon: "dance", color: "purple",
       name: "Rekreační STREET DANCE děti",
       age: "7–14 let", location: "ZŠ Helsinská, Tábor",
@@ -32,7 +35,7 @@ window.VT_SEED = {
       photo: null, detailHref: "kurz-vfresh-dc.html",
     },
     {
-      id: "gymnastika", seed: true, group: "volnocas", featured: true,
+      id: "gymnastika", seed: true, site: "viktoria", group: "volnocas", featured: true,
       icon: "medal", color: "teal",
       name: "Sportovní gymnastika",
       age: "5–15 let", location: "Gymnázium Tábor",
@@ -40,7 +43,7 @@ window.VT_SEED = {
       photo: null, detailHref: "kurz-gymnastika.html",
     },
     {
-      id: "telovychova", seed: true, group: "volnocas", featured: true,
+      id: "telovychova", seed: true, site: "viktoria", group: "volnocas", featured: true,
       icon: "kids-sport", color: "yellow",
       name: "Sportuj s VIKTORKOU",
       age: "3–12 let", location: "CUT Tábor & ZŠ Helsinská",
@@ -48,7 +51,7 @@ window.VT_SEED = {
       photo: null, detailHref: "kurz-telovychova.html",
     },
     {
-      id: "dramaticky-klub", seed: true, group: "volnocas", featured: true,
+      id: "dramaticky-klub", seed: true, site: "viktoria", group: "volnocas", featured: true,
       icon: "theater", color: "blue",
       name: "Dramatický klub",
       age: "3–12 let", location: "CUT Tábor",
@@ -56,7 +59,7 @@ window.VT_SEED = {
       photo: null, detailHref: "kurz-dramaticky-klub.html",
     },
     {
-      id: "viktorianek", seed: true, group: "volnocas", featured: true,
+      id: "viktorianek", seed: true, site: "viktoria", group: "volnocas", featured: true,
       icon: "toddler", color: "red",
       name: "Viktoriánek",
       age: "1,5–3 roky", location: "CUT Tábor",
@@ -67,7 +70,7 @@ window.VT_SEED = {
 
   akce: [
     {
-      id: "sportuj-v-parku", seed: true, featured: true,
+      id: "sportuj-v-parku", seed: true, site: "viktoria", featured: true,
       tag: "NÁBOR", color: "red", category: "nabor",
       title: "Sportuj v parku s VIKTORKOU",
       date: "16. 9. 2026", location: "Tábor",
@@ -82,7 +85,7 @@ window.VT_SEED = {
       detailHref: "akce-sportuj-v-parku.html",
     },
     {
-      id: "silvestrovsky-beh", seed: true, featured: true,
+      id: "silvestrovsky-beh", seed: true, site: "viktoria", featured: true,
       tag: "ZÁVOD", color: "teal", category: "zavody",
       title: "Silvestrovský běh",
       date: "30. 12. 2026", location: "Tábor",
@@ -98,55 +101,55 @@ window.VT_SEED = {
   ],
 
   rozvrh: [
-    { id: "r1", seed: true, published: true, weekday: 1, time: "17:45", name: "Zumba & Dance", note: "Planá n. L. · dospělí", program: "zumba" },
-    { id: "r2", seed: true, published: true, weekday: 2, time: "9:30", name: "Viktoriánek", note: "1,5–3 roky, s rodičem", program: "volnocas" },
-    { id: "r3", seed: true, published: true, weekday: 2, time: "15:00", name: "DVK crew", note: "8–12 let", program: "vfresh" },
-    { id: "r4", seed: true, published: true, weekday: 2, time: "15:30", name: "Street děti", note: "7–14 let · ZŠ Helsinská", program: "vfresh" },
-    { id: "r5", seed: true, published: true, weekday: 2, time: "16:30", name: "Mini Beat", note: "5–8 let", program: "vfresh" },
-    { id: "r6", seed: true, published: true, weekday: 2, time: "17:30", name: "A crew", note: "14–20 let", program: "vfresh" },
-    { id: "r7", seed: true, published: true, weekday: 2, time: "19:00", name: "Zumba & Dance", note: "Tábor · dospělí", program: "zumba" },
-    { id: "r8", seed: true, published: true, weekday: 3, time: "8:15", name: "Zumba & Dance", note: "Tábor · s hlídáním dětí", program: "zumba" },
-    { id: "r9", seed: true, published: true, weekday: 3, time: "14:00", name: "Dramalab", note: "7–12 let", program: "volnocas" },
-    { id: "r10", seed: true, published: true, weekday: 3, time: "15:00", name: "Dramáček", note: "3–6 let", program: "volnocas" },
-    { id: "r11", seed: true, published: true, weekday: 3, time: "15:30", name: "Gymnastika", note: "5–15 let · Gymnázium", program: "volnocas" },
-    { id: "r12", seed: true, published: true, weekday: 3, time: "16:00", name: "Freshík", note: "3–4 roky", program: "vfresh" },
-    { id: "r13", seed: true, published: true, weekday: 3, time: "16:00", name: "Sportuj B", note: "ZŠ Helsinská", program: "volnocas" },
-    { id: "r14", seed: true, published: true, weekday: 3, time: "17:00", name: "JVK crew", note: "12–15 let", program: "vfresh" },
-    { id: "r15", seed: true, published: true, weekday: 3, time: "17:00", name: "Sportuj B", note: "ZŠ Helsinská", program: "volnocas" },
-    { id: "r16", seed: true, published: true, weekday: 3, time: "18:30", name: "Fresh Mates", note: "dospělí", program: "vfresh" },
-    { id: "r17", seed: true, published: true, weekday: 4, time: "9:30", name: "Viktoriánek", note: "1,5–3 roky, s rodičem", program: "volnocas" },
-    { id: "r18", seed: true, published: true, weekday: 4, time: "15:30", name: "Sportuj A", note: "3–7 let", program: "volnocas" },
-    { id: "r19", seed: true, published: true, weekday: 4, time: "16:30", name: "DVK crew", note: "8–12 let", program: "vfresh" },
-    { id: "r20", seed: true, published: true, weekday: 4, time: "18:00", name: "A crew", note: "14–20 let", program: "vfresh" },
-    { id: "r21", seed: true, published: true, weekday: 5, time: "15:00", name: "JVK crew", note: "12–15 let", program: "vfresh" },
+    { id: "r1", seed: true, site: "viktoria", published: true, weekday: 1, time: "17:45", name: "Zumba & Dance", note: "Planá n. L. · dospělí", program: "zumba" },
+    { id: "r2", seed: true, site: "viktoria", published: true, weekday: 2, time: "9:30", name: "Viktoriánek", note: "1,5–3 roky, s rodičem", program: "volnocas" },
+    { id: "r3", seed: true, site: "vfresh", published: true, weekday: 2, time: "15:00", name: "DVK crew", note: "8–12 let", program: "vfresh" },
+    { id: "r4", seed: true, site: "vfresh", published: true, weekday: 2, time: "15:30", name: "Street děti", note: "7–14 let · ZŠ Helsinská", program: "vfresh" },
+    { id: "r5", seed: true, site: "vfresh", published: true, weekday: 2, time: "16:30", name: "Mini Beat", note: "5–8 let", program: "vfresh" },
+    { id: "r6", seed: true, site: "vfresh", published: true, weekday: 2, time: "17:30", name: "A crew", note: "14–20 let", program: "vfresh" },
+    { id: "r7", seed: true, site: "viktoria", published: true, weekday: 2, time: "19:00", name: "Zumba & Dance", note: "Tábor · dospělí", program: "zumba" },
+    { id: "r8", seed: true, site: "viktoria", published: true, weekday: 3, time: "8:15", name: "Zumba & Dance", note: "Tábor · s hlídáním dětí", program: "zumba" },
+    { id: "r9", seed: true, site: "viktoria", published: true, weekday: 3, time: "14:00", name: "Dramalab", note: "7–12 let", program: "volnocas" },
+    { id: "r10", seed: true, site: "viktoria", published: true, weekday: 3, time: "15:00", name: "Dramáček", note: "3–6 let", program: "volnocas" },
+    { id: "r11", seed: true, site: "viktoria", published: true, weekday: 3, time: "15:30", name: "Gymnastika", note: "5–15 let · Gymnázium", program: "volnocas" },
+    { id: "r12", seed: true, site: "vfresh", published: true, weekday: 3, time: "16:00", name: "Freshík", note: "3–4 roky", program: "vfresh" },
+    { id: "r13", seed: true, site: "viktoria", published: true, weekday: 3, time: "16:00", name: "Sportuj B", note: "ZŠ Helsinská", program: "volnocas" },
+    { id: "r14", seed: true, site: "vfresh", published: true, weekday: 3, time: "17:00", name: "JVK crew", note: "12–15 let", program: "vfresh" },
+    { id: "r15", seed: true, site: "viktoria", published: true, weekday: 3, time: "17:00", name: "Sportuj B", note: "ZŠ Helsinská", program: "volnocas" },
+    { id: "r16", seed: true, site: "vfresh", published: true, weekday: 3, time: "18:30", name: "Fresh Mates", note: "dospělí", program: "vfresh" },
+    { id: "r17", seed: true, site: "viktoria", published: true, weekday: 4, time: "9:30", name: "Viktoriánek", note: "1,5–3 roky, s rodičem", program: "volnocas" },
+    { id: "r18", seed: true, site: "viktoria", published: true, weekday: 4, time: "15:30", name: "Sportuj A", note: "3–7 let", program: "volnocas" },
+    { id: "r19", seed: true, site: "vfresh", published: true, weekday: 4, time: "16:30", name: "DVK crew", note: "8–12 let", program: "vfresh" },
+    { id: "r20", seed: true, site: "vfresh", published: true, weekday: 4, time: "18:00", name: "A crew", note: "14–20 let", program: "vfresh" },
+    { id: "r21", seed: true, site: "vfresh", published: true, weekday: 5, time: "15:00", name: "JVK crew", note: "12–15 let", program: "vfresh" },
   ],
 
   galerie: [
-    { id: "g1", seed: true, sortOrder: 10, published: true, photo: "assets/gallery/soutez-1.jpg", caption: "VFRESH DC na MIA Festivalu" },
-    { id: "g2", seed: true, sortOrder: 20, published: true, photo: "assets/akce/vfresh-dc.jpg", caption: "VFRESH DC" },
-    { id: "g3", seed: true, sortOrder: 30, published: true, photo: "assets/gallery/soutez-2.jpg", caption: "VFRESH DC na MIA Festivalu" },
-    { id: "g4", seed: true, sortOrder: 40, published: true, photo: "assets/gallery/soutez-3.jpg", caption: "VFRESH DC na MIA Festivalu" },
-    { id: "g5", seed: true, sortOrder: 50, published: true, photo: "assets/akce/dramaticky-klub.jpg", caption: "Dramatický klub" },
-    { id: "g6", seed: true, sortOrder: 60, published: true, photo: "assets/gallery/soutez-4.jpg", caption: "VFRESH DC na MIA Festivalu" },
-    { id: "g7", seed: true, sortOrder: 70, published: true, photo: "assets/gallery/soutez-5.jpg", caption: "VFRESH DC na MIA Festivalu" },
-    { id: "g8", seed: true, sortOrder: 80, published: true, photo: "assets/akce/sportuj-s-viktorkou.jpg", caption: "Sportuj s Viktorkou" },
+    { id: "g1", seed: true, site: "vfresh", sortOrder: 10, published: true, photo: "assets/gallery/soutez-1.jpg", caption: "VFRESH DC na MIA Festivalu" },
+    { id: "g2", seed: true, site: "vfresh", sortOrder: 20, published: true, photo: "assets/akce/vfresh-dc.jpg", caption: "VFRESH DC" },
+    { id: "g3", seed: true, site: "vfresh", sortOrder: 30, published: true, photo: "assets/gallery/soutez-2.jpg", caption: "VFRESH DC na MIA Festivalu" },
+    { id: "g4", seed: true, site: "vfresh", sortOrder: 40, published: true, photo: "assets/gallery/soutez-3.jpg", caption: "VFRESH DC na MIA Festivalu" },
+    { id: "g5", seed: true, site: "viktoria", sortOrder: 50, published: true, photo: "assets/akce/dramaticky-klub.jpg", caption: "Dramatický klub" },
+    { id: "g6", seed: true, site: "vfresh", sortOrder: 60, published: true, photo: "assets/gallery/soutez-4.jpg", caption: "VFRESH DC na MIA Festivalu" },
+    { id: "g7", seed: true, site: "vfresh", sortOrder: 70, published: true, photo: "assets/gallery/soutez-5.jpg", caption: "VFRESH DC na MIA Festivalu" },
+    { id: "g8", seed: true, site: "viktoria", sortOrder: 80, published: true, photo: "assets/akce/sportuj-s-viktorkou.jpg", caption: "Sportuj s Viktorkou" },
   ],
 
   aktuality: [
     {
-      id: "posledni-mista", seed: true,
+      id: "posledni-mista", seed: true, site: "vfresh",
       date: "září 2026",
       text: "Poslední volná místa: Taneční školička FRESHÍK 3–4 roky (st 16:00), 5 míst, VFRESH MINI BEAT 5–8 let (út 16:30), 7 míst. Přihlášky: 607 825 318 nebo lena.cimpova@seznam.cz.",
       photo: null,
     },
     {
-      id: "zkusebni-lekce", seed: true,
+      id: "zkusebni-lekce", seed: true, site: "both",
       date: "do 30. 9. 2026",
       text: "Zkušební lekce zdarma ve všech kroužcích celé září. Nestihli jste termín? Domluvte si svoji 1 lekci zdarma do konce září.",
       photo: null,
     },
     {
-      id: "zumba-tabor", seed: true,
+      id: "zumba-tabor", seed: true, site: "viktoria",
       date: "od 17. 9. 2026",
       text: "Nový podzimní blok Zumba & Dance v Táboře (CUT): úterý 19:00 a středa 8:15 s hlídáním dětí v ceně. Ukázková lekce zdarma 9. 9. v 18:00.",
       photo: null,

@@ -4,6 +4,8 @@ Redesign webu sportovního klubu pro děti v Táboře. Klient: SK Viktoria Tábo
 Jádrem klubu je taneční složka — **VFRESH DC / street dance** — a ta má být na webu dominantní.
 Repo: https://github.com/Blasto1337/sk-viktoria-web
 
+> **Rozdělení na dva weby (2026-09-28):** tohle repo je hlavní web SK Viktoria (rodinný světlý vzhled, `css/family.css` nad `css/style.css`; gymnastika, Sportuj s VIKTORKOU, dramaťák, Viktoriánek, Zumba). Taneční VFRESH DC má vlastní repo ve složce `VFRESH CZ/` (tmavá verze Night Street, `<html data-site="vfresh">`). Obě sdílí Supabase i admin (admin zůstává zde); každý řádek v DB má sloupec `site` (viktoria / vfresh / both), `js/store.js` podle webu filtruje `site=in.(<web>,both)`, admin načítá vše. Text níže o dominanci VFRESH DC se týká už jen webu VFRESH.
+
 ## Stack
 
 - Čistý statický web: HTML + CSS + vanilla JS. Žádný build, žádný framework, žádné npm.

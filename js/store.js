@@ -13,6 +13,11 @@
   Když Supabase není dostupný, veřejné stránky se vykreslí z poslední úspěšné
   kopie (localStorage) a jako poslední možnost z js/seed.js, takže web nikdy
   nezůstane prázdný.
+
+  Dva weby, jedna databáze: každý řádek má sloupec site (viktoria / vfresh /
+  both). Veřejná stránka načítá jen svůj web + both. Který web to je, určí
+  (v tomto pořadí) window.VT_SITE, atribut <html data-site="...">, nebo doména
+  (obsahuje "vfresh" = vfresh), jinak viktoria. Admin načítá obsah obou webů.
 */
 (() => {
   "use strict";
@@ -23,10 +28,23 @@
   const PHOTO_BUCKET = "vik-photos";
   const LOAD_TIMEOUT_MS = 6000;
 
-  const AUTH_KEY = "vt_auth";
-  const CACHE_KEY = "vt_cache_v1";
-
   const IS_ADMIN_PAGE = !!(document.body && document.body.classList.contains("admin-body"));
+
+  const SITES = ["viktoria", "vfresh"];
+  const SITE = (() => {
+    const explicit = window.VT_SITE || (document.documentElement && document.documentElement.dataset.site);
+    if (SITES.includes(explicit)) return explicit;
+    return /vfresh/i.test(location.hostname) ? "vfresh" : "viktoria";
+  })();
+  // Položka patří na tento web? (řádek bez site = viktoria, jako výchozí hodnota v DB)
+  function onThisSite(item) {
+    const s = (item && item.site) || "viktoria";
+    return s === SITE || s === "both";
+  }
+
+  const AUTH_KEY = "vt_auth";
+  // Kopie dat je pro každý web zvlášť, aby se při vývoji na localhost obsah nemíchal.
+  const CACHE_KEY = `vt_cache_v2_${SITE}`;
 
   // ------------------------------------------------------------ pomocné --
   function uuid() {
@@ -136,7 +154,7 @@
       fields: {
         group: "group_key", name: "name", age: "age_label", location: "location_label",
         description: "description", icon: "icon", color: "color", schedule: "schedule",
-        photo: "photo_url", detailHref: "detail_href", featured: "featured",
+        photo: "photo_url", detailHref: "detail_href", featured: "featured", site: "site",
       },
     },
     akce: {
@@ -144,31 +162,31 @@
       fields: {
         tag: "tag", color: "color", category: "category", title: "title", date: "date_label",
         location: "place_text", description: "description", bullets: "bullets",
-        photo: "photo_url", detailHref: "detail_href", featured: "featured",
+        photo: "photo_url", detailHref: "detail_href", featured: "featured", site: "site",
       },
     },
     aktuality: {
       table: "vik_news",
-      fields: { date: "date_label", text: "body", photo: "photo_url" },
+      fields: { date: "date_label", text: "body", photo: "photo_url", site: "site" },
     },
     galerie: {
       table: "vik_gallery",
       order: "sort_order.asc,created_at.desc",
       compare: (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0),
-      fields: { photo: "photo_url", caption: "caption", sortOrder: "sort_order", published: "published" },
+      fields: { photo: "photo_url", caption: "caption", sortOrder: "sort_order", published: "published", site: "site" },
     },
     rozvrh: {
       table: "vik_timetable",
       order: "weekday.asc,start_time.asc",
       compare: (a, b) => (a.weekday - b.weekday) || (timeMinutes(a.time) - timeMinutes(b.time)) || String(a.name).localeCompare(String(b.name), "cs"),
-      fields: { weekday: "weekday", time: "start_time", name: "name", note: "note", program: "program", published: "published" },
+      fields: { weekday: "weekday", time: "start_time", name: "name", note: "note", program: "program", published: "published", site: "site" },
     },
     submissions: {
       table: "vik_inquiries",
       adminOnlyRead: true,
       fields: {
         name: "name", email: "email", category: "category", message: "message",
-        status: "status", consent: "consent_gdpr",
+        status: "status", consent: "consent_gdpr", site: "site",
       },
     },
   };
@@ -222,6 +240,8 @@
         row.id = uuid();
         if (cfg.adminOnlyRead) {
           // Veřejný formulář: anon smí jen vložit, zpět nic přečíst nemůže.
+          // Přihláška se označí webem, ze kterého přišla.
+          if (!row.site) row.site = SITE;
           await rest(cfg.table, { method: "POST", body: row, prefer: "return=minimal" });
           const record = { ...item, id: row.id, createdAt: new Date().toISOString() };
           return record;
@@ -270,8 +290,10 @@
   const ALL_NAMES = ["krouzky", "akce", "aktuality", "galerie", "rozvrh", "submissions"];
 
   async function fetchCollections(names, admin) {
+    // Veřejná stránka si bere jen obsah svého webu, admin vidí oba weby.
+    const siteFilter = admin ? "" : `&site=in.(${SITE},both)`;
     const results = await Promise.all(names.map((name) =>
-      rest(`${COLLECTIONS[name].table}?select=*&order=${COLLECTIONS[name].order || "created_at.desc"}`, { admin, timeout: LOAD_TIMEOUT_MS })
+      rest(`${COLLECTIONS[name].table}?select=*${siteFilter}&order=${COLLECTIONS[name].order || "created_at.desc"}`, { admin, timeout: LOAD_TIMEOUT_MS })
     ));
     const data = {};
     names.forEach((name, i) => { data[name] = results[i] || []; });
@@ -289,7 +311,7 @@
         store[n]._set(cached[n]);
         return;
       }
-      const items = (seed[n] || []).map((it, i) => ({
+      const items = (seed[n] || []).filter(onThisSite).map((it, i) => ({
         createdAt: new Date(Date.now() - i * 1000).toISOString(), ...it,
       }));
       store[n]._setItems(items);
@@ -349,6 +371,9 @@
     } catch (e) { /* nevadí, soubor zůstane v úložišti */ }
   }
 
+  store.site = SITE;        // "viktoria" | "vfresh"
+  store.sites = SITES.slice();
+  store.onThisSite = onThisSite;
   store.uploadPhoto = uploadPhoto;
   store.deletePhoto = deletePhoto;
   store.loadAdmin = loadAdmin;

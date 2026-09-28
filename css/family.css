@@ -1,0 +1,195 @@
+/*
+  Rodinný vzhled hlavního webu SK Viktoria Tábor.
+  Vrstva nad css/style.css (ten je společný základ s tmavým webem VFRESH DC):
+  světlé krémové pozadí, navy text, Fredoka nadpisy, bílé zaoblené karty
+  s barevným akcentem a hravé tvary v hero. Barvy měň přes tokeny níže.
+*/
+:root{
+  --bg:#fff8ee;          /* krémová, základní plocha */
+  --bg-alt:#ffffff;      /* střídání sekcí */
+  --bg-soft:#eef7f6;     /* jemně tyrkysová pro rozvrh a kontakt */
+  --card:#ffffff;
+  --line:rgba(30,37,64,.1);
+  --shadow:0 6px 18px rgba(30,37,64,.08);
+  --shadow-hover:0 10px 26px rgba(30,37,64,.14);
+  --on-bg-muted:var(--muted);
+  --gold:#ffc53d;
+}
+
+body{background:var(--bg);color:var(--ink)}
+h1,h2,h3{font-family:'Fredoka',system-ui,sans-serif;letter-spacing:0}
+.btn{font-family:'Fredoka',system-ui,sans-serif}
+
+/* hlavička */
+.site-header{background:var(--bg);border-bottom:1px solid var(--line)}
+.brand-badge{
+  width:40px;height:40px;border-radius:12px;background:var(--charcoal);color:var(--yellow);
+  display:flex;align-items:center;justify-content:center;
+  font:700 15px 'Fredoka',sans-serif;transform:rotate(-6deg);
+}
+.brand-name{font:700 18px 'Fredoka',sans-serif;color:var(--navy);letter-spacing:.3px}
+.main-nav a{
+  border:2px solid var(--navy);color:var(--navy);background:#fff;
+  font-family:'Nunito',sans-serif;font-weight:800;letter-spacing:0;
+}
+.main-nav a:hover,.main-nav a.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.nav-cta{box-shadow:3px 3px 0 var(--navy)}
+.nav-toggle{border-color:var(--navy)}
+.nav-toggle span{background:var(--navy)}
+
+/* hero: krémová plocha s barevnými tvary místo fotky */
+.hero{background:var(--bg);background-image:none;padding:64px 0 56px}
+.hero::before{display:none}
+.hero-shape{position:absolute;border-radius:50%;z-index:1}
+.hero-shape-circle{top:26px;left:8%;width:70px;height:70px;background:var(--yellow);opacity:.9}
+.hero-shape-square{bottom:24px;right:10%;width:52px;height:52px;background:var(--teal);border-radius:14px;transform:rotate(18deg)}
+.hero-shape-dot1{top:56px;right:22%;width:26px;height:26px;background:var(--purple)}
+.hero-shape-dot2{bottom:40px;left:20%;width:34px;height:34px;background:var(--red);opacity:.85}
+.hero-shape-dot3{bottom:130px;right:3%;width:22px;height:22px;background:var(--blue);opacity:.85}
+.hero-shape-tri1{
+  top:100px;right:5%;width:0;height:0;border-radius:0;
+  border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:32px solid var(--blue);
+  opacity:.85;transform:rotate(8deg);
+}
+.hero-shape-tri2{
+  bottom:100px;left:5%;width:0;height:0;border-radius:0;
+  border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:28px solid var(--pink);
+  opacity:.85;transform:rotate(-15deg);
+}
+.hero-eyebrow{background:var(--yellow);color:var(--navy);font:600 13px 'Fredoka',sans-serif;border-radius:999px;box-shadow:none;letter-spacing:.6px}
+.hero h1{color:var(--charcoal)}
+.hero h1 span{color:var(--red)}
+.hero-lead{color:var(--muted)}
+.btn-hero{background:var(--green);color:#fff;box-shadow:4px 4px 0 var(--yellow)}
+.btn-hero:hover{background:#25a35f;box-shadow:6px 6px 0 var(--yellow)}
+
+.section-divider{background:var(--line);height:2px}
+
+/* sekce: střídání krémová / bílá / jemně tyrkysová */
+#o-nas{background:var(--bg-alt)}
+#volnocasove-aktivity,#tanecni-kurzy{background:var(--bg);color:var(--ink)}
+#akce{background:var(--bg-alt);color:var(--ink)}
+.timetable{background:var(--bg-soft);color:var(--ink)}
+.news-section{background:var(--bg);color:var(--ink)}
+#benefity{background:var(--bg-alt);color:var(--ink)}
+.contact{background:var(--bg-soft);color:var(--ink)}
+
+.section-head h2,.about-text h2,.timetable h2,.contact h2{
+  font-family:'Fredoka',sans-serif;font-weight:700;color:var(--navy);text-transform:none;letter-spacing:0;
+}
+.kicker{font-family:'Fredoka',sans-serif;color:var(--red);letter-spacing:1.4px}
+.link-more{color:var(--navy)}
+.link-more:hover{color:var(--red)}
+.about-photo{box-shadow:var(--shadow);border-radius:18px;overflow:hidden}
+.about-text p,.detail-lead,.page-head p{color:var(--muted)}
+
+/* karty kroužků a akcí: bílé, zaoblené, barevný akcent */
+.course-card,.event-card,.detail-box,.event-detail-card,.alert-item.is-featured{
+  background:var(--card);color:var(--ink);box-shadow:var(--shadow);border-radius:18px;
+}
+.course-card:hover,.event-card:hover{background:var(--card);box-shadow:var(--shadow-hover)}
+.course-card{border-left:none;border-top:6px solid var(--accent)}
+.course-card.has-photo{border-top:none}
+.course-icon{background:color-mix(in srgb,var(--accent) 16%,#fff);color:var(--accent)}
+.course-yellow{--accent:var(--yellow)}
+.course-card h3{font-family:'Fredoka',sans-serif;color:var(--navy)}
+.course-card p{color:var(--muted)}
+.course-loc{color:var(--muted)}
+.age-badge{background:color-mix(in srgb,var(--accent, var(--teal)) 16%,#fff);color:var(--navy)}
+
+.event-card .ph{background:#f1ece2}
+.event-card .ph span{background:#fff;color:var(--muted)}
+.event-body h3{font-family:'Fredoka',sans-serif;color:var(--navy)}
+.event-body p{color:var(--muted)}
+.event-meta time{color:var(--muted)}
+#events-grid-preview .event-card:hover{background:var(--card)}
+#events-grid-preview .event-meta time{font-family:'Fredoka',sans-serif;color:var(--red)}
+#events-grid-preview .event-body h3{font-family:'Fredoka',sans-serif}
+#events-grid-preview .event-location{color:var(--muted)}
+#events-grid-preview .event-cta{box-shadow:3px 3px 0 var(--yellow)}
+.tag-purple{background:var(--purple)}
+
+/* aktuality */
+.alert-flag{font-family:'Fredoka',sans-serif}
+.is-featured .alert-date{font-family:'Fredoka',sans-serif;color:var(--red)}
+.is-featured p{color:var(--ink)}
+.alert-rest .alert-item{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
+.alert-icon,.alert-rest .alert-date{color:var(--teal)}
+.alert-rest p{color:var(--ink)}
+
+/* rozvrh */
+.tt-zumba{--c:var(--pink)}
+.tt-volnocas{--c:var(--teal)}
+.tt-filter{color:var(--navy);border-color:rgba(30,37,64,.25);font-family:'Nunito',sans-serif;font-weight:800}
+.tt-filter:hover{border-color:var(--navy)}
+.tt-filter.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tt-dayname{font-family:'Fredoka',sans-serif;color:var(--navy);border-bottom-color:var(--line)}
+.tt-day.is-today .tt-dayname{border-bottom-color:var(--red)}
+.tt-day.is-today .tt-dayname::after{background:var(--red);color:#fff;font-family:'Fredoka',sans-serif}
+.tt-slot{background:#fff;box-shadow:0 2px 8px rgba(30,37,64,.06)}
+.tt-slot time{font-family:'Fredoka',sans-serif;color:var(--navy)}
+.tt-name{color:var(--navy)}
+.tt-note,.tt-empty,.tt-foot{color:var(--muted)}
+.tt-foot a{color:var(--red)}
+
+/* benefity */
+.benefit-groups{grid-template-columns:1fr}
+.benefit-group h3{font-family:'Fredoka',sans-serif;color:var(--navy);font-size:18px}
+.benefit-chips{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.benefit-chip{background:var(--bg);box-shadow:var(--shadow);filter:none}
+.benefit-chip:hover{filter:none;box-shadow:var(--shadow-hover)}
+.benefit-value{font-family:'Fredoka',sans-serif;color:var(--navy)}
+.benefit-label{color:var(--muted)}
+.benefit-ribbon{background:var(--bg-soft);color:var(--navy)}
+.benefit-ribbon svg{color:var(--teal)}
+
+/* kontakt a formulář */
+.contact-card{background:#fff;box-shadow:var(--shadow);border-left-color:var(--teal)}
+.contact-card p,.contact-details span{color:var(--ink)}
+.contact-details a{color:var(--navy)}
+.contact-details a:hover{color:var(--red)}
+.contact-icon{color:var(--teal)}
+.contact-form label,.contact-form .form-consent{color:var(--navy)}
+.contact-form input,.contact-form select,.contact-form textarea{background:#fff;color:var(--ink);border-color:rgba(30,37,64,.18)}
+.contact-form input::placeholder,.contact-form textarea::placeholder{color:#9a9eae}
+.form-note{color:var(--navy)}
+
+/* galerie, podstránky */
+.page-head h1{font-family:'Fredoka',sans-serif;color:var(--navy)}
+.gallery-item,.gallery-item img,.gallery-item .ph{border-radius:14px}
+.gallery-empty{color:var(--muted)}
+
+/* detail kroužku / akce */
+.course-hero{background:var(--bg-soft);color:var(--ink)}
+.course-hero h1{font-family:'Fredoka',sans-serif;background:#fff;color:var(--navy);border-radius:18px;box-shadow:4px 4px 0 var(--accent, var(--yellow))}
+.course-hero .age-badge{background:#fff;color:var(--navy)}
+.back-link,.detail-cta-alt a{color:var(--navy)}
+.back-link:hover,.detail-cta-alt a:hover{color:var(--red)}
+.detail-box h2,.detail-media h2,.event-detail h1{font-family:'Fredoka',sans-serif;color:var(--navy)}
+.detail-box p,.detail-box .detail-note,.detail-cta p{color:var(--muted)}
+.detail-box .schedule-list li{border-bottom-color:var(--line)}
+.detail-box .schedule-list b{color:var(--navy)}
+.detail-box .schedule-list span{color:var(--muted)}
+main [style*="color:#fff"]{color:var(--muted)!important}
+.course-location,.course-slot-note,.course-term{color:var(--muted)}
+.course-slot-icon{background:color-mix(in srgb,var(--accent, var(--teal)) 14%,#fff)}
+.course-slot-time{font-family:'Fredoka',sans-serif;color:var(--navy)}
+.course-price{background:var(--bg)}
+.course-price-main{background:var(--red)}
+.course-price-value{font-family:'Fredoka',sans-serif;color:var(--navy)}
+.course-price-label{color:var(--muted)}
+.course-price-main .course-price-value,.course-price-main .course-price-label{color:#fff}
+.course-trial{background:#fff5d6;border-color:#f3d27a;color:#8a6400}
+.course-trial b{color:var(--navy)}
+.event-detail-info{color:var(--navy)}
+.event-detail-icon{color:var(--teal)}
+.event-detail-list li{color:var(--ink)}
+.event-detail-list li::before{color:var(--teal)}
+
+/* patička */
+.site-footer{background:var(--navy);color:#fff}
+
+@media (max-width:720px){
+  .main-nav{background:var(--bg);border-bottom-color:var(--line)}
+  .hero-shape{display:none}
+}
