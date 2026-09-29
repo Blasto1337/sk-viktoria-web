@@ -189,6 +189,7 @@ em.accent,.accent{font-style:italic;color:var(--gold-700)}
 .course-card-vfresh p{color:var(--on-purple);font-size:16px}
 .vfresh-link{color:var(--gold-500);font-weight:700}
 .vfresh-list{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--on-purple-muted)}
+.btn-more-courses{grid-column:1/-1;justify-self:center;margin-top:8px}
 
 /* ============ akce: řádky ============ */
 .events-section{background:var(--sand)}

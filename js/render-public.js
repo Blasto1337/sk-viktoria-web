@@ -167,9 +167,9 @@
   }
 
   // ------------------------------------------------------------ kroužky --
-  function courseCardHtml(item) {
+  function courseCardHtml(item, hidden) {
     return `
-      <a class="course-card" href="${esc(krouzekHref(item))}" data-vt-id="${item.id}">
+      <a class="course-card" href="${esc(krouzekHref(item))}" data-vt-id="${item.id}"${hidden ? " hidden" : ""}>
         <div class="course-media">
           ${mediaHtml(item.photo, item.photoHint, item.name)}
           ${item.age ? `<span class="age-badge">${esc(item.age)}</span>` : ""}
@@ -202,16 +202,32 @@
       </a>`;
   }
 
+  // Homepage ukazuje vždy 6 karet: 5 aktivit + na šestém, pevném místě karta
+  // VFRESH DC. Když je featured aktivit víc, zbytek se skryje za tlačítko.
   function renderCourses() {
     const all = VTStore.krouzky.all();
     const vfreshItems = all.filter(isVfresh);
     const preview = document.getElementById("courses-grid-preview");
     if (preview) {
-      preview.innerHTML = all.filter((k) => k.featured && !isVfresh(k)).map(courseCardHtml).join("") + vfreshCardHtml(vfreshItems, false);
+      const featured = all.filter((k) => k.featured && !isVfresh(k));
+      const shown = featured.slice(0, 5);
+      const rest = featured.slice(5);
+      preview.innerHTML =
+        shown.map((k) => courseCardHtml(k)).join("") +
+        vfreshCardHtml(vfreshItems, false) +
+        rest.map((k) => courseCardHtml(k, true)).join("") +
+        (rest.length ? `<button type="button" class="btn btn-purple btn-more-courses" id="courses-more-btn">Zobrazit další aktivity</button>` : "");
+      const moreBtn = document.getElementById("courses-more-btn");
+      if (moreBtn) {
+        moreBtn.addEventListener("click", () => {
+          preview.querySelectorAll(".course-card[hidden]").forEach((el) => { el.hidden = false; });
+          moreBtn.remove();
+        });
+      }
     }
     const full = document.getElementById("courses-grid");
     if (full) {
-      full.innerHTML = all.filter((k) => !isVfresh(k)).map(courseCardHtml).join("") + vfreshCardHtml(vfreshItems, true);
+      full.innerHTML = all.filter((k) => !isVfresh(k)).map((k) => courseCardHtml(k)).join("") + vfreshCardHtml(vfreshItems, true);
     }
   }
 
