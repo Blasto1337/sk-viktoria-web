@@ -41,11 +41,11 @@ window.VT_SEED = {
     {
       id: "gymnastika", seed: true, site: "viktoria", group: "volnocas", featured: true,
       when: "St 15:30–17:30", photoHint: "děti při sestavě na kladině nebo akrobacii v tělocvičně Gymnázia",
-      hero: true, heroOrder: 40, heroLead: "Od prvních kotoulů po závodní medaile. Trénujeme obratnost, sílu i odvahu v tělocvičně Gymnázia Tábor.",
+      hero: true, heroOrder: 40, heroLead: "Od prvních kotoulů po soutěžní medaile. Trénujeme obratnost, sílu i odvahu v tělocvičně Gymnázia Tábor.",
       icon: "medal", color: "teal",
       name: "Sportovní gymnastika",
       age: "5–15 let", location: "Gymnázium Tábor",
-      description: "Od prvních kotoulů po závodní medaile. Středa 15:30–17:30.",
+      description: "Od prvních kotoulů po soutěžní medaile. Středa 15:30–17:30.",
       photo: "assets/aktivity/gymnastika-1.jpg", detailHref: "kurz-gymnastika.html",
     },
     {
@@ -101,7 +101,7 @@ window.VT_SEED = {
       id: "silvestrovsky-beh", seed: true, site: "viktoria", featured: true,
       age: "děti i dospělí", photoHint: "běžci na startu v zimním Táboře",
       hero: true, heroOrder: 50, heroLead: "Tradiční sportovní rozloučení se starým rokem, pro děti i dospělé, bez ohledu na výkonnost.",
-      tag: "ZÁVOD", color: "teal", category: "zavody",
+      tag: "SOUTĚŽ", color: "teal", category: "zavody",
       title: "Silvestrovský běh",
       date: "30. 12. 2026", location: "Tábor",
       description: "Tradiční sportovní rozloučení se starým rokem, pro děti i dospělé.",
