@@ -458,10 +458,25 @@
 
   <!-- ================= GALERIE ================= -->
   <section class="admin-panel" id="panel-galerie" data-panel="galerie" hidden>
-    <div class="admin-panel-head"><h2>Galerie fotek</h2></div>
+    <div class="admin-panel-head">
+      <h2>Galerie fotek</h2>
+      <div class="admin-filters" id="galerie-filters">
+        <button class="filter-btn" data-site="viktoria">SK Viktoria</button>
+        <button class="filter-btn" data-site="vfresh">VFRESH DC</button>
+        <button class="filter-btn" data-site="all">Vše</button>
+      </div>
+    </div>
+    <p class="hint" style="margin:-8px 0 16px">Galerie obou webů jsou oddělené podle webu u fotky (štítek na kartě). Smažete nebo přeřadíte jen fotky ve zvoleném filtru, ať se nestane, že smažete fotky druhého webu omylem.</p>
 
     <form class="admin-form gallery-upload" id="form-galerie-upload">
       <h3>Přidat fotky</h3>
+      <label>Web
+        <select name="site" id="galerie-upload-site">
+          <option value="viktoria">SK Viktoria</option>
+          <option value="vfresh">VFRESH DC</option>
+        </select>
+        <span class="hint">Fotky patří jen jednomu webu. Zvolí se podle toho, na jaké galerii teď pracujete (viz filtr nahoře).</span>
+      </label>
       <label>Vyberte jednu nebo více fotek
         <input type="file" name="photos" accept="image/*" multiple required>
         <span class="hint">Fotky se před nahráním samy zmenší. Nové se zobrazí na začátku galerie, pořadí pak upravíte šipkami. Videa se řeší zvlášť.</span>
@@ -476,7 +491,7 @@
     </form>
 
     <div class="gallery-admin-grid" id="galerie-list"></div>
-    <p class="admin-empty" id="galerie-empty" hidden>V galerii zatím nejsou žádné fotky.</p>
+    <p class="admin-empty" id="galerie-empty" hidden>V této galerii zatím nejsou žádné fotky.</p>
   </section>
 
 </main>

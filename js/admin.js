@@ -1066,20 +1066,47 @@
   });
 
   // -------------------------------------------------------------- galerie --
+  // Galerie sdílí tabulku mezi oběma weby (sloupec site), takže je nutné je
+  // v adminu jasně oddělit: filtr nahoře, barevný štítek na kartě a řazení/
+  // mazání smí sáhnout jen na fotky aktuálně zvoleného webu.
   const galerieForm = document.getElementById("form-galerie-upload");
   const galerieList = document.getElementById("galerie-list");
   const galerieProgress = document.getElementById("galerie-progress");
+  const galerieUploadSite = document.getElementById("galerie-upload-site");
+  const SITE_NAMES = { viktoria: "SK Viktoria", vfresh: "VFRESH DC" };
+  let galerieFilter = "viktoria";
+
+  function galerieVisible() {
+    const all = VTStore.galerie.all();
+    return galerieFilter === "all" ? all : all.filter((g) => (g.site || "viktoria") === galerieFilter);
+  }
+
+  document.querySelectorAll("#galerie-filters .filter-btn").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.site === galerieFilter);
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#galerie-filters .filter-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      galerieFilter = btn.dataset.site;
+      if (galerieFilter !== "all") galerieUploadSite.value = galerieFilter;
+      renderGalerie();
+    });
+  });
 
   function renderGalerie() {
     const empty = document.getElementById("galerie-empty");
-    const items = VTStore.galerie.all();
+    const items = galerieVisible();
     empty.hidden = items.length > 0;
-    galerieList.innerHTML = items.map((g, i) => `
+    galerieList.innerHTML = items.map((g, i) => {
+      const site = g.site || "viktoria";
+      return `
       <div class="gallery-admin-card${g.published ? "" : " is-unpublished"}" data-id="${g.id}">
         <img src="${escapeHtml(pub(g.photo))}" alt="${escapeHtml(g.caption || "")}" loading="lazy">
         <div class="gallery-admin-body">
           <input class="gallery-caption" type="text" value="${escapeHtml(g.caption || "")}" placeholder="Popisek fotky" maxlength="200" aria-label="Popisek fotky" data-id="${g.id}">
-          ${g.seed ? '<span class="seed-badge">základní</span>' : ""}
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="site-badge site-badge-${site}">${escapeHtml(SITE_NAMES[site] || site)}</span>
+            ${g.seed ? '<span class="seed-badge">základní</span>' : ""}
+          </div>
           <div class="gallery-admin-actions">
             <button class="btn-mini" data-action="move-left" data-id="${g.id}" title="Posunout dopředu" aria-label="Posunout dopředu"${i === 0 ? " disabled" : ""}>←</button>
             <button class="btn-mini" data-action="move-right" data-id="${g.id}" title="Posunout dozadu" aria-label="Posunout dozadu"${i === items.length - 1 ? " disabled" : ""}>→</button>
@@ -1088,19 +1115,21 @@
           </div>
         </div>
       </div>
-    `).join("");
+    `;
+    }).join("");
   }
 
   galerieForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const files = [...galerieForm.photos.files];
     if (!files.length) return;
+    const site = galerieUploadSite.value;
     const caption = galerieForm.caption.value.trim();
     const submitBtn = galerieForm.querySelector(".btn-submit");
     submitBtn.disabled = true;
 
-    // Nové fotky jdou na začátek galerie, ve stejném pořadí, v jakém byly vybrány.
-    const existing = VTStore.galerie.all().map((g) => g.sortOrder || 0);
+    // Nové fotky jdou na začátek galerie DANÉHO webu, ve stejném pořadí, v jakém byly vybrány.
+    const existing = VTStore.galerie.all().filter((g) => (g.site || "viktoria") === site).map((g) => g.sortOrder || 0);
     const first = (existing.length ? Math.min(...existing) : 10) - 10 * files.length;
     const failed = [];
     let done = 0;
@@ -1111,7 +1140,7 @@
       try {
         const blob = await compressImage(files[i], 1600, 0.82);
         url = await VTStore.uploadPhoto(blob, "galerie");
-        await VTStore.galerie.add({ photo: url, caption: caption || null, sortOrder: first + 10 * i, published: true });
+        await VTStore.galerie.add({ photo: url, caption: caption || null, sortOrder: first + 10 * i, published: true, site });
         done++;
         renderGalerie();
         updateCounts();
@@ -1125,6 +1154,7 @@
 
     submitBtn.disabled = false;
     galerieForm.reset();
+    galerieUploadSite.value = site;
     if (failed.length) {
       galerieProgress.textContent = `Nahráno ${done} z ${files.length}.`;
       alert(`Nepodařilo se nahrát: ${failed.map((f) => f.name).join(", ")}.\n${friendlyError(failed[0].err)}`);
@@ -1144,8 +1174,10 @@
     if (!ok) input.value = g.caption || "";
   });
 
+  // Řazení šipkami smí prohazovat pořadí jen v rámci právě zobrazeného webu,
+  // jinak by se sort_order omylem přepsal i fotkám druhého webu.
   async function moveGalerie(id, dir) {
-    const items = VTStore.galerie.all();
+    const items = galerieVisible();
     const i = items.findIndex((g) => g.id === id);
     const j = i + dir;
     if (i < 0 || j < 0 || j >= items.length) return;
@@ -1176,8 +1208,9 @@
       const ok = await trySave(() => VTStore.galerie.update(id, { published: !g.published }));
       if (ok) renderGalerie();
     } else if (action === "delete-galerie") {
-      if (!confirm("Smazat tuto fotku z galerie?")) return;
-      const photo = (VTStore.galerie.get(id) || {}).photo;
+      const g = VTStore.galerie.get(id);
+      if (!confirm(`Smazat tuto fotku z galerie webu ${SITE_NAMES[(g && g.site) || "viktoria"]}?`)) return;
+      const photo = (g || {}).photo;
       const ok = await trySave(() => VTStore.galerie.remove(id));
       if (!ok) return;
       VTStore.deletePhoto(photo);
