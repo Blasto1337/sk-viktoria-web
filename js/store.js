@@ -209,6 +209,49 @@
       compare: (a, b) => (a.weekday - b.weekday) || (timeMinutes(a.time) - timeMinutes(b.time)) || String(a.name).localeCompare(String(b.name), "cs"),
       fields: { weekday: "weekday", time: "start_time", name: "name", note: "note", program: "program", published: "published", site: "site" },
     },
+    // Skupiny/kurzy a jejich rozvrh a místa — pro bohatý obsah statických stránek
+    // kurz-*.html (kurz-groups.js), na rozdíl od vik_courses (kartičky v přehledu).
+    // Tyto tři tabulky nemají sloupec site: skupiny bez pageSlug patří webu VFRESH
+    // a na tomto webu se nikde nefiltrují ani nezobrazují.
+    skupiny: {
+      table: "vik_groups",
+      order: "sort_order.asc",
+      compare: (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0),
+      noSiteFilter: true,
+      fields: {
+        programId: "program_id", slug: "slug", pageSlug: "page_slug", name: "name",
+        shortDescription: "short_description", description: "description",
+        ageMin: "age_min", ageMax: "age_max",
+        priceCzk: "price_czk", priceNote: "price_note", priceExtra: "price_extra",
+        capacity: "capacity", availability: "availability",
+        trialLesson: "trial_lesson", trialNote: "trial_note", termNote: "term_note",
+        photo: "photo_url", sortOrder: "sort_order", published: "published",
+      },
+    },
+    rozvrhSkupin: {
+      table: "vik_schedule_slots",
+      order: "weekday.asc,start_time.asc",
+      compare: (a, b) => (a.weekday - b.weekday) || (timeMinutes(a.startTime) - timeMinutes(b.startTime)),
+      noSiteFilter: true,
+      fields: {
+        groupId: "group_id", placeId: "place_id", weekday: "weekday",
+        startTime: "start_time", endTime: "end_time", note: "note", published: "published",
+      },
+    },
+    mista: {
+      table: "vik_places",
+      order: "sort_order.asc",
+      compare: (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0),
+      noSiteFilter: true,
+      fields: { slug: "slug", name: "name", address: "address", note: "note", sortOrder: "sort_order", published: "published" },
+    },
+    programy: {
+      table: "vik_programs",
+      order: "sort_order.asc",
+      compare: (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0),
+      noSiteFilter: true,
+      fields: { slug: "slug", name: "name", description: "description", sortOrder: "sort_order", published: "published" },
+    },
     submissions: {
       table: "vik_inquiries",
       adminOnlyRead: true,
@@ -244,6 +287,10 @@
     if (item.bullets == null && cfg.table === "vik_events") item.bullets = [];
     // Čas z databáze ("08:15:00") ukazujeme jako "8:15".
     if (cfg.table === "vik_timetable" && item.time) item.time = item.time.replace(/^0(\d):/, "$1:").replace(/^(\d{1,2}:\d{2}):\d{2}$/, "$1");
+    if (cfg.table === "vik_schedule_slots") {
+      if (item.startTime) item.startTime = item.startTime.replace(/^0(\d):/, "$1:").replace(/^(\d{1,2}:\d{2}):\d{2}$/, "$1");
+      if (item.endTime) item.endTime = item.endTime.replace(/^0(\d):/, "$1:").replace(/^(\d{1,2}:\d{2}):\d{2}$/, "$1");
+    }
     return item;
   }
 
@@ -310,19 +357,24 @@
     krouzky: makeCollection(COLLECTIONS.krouzky),
     galerie: makeCollection(COLLECTIONS.galerie),
     rozvrh: makeCollection(COLLECTIONS.rozvrh),
+    skupiny: makeCollection(COLLECTIONS.skupiny),
+    rozvrhSkupin: makeCollection(COLLECTIONS.rozvrhSkupin),
+    mista: makeCollection(COLLECTIONS.mista),
+    programy: makeCollection(COLLECTIONS.programy),
     source: "none", // "live" | "cache" | "seed"
   };
 
   // ----------------------------------------------------------------- načtení --
-  const PUBLIC_NAMES = ["krouzky", "akce", "aktuality", "galerie", "rozvrh"];
-  const ALL_NAMES = ["krouzky", "akce", "aktuality", "galerie", "rozvrh", "submissions"];
+  const PUBLIC_NAMES = ["krouzky", "akce", "aktuality", "galerie", "rozvrh", "skupiny", "rozvrhSkupin", "mista", "programy"];
+  const ALL_NAMES = ["krouzky", "akce", "aktuality", "galerie", "rozvrh", "skupiny", "rozvrhSkupin", "mista", "programy", "submissions"];
 
   async function fetchCollections(names, admin) {
     // Veřejná stránka si bere jen obsah svého webu, admin vidí oba weby.
-    const siteFilter = admin ? "" : `&site=in.(${SITE},both)`;
-    const results = await Promise.all(names.map((name) =>
-      rest(`${COLLECTIONS[name].table}?select=*${siteFilter}&order=${COLLECTIONS[name].order || "created_at.desc"}`, { admin, timeout: LOAD_TIMEOUT_MS })
-    ));
+    // Skupiny/rozvrh skupin/místa sloupec site nemají (skupiny bez page_slug patří webu VFRESH a tady se nikde nepoužijí).
+    const results = await Promise.all(names.map((name) => {
+      const siteFilter = (admin || COLLECTIONS[name].noSiteFilter) ? "" : `&site=in.(${SITE},both)`;
+      return rest(`${COLLECTIONS[name].table}?select=*${siteFilter}&order=${COLLECTIONS[name].order || "created_at.desc"}`, { admin, timeout: LOAD_TIMEOUT_MS });
+    }));
     const data = {};
     names.forEach((name, i) => { data[name] = results[i] || []; });
     return data;

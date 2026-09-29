@@ -52,6 +52,7 @@
     <button class="admin-tab" data-tab="akce">🎉 Akce <span class="admin-tab-count" id="count-akce">0</span></button>
     <button class="admin-tab" data-tab="krouzky">🏅 Aktivity <span class="admin-tab-count" id="count-krouzky">0</span></button>
     <button class="admin-tab" data-tab="rozvrh">🗓 Rozvrh <span class="admin-tab-count" id="count-rozvrh">0</span></button>
+    <button class="admin-tab" data-tab="skupiny">📄 Kurzy (rozvrh, cena) <span class="admin-tab-count" id="count-skupiny">0</span></button>
     <button class="admin-tab" data-tab="galerie">📷 Galerie <span class="admin-tab-count" id="count-galerie">0</span></button>
   </nav>
 
@@ -298,7 +299,7 @@
             </select>
           </label>
           <label>Začátek
-            <input type="time" name="time" required>
+            <select name="time" id="rozvrh-time-select" required></select>
           </label>
         </div>
         <label>Název
@@ -328,6 +329,129 @@
       <div>
         <div class="admin-list" id="rozvrh-list"></div>
         <p class="admin-empty" id="rozvrh-empty" hidden>Rozvrh je zatím prázdný.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= KURZY (statické stránky) ================= -->
+  <section class="admin-panel" id="panel-skupiny" data-panel="skupiny" hidden>
+    <div class="admin-panel-head"><h2>Kurzy: rozvrh, cena a místo</h2></div>
+    <p class="hint" style="margin:-8px 0 16px">Sem patří obsah stránek Sportovní gymnastika, Viktoriánek, Dramatický klub, Sportuj s VIKTORKOU a Zumba &amp; Dance: rozvrh, cena, místo i popis. Ostatní aktivity (VFRESH DC, kroužky přidané ručně) se spravují v záložce Aktivity.</p>
+    <div class="admin-columns">
+      <form class="admin-form" id="form-skupina" data-collection="skupiny">
+        <h3 id="form-skupina-title">Přidat kurz</h3>
+        <label>Stránka
+          <select name="pageSlug" required>
+            <option value="gymnastika">Sportovní gymnastika</option>
+            <option value="viktorianek">Viktoriánek</option>
+            <option value="dramacek">Dramatický klub</option>
+            <option value="telovychova">Sportuj s VIKTORKOU</option>
+            <option value="zumba">Zumba &amp; Dance</option>
+          </select>
+          <span class="hint">Na stránce se zobrazí jako samostatný box. Když jich má stránka víc (např. Zumba), zobrazí se vedle sebe.</span>
+        </label>
+        <label>Název (nadpis boxu)
+          <input type="text" name="name" placeholder="např. Směr A · Pohybové hry &amp; soutěže" required maxlength="120">
+        </label>
+        <div class="field-row">
+          <label>Věk od
+            <input type="number" name="ageMin" min="0" max="99">
+          </label>
+          <label>Věk do
+            <input type="number" name="ageMax" min="0" max="99">
+          </label>
+        </div>
+        <label>Popis
+          <textarea name="description" rows="3" placeholder="Zobrazí se pod rozvrhem a cenou. Víc odstavců oddělte novým řádkem."></textarea>
+        </label>
+        <div class="field-row">
+          <label>Cena (Kč)
+            <input type="number" name="priceCzk" min="0" step="1">
+          </label>
+          <label>Poznámka k ceně
+            <input type="text" name="priceNote" placeholder="např. blok · 12 lekcí" maxlength="80">
+          </label>
+        </div>
+        <label>Další ceny (jeden řádek: popisek | částka)
+          <textarea name="priceExtra" rows="2" placeholder="jednotlivá lekce | 130 Kč"></textarea>
+          <span class="hint">Nepovinné, např. jednorázový vstup navíc k bloku.</span>
+        </label>
+        <label>Info k termínu kurzu (malým písmem pod cenou)
+          <input type="text" name="termNote" placeholder="např. 17. 9. – 19. 12. · úterý se nekoná 17. 11.">
+        </label>
+        <label class="check-row">
+          <input type="checkbox" name="trialLesson">
+          Zkušební lekce zdarma
+        </label>
+        <label>Kdy je zkušební lekce
+          <input type="text" name="trialNote" placeholder="např. 9. 9., 18:00–19:00">
+        </label>
+        <div class="field-row">
+          <label>Pořadí
+            <input type="number" name="sortOrder" value="100" min="0" step="1">
+          </label>
+          <label class="check-row">
+            <input type="checkbox" name="published" checked>
+            Zobrazit na webu
+          </label>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-submit" type="submit">Přidat kurz</button>
+          <button type="button" class="btn-cancel-edit" data-cancel-edit hidden>Zrušit úpravu</button>
+        </div>
+      </form>
+
+      <div>
+        <div class="admin-list" id="skupiny-list"></div>
+        <p class="admin-empty" id="skupiny-empty" hidden>Zatím žádné kurzy.</p>
+      </div>
+    </div>
+
+    <div class="admin-panel-head" style="margin-top:32px"><h2>Rozvrhové termíny</h2></div>
+    <p class="hint" style="margin:-8px 0 16px">Ke kurzu vybranému výše přidejte jeden nebo víc termínů: den a čas se vybírá ze seznamu, aby se nestala překlepová chyba.</p>
+    <div class="admin-columns">
+      <form class="admin-form" id="form-slot">
+        <h3 id="form-slot-title">Přidat termín</h3>
+        <label>Kurz
+          <select name="groupId" id="slot-group-select" required></select>
+        </label>
+        <div class="field-row">
+          <label>Den
+            <select name="weekday" required>
+              <option value="1">Pondělí</option>
+              <option value="2">Úterý</option>
+              <option value="3">Středa</option>
+              <option value="4">Čtvrtek</option>
+              <option value="5">Pátek</option>
+              <option value="6">Sobota</option>
+              <option value="7">Neděle</option>
+            </select>
+          </label>
+          <label>Od
+            <select name="startTime" id="slot-start-select" required></select>
+          </label>
+          <label>Do (nepovinné)
+            <select name="endTime" id="slot-end-select"></select>
+          </label>
+        </div>
+        <label>Místo
+          <select name="placeId" id="slot-place-select"><option value="">Bez místa</option></select>
+        </label>
+        <label>Poznámka
+          <input type="text" name="note" placeholder="např. 4–7 let" maxlength="80">
+        </label>
+        <label class="check-row">
+          <input type="checkbox" name="published" checked>
+          Zobrazit na webu
+        </label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-submit" type="submit">Přidat termín</button>
+          <button type="button" class="btn-cancel-edit" data-cancel-edit hidden>Zrušit úpravu</button>
+        </div>
+      </form>
+      <div>
+        <div class="admin-list" id="slots-list"></div>
+        <p class="admin-empty" id="slots-empty" hidden>Zatím žádné termíny.</p>
       </div>
     </div>
   </section>
