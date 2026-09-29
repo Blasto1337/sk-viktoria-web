@@ -42,7 +42,7 @@
   // aktuální (např. VFRESH DC na viktoria-tabor.cz), odkazuje na detail tam.
   const SITE_URLS = {
     viktoria: "https://www.viktoria-tabor.cz/",
-    vfresh: "https://www.vfreshdc.cz/",
+    vfresh: "https://www.vfresh.cz/",
   };
   // Domovský web položky: taneční skupina VFRESH patří na web vfresh, zbytek na viktoria.
   function homeSite(item) {
