@@ -1,3 +1,6 @@
+// Stránka aktivity (kurz-detail.html?a=<slug>, starší odkazy ?id=<uuid>).
+// Vše je z databáze: hlavička a úvodní text z aktivity (admin: Aktivity),
+// boxy kurzů s termíny a cenami vykreslí js/kurz-groups.js (admin: Kurzy).
 (() => {
   "use strict";
 
@@ -9,9 +12,20 @@
     }[c]));
   }
 
+  // Aktivita podle adresy stránky (sdílí se s kurz-groups.js).
+  function currentActivity() {
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("a");
+    if (slug) return VTStore.activityBySlug(slug);
+    const id = params.get("id");
+    return id ? VTStore.krouzky.get(id) : null;
+  }
+  window.vtCurrentActivity = currentActivity;
+
+  const COLORS = ["teal", "blue", "yellow", "pink", "red", "purple"];
+
   function render() {
-    const id = new URLSearchParams(window.location.search).get("id");
-    const item = id ? VTStore.krouzky.get(id) : null;
+    const item = currentActivity();
 
     if (!item) {
       document.getElementById("k-root").innerHTML = `
@@ -25,39 +39,39 @@
       return;
     }
 
+    // Aktivita, která patří na druhý web (VFRESH DC), se zobrazuje tam.
+    if (VTStore.isExternal(item)) {
+      window.location.replace(VTStore.hrefFor(item));
+      return;
+    }
+
     document.title = `${item.name} | SK Viktoria Tábor`;
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta && item.description) meta.setAttribute("content", item.description);
 
-    document.getElementById("k-hero").className = `course-hero course-${escapeHtml(item.color || "teal")}`;
-    document.getElementById("k-root").className = `detail-accent-${escapeHtml(item.color || "teal")}`;
+    const color = COLORS.includes(item.color) ? item.color : "teal";
+    document.getElementById("k-hero").className = `course-hero course-${color}`;
+    document.getElementById("k-root").className = `detail-accent-${color}`;
     document.getElementById("k-name").textContent = item.name;
-    document.getElementById("k-age").textContent = item.age || "Novinka";
-    document.getElementById("k-desc").textContent = item.description || "";
-    document.getElementById("k-location").textContent = item.location || "Bude upřesněno.";
 
-    const photoWrap = document.getElementById("k-photo-wrap");
-    if (photoWrap) {
-      photoWrap.innerHTML = item.photo
-        ? `<img class="detail-photo" src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.name)}">`
-        : `<div class="ph detail-photo"><span>foto: ${escapeHtml(item.photoHint || item.name)}</span></div>`;
-    }
-    const tags = document.querySelector("#k-hero .course-hero-tags");
-    if (tags) {
-      if (item.when) tags.insertAdjacentHTML("beforeend", `<span class="age-badge">${escapeHtml(item.when)}</span>`);
-      if (item.location) tags.insertAdjacentHTML("beforeend", `<span class="age-badge">📍 ${escapeHtml(item.location)}</span>`);
-    }
+    const tags = [item.age || "Novinka", item.badge, item.location ? `📍 ${item.location}` : ""].filter(Boolean);
+    document.getElementById("k-tags").innerHTML = tags.map((t) => `<span class="age-badge">${escapeHtml(t)}</span>`).join("");
 
-    const scheduleEl = document.getElementById("k-schedule");
-    const schedule = Array.isArray(item.schedule) ? item.schedule : [];
-    if (schedule.length) {
-      scheduleEl.innerHTML = schedule
-        .map((row) => `<li><b>${escapeHtml(row.label)}</b><span>${escapeHtml(row.time)}</span></li>`)
-        .join("");
-    } else {
-      scheduleEl.outerHTML = `<p id="k-schedule">Rozvrh bude upřesněn.</p>`;
+    // Úvodní text: odstavce oddělené prázdným řádkem, první jako perex.
+    const paragraphs = String(item.detailLead || item.description || "").split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+    document.getElementById("k-lead").innerHTML = paragraphs.map((p, i) => i === 0
+      ? `<p class="detail-lead">${escapeHtml(p)}</p>`
+      : `<p class="detail-text">${escapeHtml(p)}</p>`).join("");
+
+    const photos = (Array.isArray(item.detailPhotos) ? item.detailPhotos : []).filter((p) => p && p.url);
+    if (!photos.length && item.photo) photos.push({ url: item.photo, alt: item.name });
+    if (photos.length) {
+      document.getElementById("k-photos").innerHTML = photos.map((p) =>
+        `<div class="gallery-item"><img src="${escapeHtml(p.url)}" alt="${escapeHtml(p.alt || item.name)}" loading="lazy"></div>`).join("");
+      document.getElementById("k-media").hidden = false;
     }
 
-    const cta = document.getElementById("k-cta");
-    cta.href = `index.html?kurzname=${encodeURIComponent(item.name)}#kontakt`;
+    document.getElementById("k-cta").href = `index.html?kurzname=${encodeURIComponent(item.name)}#kontakt`;
   }
 
   VTStore.ready.then(render);

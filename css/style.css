@@ -360,6 +360,9 @@ em.accent,.accent{font-style:italic;color:var(--gold-700)}
 .course-term{font-size:13px;color:var(--soft)}
 .course-trial{display:inline-block;margin:16px 0 4px;padding:8px 16px;background:#fbf0d4;border-radius:999px;font-size:14px;color:var(--gold-700);font-weight:600}
 .course-trial b{color:var(--purple-800)}
+.course-age{font:700 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--gold-700);margin:-6px 0 14px}
+.detail-box .course-desc{margin-top:12px;font-size:14px}
+.detail-text{font-size:16px;line-height:1.7;color:var(--muted);max-width:760px;margin-top:14px}
 .detail-media{padding:56px 0 0}
 .detail-media h2{font-size:36px;color:var(--purple-800);margin-bottom:20px}
 .detail-cta{margin:72px 0 0;padding:64px 0;background:var(--sand);text-align:center}

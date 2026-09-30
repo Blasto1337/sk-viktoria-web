@@ -158,8 +158,8 @@
     document.getElementById("count-aktuality").textContent = VTStore.aktuality.all().length;
     document.getElementById("count-akce").textContent = VTStore.akce.all().length;
     document.getElementById("count-krouzky").textContent = VTStore.krouzky.all().length;
-    document.getElementById("count-rozvrh").textContent = VTStore.rozvrh.all().length;
-    document.getElementById("count-skupiny").textContent = VTStore.skupiny.all().filter((g) => g.pageSlug).length;
+    document.getElementById("count-rozvrh").textContent = VTStore.timetable().length;
+    document.getElementById("count-skupiny").textContent = VTStore.skupiny.all().length;
     document.getElementById("count-galerie").textContent = VTStore.galerie.all().length;
   }
 
@@ -466,12 +466,83 @@
     }
   });
 
-  // -------------------------------------------------------------- kroužky --
+  // ------------------------------------------------------------- společné --
+  // Hierarchie obsahu: aktivita (VTStore.krouzky) -> kurz (VTStore.skupiny,
+  // activityId) -> termín (VTStore.rozvrhSkupin, groupId). Rozvrh na webu se
+  // z termínů skládá sám (VTStore.timetable), v adminu je jen náhled.
+  const DAY_NAMES = { 1: "Pondělí", 2: "Úterý", 3: "Středa", 4: "Čtvrtek", 5: "Pátek", 6: "Sobota", 7: "Neděle" };
+  const DAY_SHORT = { 1: "Po", 2: "Út", 3: "St", 4: "Čt", 5: "Pá", 6: "So", 7: "Ne" };
+  const PROGRAM_ORDER = ["volnocas", "zumba", "vfresh"];
+  const PROGRAM_NAMES = { volnocas: "Aktivity SK Viktoria", zumba: "Zumba & Dance", vfresh: "VFRESH DC" };
+  const PROGRAM_TAGS = { volnocas: "tag-teal", zumba: "tag-red", vfresh: "tag-purple" };
+
+  // "8:15" -> "08:15" (čas se ukládá i porovnává jako dvouciferný "HH:MM")
+  function padTime(t) {
+    const m = /^(\d{1,2}):(\d{2})/.exec(String(t || ""));
+    return m ? `${m[1].padStart(2, "0")}:${m[2]}` : "";
+  }
+
+  // Rozbalovací seznam časů po 15 minutách (6:00–22:00), aby nevznikaly překlepy.
+  function timeSelectOptions(emptyLabel) {
+    const opts = [];
+    if (emptyLabel) opts.push(`<option value="">${escapeHtml(emptyLabel)}</option>`);
+    for (let m = 6 * 60; m <= 22 * 60; m += 15) {
+      const t = `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+      opts.push(`<option value="${t}">${t}</option>`);
+    }
+    return opts.join("");
+  }
+
+  function slugify(str) {
+    return String(str || "")
+      .normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  }
+  function uniqueSlug(base, taken) {
+    const root = slugify(base) || "polozka";
+    let slug = root;
+    for (let i = 2; taken.includes(slug); i++) slug = `${root}-${i}`;
+    return slug;
+  }
+
+  function programOf(a) {
+    if (a && PROGRAM_NAMES[a.program]) return a.program;
+    return a && a.group === "vfresh" ? "vfresh" : "volnocas";
+  }
+  function sortedActivities() {
+    return VTStore.krouzky.all().slice().sort((a, b) =>
+      (PROGRAM_ORDER.indexOf(programOf(a)) - PROGRAM_ORDER.indexOf(programOf(b))) ||
+      String(a.name).localeCompare(String(b.name), "cs"));
+  }
+  function placeName(id, short) {
+    const p = id ? VTStore.mista.get(id) : null;
+    if (!p) return "";
+    return short ? (p.shortName || p.name) : p.name;
+  }
+  function slotText(s) {
+    const time = s.endTime ? `${s.startTime}–${s.endTime}` : s.startTime;
+    const place = placeName(s.placeId, true);
+    return `${DAY_SHORT[s.weekday] || ""} ${time}${place ? " · " + place : ""}${s.note ? " (" + s.note + ")" : ""}`;
+  }
+  function priceText(g) {
+    return g.priceCzk ? `${Number(g.priceCzk).toLocaleString("cs-CZ")} Kč${g.priceNote ? " · " + g.priceNote : ""}` : "";
+  }
+
+  function switchTab(name) {
+    const tab = tabs.find((t) => t.dataset.tab === name);
+    if (tab) tab.click();
+  }
+
+  // ------------------------------------------------------------- aktivity --
   const krouzekForm = document.getElementById("form-krouzek");
   const krouzekPhoto = setupPhotoField(krouzekForm, "krouzek-photo-row", "krouzek-photo-preview");
   const iconSelect = document.getElementById("krouzek-icon-select");
   const iconPreview = document.getElementById("krouzek-icon-preview");
+  const detailPhotosBox = document.getElementById("krouzek-detail-photos");
   let editingKrouzekId = null;
+  // Fotky stránky aktivity: { url, alt } z databáze nebo { blob, preview } nově vybrané.
+  let detailPhotos = [];
+  let detailPhotosOriginal = [];
 
   Object.keys(window.VT_ICONS || {}).forEach((key) => {
     const opt = document.createElement("option");
@@ -485,10 +556,45 @@
   iconSelect.addEventListener("change", refreshIconPreview);
   refreshIconPreview();
 
+  function renderDetailPhotos() {
+    detailPhotosBox.innerHTML = detailPhotos.map((p, i) => `
+      <div class="admin-photo-thumb">
+        <img src="${escapeHtml(p.blob ? p.preview : pub(p.url))}" alt="">
+        <button type="button" class="btn-mini btn-mini-danger" data-remove-detail-photo="${i}" aria-label="Odebrat fotku">🗑</button>
+      </div>`).join("");
+  }
+  krouzekForm.detailPhotoFiles.addEventListener("change", async () => {
+    const files = [...(krouzekForm.detailPhotoFiles.files || [])];
+    for (const file of files) {
+      try {
+        const blob = await compressImage(file, 1600, 0.82);
+        detailPhotos.push({ blob, preview: URL.createObjectURL(blob) });
+      } catch (e) {
+        alert(`Fotku ${file.name} se nepodařilo zpracovat.`);
+      }
+    }
+    krouzekForm.detailPhotoFiles.value = "";
+    renderDetailPhotos();
+  });
+  detailPhotosBox.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-remove-detail-photo]");
+    if (!btn) return;
+    const [removed] = detailPhotos.splice(Number(btn.dataset.removeDetailPhoto), 1);
+    if (removed && removed.blob) URL.revokeObjectURL(removed.preview);
+    renderDetailPhotos();
+  });
+  function setDetailPhotos(list) {
+    detailPhotos.forEach((p) => p.blob && URL.revokeObjectURL(p.preview));
+    detailPhotos = (Array.isArray(list) ? list : []).filter((p) => p && p.url).map((p) => ({ url: p.url, alt: p.alt || "" }));
+    detailPhotosOriginal = detailPhotos.map((p) => p.url);
+    renderDetailPhotos();
+  }
+
   function resetKrouzekForm() {
     editingKrouzekId = null;
     krouzekForm.reset();
     krouzekPhoto.set(null);
+    setDetailPhotos([]);
     iconSelect.value = "star";
     refreshIconPreview();
     document.getElementById("form-krouzek-title").textContent = "Přidat aktivitu";
@@ -503,18 +609,18 @@
     editingKrouzekId = id;
     iconSelect.value = item.icon || "star";
     refreshIconPreview();
-    krouzekForm.group.value = item.group || "volnocas";
+    krouzekForm.program.value = programOf(item);
     krouzekForm.name.value = item.name || "";
     krouzekForm.age.value = item.age || "";
     krouzekForm.location.value = item.location || "";
-    krouzekForm.description.value = item.description || "";
-    krouzekForm.schedule.value = Array.isArray(item.schedule)
-      ? item.schedule.map((row) => `${row.label || ""} | ${row.time || ""}`).join("\n")
-      : "";
-    krouzekForm.featured.checked = !!item.featured;
     krouzekForm.when.value = item.when || "";
+    krouzekForm.description.value = item.description || "";
+    krouzekForm.detailLead.value = item.detailLead || "";
+    krouzekForm.badge.value = item.badge || "";
+    krouzekForm.featured.checked = !!item.featured;
     fillHero(krouzekForm, item);
     krouzekPhoto.set(item.photo || null);
+    setDetailPhotos(item.detailPhotos);
     document.getElementById("form-krouzek-title").textContent = "Upravit aktivitu";
     krouzekForm.querySelector(".btn-submit").textContent = "Uložit změny";
     krouzekForm.querySelector("[data-cancel-edit]").hidden = false;
@@ -522,28 +628,50 @@
     krouzekForm.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  function courseLineHtml(g) {
+    const slots = VTStore.slotsOf(g.id);
+    const bits = [
+      g.ageLabel,
+      slots.length ? slots.map(slotText).join(", ") : "⚠ bez termínu",
+      priceText(g),
+    ].filter(Boolean);
+    return `<li class="${g.published === false ? "is-unpublished" : ""}"><button type="button" class="link-btn" data-action="open-skupina" data-id="${g.id}">${escapeHtml(g.name)}</button>${g.published === false ? ' <span class="seed-badge">skryto</span>' : ""}<span> · ${escapeHtml(bits.join(" · "))}</span></li>`;
+  }
+
   function renderKrouzky() {
     const list = document.getElementById("krouzky-list");
     const empty = document.getElementById("krouzky-empty");
-    const items = VTStore.krouzky.all();
+    const items = sortedActivities();
     empty.hidden = items.length > 0;
-    list.innerHTML = items.map((k) => `
+    list.innerHTML = PROGRAM_ORDER.map((prog) => {
+      const rows = items.filter((k) => programOf(k) === prog);
+      if (!rows.length) return "";
+      return `<h3 class="admin-subhead">${escapeHtml(PROGRAM_NAMES[prog])}</h3>` + rows.map((k) => {
+        const courses = VTStore.coursesOf(k.id);
+        const when = VTStore.whenLabel(k);
+        return `
       <div class="admin-card" data-id="${k.id}">
         <div class="admin-card-main">
-          ${k.photo ? `<img class="admin-card-thumb" src="${escapeHtml(pub(k.photo))}" alt="">` : `<span class="admin-card-thumb icon-preview" style="display:flex;align-items:center;justify-content:center;background:#f4f1e9">${window.vtIconSvg ? window.vtIconSvg(k.icon) : ""}</span>`}
+          ${k.photo ? `<img class="admin-card-thumb" src="${escapeHtml(pub(k.photo))}" alt="">` : `<span class="admin-card-thumb icon-preview" style="display:flex;align-items:center;justify-content:center">${window.vtIconSvg ? window.vtIconSvg(k.icon) : ""}</span>`}
           <div class="admin-card-main-text">
-            <div class="admin-card-title">${escapeHtml(k.name)} <span class="tag tag-teal">${escapeHtml(k.age || "Novinka")}</span> ${k.seed ? '<span class="seed-badge">základní</span>' : ""}</div>
-            <div class="admin-card-meta">${escapeHtml(k.location || "")}${k.when ? " · " + escapeHtml(k.when) : ""}${k.group === "vfresh" ? " · VFRESH DC" : ""}${k.featured ? " · na hlavní straně" : ""}${heroMeta(k)}</div>
+            <div class="admin-card-title">${escapeHtml(k.name)} <span class="tag ${PROGRAM_TAGS[prog]}">${escapeHtml(k.age || "Novinka")}</span>${k.badge ? ` <span class="seed-badge">${escapeHtml(k.badge)}</span>` : ""}</div>
+            <div class="admin-card-meta">${escapeHtml([k.location, when].filter(Boolean).join(" · "))}${k.featured ? " · na hlavní straně" : ""}${heroMeta(k)}</div>
             <p class="admin-card-message">${escapeHtml(k.description || "")}</p>
+            <div class="admin-course-list">
+              <div class="admin-course-list-head">Kurzy (${courses.length})</div>
+              ${courses.length ? `<ul>${courses.map(courseLineHtml).join("")}</ul>` : '<p class="admin-warn">Zatím žádný kurz, na webu se nezobrazí rozvrh ani cena.</p>'}
+            </div>
           </div>
         </div>
         <div class="admin-card-actions">
-          <a class="btn-mini" href="${escapeHtml(pub(VTStore.hrefFor(k, `kurz-detail.html?id=${encodeURIComponent(k.id)}`)))}" target="_blank" rel="noopener">👁 Náhled</a>
+          <a class="btn-mini" href="${escapeHtml(pub(VTStore.hrefFor(k, VTStore.activityHref(k))))}" target="_blank" rel="noopener">👁 Náhled</a>
           <button class="btn-mini" data-action="edit-krouzek" data-id="${k.id}">✎ Upravit</button>
+          <button class="btn-mini" data-action="add-kurz" data-id="${k.id}">＋ Kurz</button>
           <button class="btn-mini btn-mini-danger" data-action="delete-krouzek" data-id="${k.id}">🗑 Smazat</button>
         </div>
-      </div>
-    `).join("");
+      </div>`;
+      }).join("");
+    }).join("");
   }
 
   krouzekForm.addEventListener("submit", async (e) => {
@@ -551,245 +679,179 @@
     const f = e.target;
     const submitBtn = f.querySelector(".btn-submit");
     submitBtn.disabled = true;
-    const schedule = f.schedule.value.split("\n").map((s) => s.trim()).filter(Boolean).map((line) => {
-      const [label, time] = line.split("|").map((s) => (s || "").trim());
-      return { label: label || "", time: time || "" };
-    });
     let finalPhoto = null;
+    let finalDetailPhotos = [];
+    const program = f.program.value;
+    const name = f.name.value.trim();
     const ok = await trySave(async () => {
       finalPhoto = await krouzekPhoto.commit("krouzky");
+      finalDetailPhotos = [];
+      for (const p of detailPhotos) {
+        if (p.blob) {
+          const url = await VTStore.uploadPhoto(p.blob, "krouzky");
+          URL.revokeObjectURL(p.preview);
+          Object.assign(p, { url, alt: "", blob: null, preview: null });
+        }
+        finalDetailPhotos.push({ url: p.url, alt: p.alt || `${name} (foto)` });
+      }
       const patch = {
         icon: iconSelect.value,
-        group: f.group.value,
-        name: f.name.value.trim(),
+        program,
+        // group a site se odvozují z kategorie: VFRESH DC je taneční web (na hlavním
+        // webu jen jako rozcestník, site both), ostatní patří na hlavní web.
+        group: program === "vfresh" ? "vfresh" : "volnocas",
+        site: program === "vfresh" ? "both" : "viktoria",
+        name,
         age: f.age.value.trim() || "Novinka",
         location: f.location.value.trim(),
-        description: f.description.value.trim(),
-        schedule,
-        featured: f.featured.checked,
         when: f.when.value.trim() || null,
+        description: f.description.value.trim(),
+        detailLead: f.detailLead.value.trim() || null,
+        badge: f.badge.value.trim() || null,
+        detailPhotos: finalDetailPhotos,
+        featured: f.featured.checked,
         ...readHero(f),
         photo: finalPhoto,
       };
       if (editingKrouzekId) {
-        // barva karty se při úpravě nemění (formulář ji nenabízí)
+        const current = VTStore.krouzky.get(editingKrouzekId);
+        // slug (adresa stránky) se při úpravě nemění, aby fungovaly sdílené odkazy
+        if (current && !current.slug) patch.slug = uniqueSlug(name, VTStore.krouzky.all().map((k) => k.slug));
         await VTStore.krouzky.update(editingKrouzekId, patch);
       } else {
-        await VTStore.krouzky.add({ ...patch, color: "teal" });
+        patch.slug = uniqueSlug(name, VTStore.krouzky.all().map((k) => k.slug));
+        await VTStore.krouzky.add({ ...patch, color: "teal", schedule: [] });
       }
     });
     submitBtn.disabled = false;
     if (!ok) return;
     krouzekPhoto.cleanup(finalPhoto);
+    const kept = finalDetailPhotos.map((p) => p.url);
+    detailPhotosOriginal.filter((url) => !kept.includes(url)).forEach((url) => VTStore.deletePhoto(url));
     resetKrouzekForm();
-    renderKrouzky();
-    updateCounts();
+    renderCourseStuff();
   });
 
   krouzekForm.querySelector("[data-cancel-edit]").addEventListener("click", resetKrouzekForm);
 
   document.getElementById("krouzky-list").addEventListener("click", async (e) => {
-    const editBtn = e.target.closest("button[data-action='edit-krouzek']");
-    if (editBtn) {
-      startEditKrouzek(editBtn.dataset.id);
-      return;
-    }
-    const delBtn = e.target.closest("button[data-action='delete-krouzek']");
-    if (delBtn) {
-      if (confirm("Smazat tuto aktivitu?")) {
-        const id = delBtn.dataset.id;
-        const photo = (VTStore.krouzky.get(id) || {}).photo;
-        const ok = await trySave(() => VTStore.krouzky.remove(id));
-        if (!ok) return;
-        VTStore.deletePhoto(photo);
-        if (editingKrouzekId === id) resetKrouzekForm();
-        renderKrouzky();
-        updateCounts();
-      }
-    }
-  });
-
-  // --------------------------------------------------------------- rozvrh --
-  const rozvrhForm = document.getElementById("form-rozvrh");
-  const rozvrhList = document.getElementById("rozvrh-list");
-  let editingRozvrhId = null;
-  const DAY_NAMES = { 1: "Pondělí", 2: "Úterý", 3: "Středa", 4: "Čtvrtek", 5: "Pátek", 6: "Sobota", 7: "Neděle" };
-  const PROGRAM_NAMES = { vfresh: "VFRESH DC", zumba: "Zumba & Dance", volnocas: "Aktivity" };
-  const PROGRAM_TAGS = { vfresh: "tag-purple", zumba: "tag-red", volnocas: "tag-teal" };
-
-  // "8:15" -> "08:15" (čas se ukládá i porovnává jako dvouciferný "HH:MM")
-  function padTime(t) {
-    const m = /^(\d{1,2}):(\d{2})/.exec(String(t || ""));
-    return m ? `${m[1].padStart(2, "0")}:${m[2]}` : "";
-  }
-
-  // Rozbalovací seznam časů po 30 minutách (6:00–22:00), aby v rozvrhu nevznikaly
-  // překlepy ručním zápisem. `emptyLabel` přidá prázdnou volbu (pro nepovinný konec).
-  function timeSelectOptions(emptyLabel) {
-    const opts = [];
-    if (emptyLabel) opts.push(`<option value="">${escapeHtml(emptyLabel)}</option>`);
-    for (let m = 6 * 60; m <= 22 * 60; m += 30) {
-      const t = `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
-      opts.push(`<option value="${t}">${t}</option>`);
-    }
-    return opts.join("");
-  }
-  document.getElementById("rozvrh-time-select").innerHTML = timeSelectOptions();
-
-  function resetRozvrhForm() {
-    editingRozvrhId = null;
-    rozvrhForm.reset();
-    document.getElementById("form-rozvrh-title").textContent = "Přidat trénink do rozvrhu";
-    rozvrhForm.querySelector(".btn-submit").textContent = "Přidat do rozvrhu";
-    rozvrhForm.querySelector("[data-cancel-edit]").hidden = true;
-    rozvrhForm.classList.remove("is-editing");
-  }
-
-  function startEditRozvrh(id, copy) {
-    const item = VTStore.rozvrh.get(id);
-    if (!item) return;
-    editingRozvrhId = copy ? null : id;
-    rozvrhForm.weekday.value = String(item.weekday);
-    rozvrhForm.time.value = padTime(item.time);
-    rozvrhForm.name.value = item.name || "";
-    rozvrhForm.note.value = item.note || "";
-    rozvrhForm.program.value = item.program || "volnocas";
-    rozvrhForm.published.checked = item.published !== false;
-    document.getElementById("form-rozvrh-title").textContent = copy ? "Přidat trénink (kopie)" : "Upravit trénink";
-    rozvrhForm.querySelector(".btn-submit").textContent = copy ? "Přidat do rozvrhu" : "Uložit změny";
-    rozvrhForm.querySelector("[data-cancel-edit]").hidden = false;
-    rozvrhForm.classList.toggle("is-editing", !copy);
-    rozvrhForm.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  function renderRozvrh() {
-    const empty = document.getElementById("rozvrh-empty");
-    const items = VTStore.rozvrh.all();
-    empty.hidden = items.length > 0;
-    const days = [...new Set(items.map((r) => r.weekday))];
-    rozvrhList.innerHTML = days.map((d) => `
-      <h3 class="admin-subhead">${DAY_NAMES[d] || d}</h3>
-      ${items.filter((r) => r.weekday === d).map((r) => `
-        <div class="admin-card${r.published === false ? " is-unpublished" : ""}" data-id="${r.id}">
-          <div class="admin-card-main">
-            <div class="admin-card-main-text">
-              <div class="admin-card-title">${escapeHtml(r.time)} ${escapeHtml(r.name)} <span class="tag ${PROGRAM_TAGS[r.program] || "tag-teal"}">${escapeHtml(PROGRAM_NAMES[r.program] || r.program)}</span> ${r.seed ? '<span class="seed-badge">základní</span>' : ""}${r.published === false ? ' <span class="seed-badge">skryto</span>' : ""}</div>
-              ${r.note ? `<div class="admin-card-meta">${escapeHtml(r.note)}</div>` : ""}
-            </div>
-          </div>
-          <div class="admin-card-actions">
-            <button class="btn-mini" data-action="edit-rozvrh" data-id="${r.id}">✎ Upravit</button>
-            <button class="btn-mini" data-action="copy-rozvrh" data-id="${r.id}">⧉ Kopie</button>
-            <button class="btn-mini" data-action="toggle-rozvrh" data-id="${r.id}">${r.published === false ? "Zobrazit" : "Skrýt"}</button>
-            <button class="btn-mini btn-mini-danger" data-action="delete-rozvrh" data-id="${r.id}">🗑 Smazat</button>
-          </div>
-        </div>
-      `).join("")}
-    `).join("");
-  }
-
-  rozvrhForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const f = e.target;
-    const submitBtn = f.querySelector(".btn-submit");
-    submitBtn.disabled = true;
-    const patch = {
-      weekday: Number(f.weekday.value),
-      time: f.time.value,
-      name: f.name.value.trim(),
-      note: f.note.value.trim() || null,
-      program: f.program.value,
-      published: f.published.checked,
-    };
-    const ok = await trySave(async () => {
-      if (editingRozvrhId) await VTStore.rozvrh.update(editingRozvrhId, patch);
-      else await VTStore.rozvrh.add(patch);
-    });
-    submitBtn.disabled = false;
-    if (!ok) return;
-    resetRozvrhForm();
-    renderRozvrh();
-    updateCounts();
-  });
-
-  rozvrhForm.querySelector("[data-cancel-edit]").addEventListener("click", resetRozvrhForm);
-
-  rozvrhList.addEventListener("click", async (e) => {
-    const btn = e.target.closest("button[data-action]");
+    const btn = e.target.closest("[data-action]");
     if (!btn) return;
     const id = btn.dataset.id;
     const action = btn.dataset.action;
-    if (action === "edit-rozvrh") {
-      startEditRozvrh(id, false);
-    } else if (action === "copy-rozvrh") {
-      startEditRozvrh(id, true);
-    } else if (action === "toggle-rozvrh") {
-      const r = VTStore.rozvrh.get(id);
-      if (!r) return;
-      const ok = await trySave(() => VTStore.rozvrh.update(id, { published: r.published === false }));
-      if (ok) renderRozvrh();
-    } else if (action === "delete-rozvrh") {
-      if (!confirm("Smazat tento trénink z rozvrhu?")) return;
-      const ok = await trySave(() => VTStore.rozvrh.remove(id));
-      if (!ok) return;
-      if (editingRozvrhId === id) resetRozvrhForm();
-      renderRozvrh();
-      updateCounts();
+    if (action === "edit-krouzek") {
+      startEditKrouzek(id);
+    } else if (action === "add-kurz") {
+      switchTab("skupiny");
+      resetSkupinaForm(id);
+      skupinaForm.scrollIntoView({ behavior: "smooth", block: "start" });
+      skupinaForm.name.focus({ preventScroll: true });
+    } else if (action === "open-skupina") {
+      switchTab("skupiny");
+      startEditSkupina(id);
+    } else if (action === "delete-krouzek") {
+      const item = VTStore.krouzky.get(id);
+      if (!item) return;
+      const courses = VTStore.coursesOf(id);
+      const msg = courses.length
+        ? `Smazat aktivitu „${item.name}“ i s ${courses.length} kurzy a jejich termíny? Tohle nejde vrátit.`
+        : `Smazat aktivitu „${item.name}“?`;
+      if (!confirm(msg)) return;
+      const ok = await trySave(async () => {
+        for (const g of courses) await removeCourse(g.id);
+        await VTStore.krouzky.remove(id);
+      });
+      if (!ok) { renderCourseStuff(); return; }
+      VTStore.deletePhoto(item.photo);
+      (item.detailPhotos || []).forEach((p) => VTStore.deletePhoto(p && p.url));
+      if (editingKrouzekId === id) resetKrouzekForm();
+      renderCourseStuff();
     }
   });
 
-  // ------------------------------------------------------- kurzy (skupiny) --
-  // Obsah statických stránek kurz-gymnastika.html, kurz-viktorianek.html,
-  // kurz-dramaticky-klub.html, kurz-telovychova.html a kurz-zumba.html (rozvrh,
-  // cena, místo, popis) — vykresluje js/kurz-groups.js podle page_slug.
-  const PAGE_SLUG_ORDER = ["gymnastika", "viktorianek", "dramacek", "telovychova", "zumba"];
-  const PAGE_SLUG_NAMES = {
-    gymnastika: "Sportovní gymnastika",
-    viktorianek: "Viktoriánek",
-    dramacek: "Dramatický klub",
-    telovychova: "Sportuj s VIKTORKOU",
-    zumba: "Zumba & Dance",
-  };
-  const PAGE_SLUG_HREF = {
-    gymnastika: "kurz-gymnastika.html",
-    viktorianek: "kurz-viktorianek.html",
-    dramacek: "kurz-dramaticky-klub.html",
-    telovychova: "kurz-telovychova.html",
-    zumba: "kurz-zumba.html",
-  };
-  // program_id je u vik_groups povinný a řízený obsahem, ne formulářem: Zumba
-  // patří pod program "zumba-dance", zbytek pod "volnocas".
-  const PAGE_SLUG_PROGRAM_SLUG = { zumba: "zumba-dance" };
+  // ---------------------------------------------------------------- kurzy --
+  const skupinaForm = document.getElementById("form-skupina");
+  const activitySelect = document.getElementById("skupina-activity-select");
+  const slotRowsBox = document.getElementById("skupina-slots");
+  let editingSkupinaId = null;
+  let editingSlotIds = [];
 
-  function slugify(str) {
-    return String(str || "")
-      .normalize("NFD").replace(/[̀-ͯ]/g, "")
-      .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  function refreshActivitySelect() {
+    const current = activitySelect.value;
+    const acts = sortedActivities();
+    activitySelect.innerHTML = '<option value="">Vyberte aktivitu…</option>' + PROGRAM_ORDER.map((prog) => {
+      const rows = acts.filter((a) => programOf(a) === prog);
+      if (!rows.length) return "";
+      return `<optgroup label="${escapeHtml(PROGRAM_NAMES[prog])}">${rows.map((a) => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("")}</optgroup>`;
+    }).join("");
+    if (acts.some((a) => a.id === current)) activitySelect.value = current;
   }
 
-  document.getElementById("slot-start-select").innerHTML = timeSelectOptions();
-  document.getElementById("slot-end-select").innerHTML = timeSelectOptions("–");
+  function placeOptions() {
+    return '<option value="">Bez místa</option>' + VTStore.mista.all().map((p) => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
+  }
+  const WEEKDAY_OPTIONS = Object.keys(DAY_NAMES).map((d) => `<option value="${d}">${DAY_NAMES[d]}</option>`).join("");
 
-  const skupinaForm = document.getElementById("form-skupina");
-  let editingSkupinaId = null;
+  function addSlotRow(slot) {
+    const row = document.createElement("div");
+    row.className = "slot-row";
+    if (slot && slot.id) row.dataset.id = slot.id;
+    row.innerHTML = `
+      <select name="slotWeekday" aria-label="Den">${WEEKDAY_OPTIONS}</select>
+      <select name="slotStart" aria-label="Od">${timeSelectOptions()}</select>
+      <select name="slotEnd" aria-label="Do">${timeSelectOptions("do –")}</select>
+      <select name="slotPlace" aria-label="Místo">${placeOptions()}</select>
+      <input type="text" name="slotNote" placeholder="Poznámka" maxlength="80" aria-label="Poznámka">
+      <button type="button" class="btn-mini btn-mini-danger" data-remove-slot aria-label="Odebrat termín">✕</button>`;
+    const last = slotRowsBox.querySelector(".slot-row:last-child");
+    row.querySelector('[name="slotWeekday"]').value = String(slot ? slot.weekday : (last ? last.querySelector('[name="slotWeekday"]').value : 1));
+    row.querySelector('[name="slotStart"]').value = slot ? padTime(slot.startTime) : "16:00";
+    row.querySelector('[name="slotEnd"]').value = slot && slot.endTime ? padTime(slot.endTime) : (slot ? "" : "17:00");
+    const defaultPlace = last ? last.querySelector('[name="slotPlace"]').value : ((VTStore.mista.all().find((p) => p.slug === "cut") || {}).id || "");
+    row.querySelector('[name="slotPlace"]').value = slot ? (slot.placeId || "") : defaultPlace;
+    row.querySelector('[name="slotNote"]').value = (slot && slot.note) || "";
+    slotRowsBox.appendChild(row);
+  }
+  document.getElementById("skupina-add-slot").addEventListener("click", () => addSlotRow(null));
+  slotRowsBox.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-remove-slot]");
+    if (btn) btn.closest(".slot-row").remove();
+  });
 
-  function resetSkupinaForm() {
+  function readSlotRows() {
+    return [...slotRowsBox.querySelectorAll(".slot-row")].map((row) => ({
+      id: row.dataset.id || null,
+      weekday: Number(row.querySelector('[name="slotWeekday"]').value),
+      startTime: row.querySelector('[name="slotStart"]').value,
+      endTime: row.querySelector('[name="slotEnd"]').value || null,
+      placeId: row.querySelector('[name="slotPlace"]').value || null,
+      note: row.querySelector('[name="slotNote"]').value.trim() || null,
+    }));
+  }
+
+  function resetSkupinaForm(activityId) {
     editingSkupinaId = null;
+    editingSlotIds = [];
     skupinaForm.reset();
+    refreshActivitySelect();
+    activitySelect.value = activityId || "";
+    slotRowsBox.innerHTML = "";
+    addSlotRow(null);
     document.getElementById("form-skupina-title").textContent = "Přidat kurz";
     skupinaForm.querySelector(".btn-submit").textContent = "Přidat kurz";
     skupinaForm.querySelector("[data-cancel-edit]").hidden = true;
     skupinaForm.classList.remove("is-editing");
   }
 
-  function startEditSkupina(id) {
+  function startEditSkupina(id, copy) {
     const item = VTStore.skupiny.get(id);
     if (!item) return;
-    editingSkupinaId = id;
-    skupinaForm.pageSlug.value = item.pageSlug || "gymnastika";
-    skupinaForm.name.value = item.name || "";
-    skupinaForm.ageMin.value = item.ageMin ?? "";
-    skupinaForm.ageMax.value = item.ageMax ?? "";
+    editingSkupinaId = copy ? null : id;
+    refreshActivitySelect();
+    activitySelect.value = item.activityId || "";
+    skupinaForm.name.value = copy ? `${item.name} (kopie)` : (item.name || "");
+    skupinaForm.shortName.value = item.shortName || "";
+    skupinaForm.ageLabel.value = item.ageLabel || "";
     skupinaForm.description.value = item.description || "";
     skupinaForm.priceCzk.value = item.priceCzk ?? "";
     skupinaForm.priceNote.value = item.priceNote || "";
@@ -801,55 +863,67 @@
     skupinaForm.trialNote.value = item.trialNote || "";
     skupinaForm.sortOrder.value = item.sortOrder ?? 100;
     skupinaForm.published.checked = item.published !== false;
-    document.getElementById("form-skupina-title").textContent = "Upravit kurz";
-    skupinaForm.querySelector(".btn-submit").textContent = "Uložit změny";
+    slotRowsBox.innerHTML = "";
+    const slots = VTStore.slotsOf(id);
+    editingSlotIds = copy ? [] : slots.map((s) => s.id);
+    slots.forEach((s) => addSlotRow(copy ? { ...s, id: null } : s));
+    if (!slots.length) addSlotRow(null);
+    document.getElementById("form-skupina-title").textContent = copy ? "Přidat kurz (kopie)" : "Upravit kurz";
+    skupinaForm.querySelector(".btn-submit").textContent = copy ? "Přidat kurz" : "Uložit změny";
     skupinaForm.querySelector("[data-cancel-edit]").hidden = false;
-    skupinaForm.classList.add("is-editing");
+    skupinaForm.classList.toggle("is-editing", !copy);
     skupinaForm.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // Smaže kurz i s jeho termíny (nejdřív termíny, ať sedí i kopie v prohlížeči).
+  async function removeCourse(id) {
+    for (const s of VTStore.slotsOf(id)) await VTStore.rozvrhSkupin.remove(s.id);
+    await VTStore.skupiny.remove(id);
   }
 
   function renderSkupiny() {
     const list = document.getElementById("skupiny-list");
     const empty = document.getElementById("skupiny-empty");
-    const items = VTStore.skupiny.all().filter((g) => g.pageSlug);
-    empty.hidden = items.length > 0;
-    const bySlug = new Map();
-    items.forEach((g) => {
-      if (!bySlug.has(g.pageSlug)) bySlug.set(g.pageSlug, []);
-      bySlug.get(g.pageSlug).push(g);
-    });
-    list.innerHTML = PAGE_SLUG_ORDER.filter((slug) => bySlug.has(slug)).map((slug) => {
-      const rows = bySlug.get(slug).slice().sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-      return `
-        <h3 class="admin-subhead">${escapeHtml(PAGE_SLUG_NAMES[slug] || slug)}</h3>
-        ${rows.map((g) => {
-          const age = g.ageMin != null ? `${g.ageMin}${g.ageMax != null ? "–" + g.ageMax : "+"} let` : "";
-          const price = g.priceCzk ? `${g.priceCzk} Kč${g.priceNote ? " · " + escapeHtml(g.priceNote) : ""}` : "cena neuvedena";
-          return `
-          <div class="admin-card${g.published === false ? " is-unpublished" : ""}" data-id="${g.id}">
-            <div class="admin-card-main">
-              <div class="admin-card-main-text">
-                <div class="admin-card-title">${escapeHtml(g.name)}${age ? ` <span class="tag tag-teal">${escapeHtml(age)}</span>` : ""}${g.published === false ? ' <span class="seed-badge">skryto</span>' : ""}</div>
-                <div class="admin-card-meta">${price}${g.trialLesson ? " · zkušební lekce zdarma" : ""}</div>
-                <p class="admin-card-message">${escapeHtml(g.description || "")}</p>
-              </div>
+    const all = VTStore.skupiny.all();
+    empty.hidden = all.length > 0;
+    const acts = sortedActivities();
+    const orphans = all.filter((g) => !g.activityId || !VTStore.krouzky.get(g.activityId));
+    const sections = acts.map((a) => ({ title: a.name, prog: programOf(a), rows: VTStore.coursesOf(a.id) }))
+      .filter((sec) => sec.rows.length);
+    if (orphans.length) sections.push({ title: "Bez aktivity (na webu se nezobrazí)", prog: "volnocas", rows: orphans });
+    list.innerHTML = sections.map((sec) => `
+      <h3 class="admin-subhead">${escapeHtml(sec.title)} <span class="tag ${PROGRAM_TAGS[sec.prog]}">${escapeHtml(PROGRAM_NAMES[sec.prog])}</span></h3>
+      ${sec.rows.map((g) => {
+        const slots = VTStore.slotsOf(g.id);
+        const meta = [priceText(g), g.trialLesson ? "zkušební lekce zdarma" : ""].filter(Boolean).join(" · ");
+        return `
+        <div class="admin-card${g.published === false ? " is-unpublished" : ""}" data-id="${g.id}" id="kurz-${g.id}">
+          <div class="admin-card-main">
+            <div class="admin-card-main-text">
+              <div class="admin-card-title">${escapeHtml(g.name)}${g.ageLabel ? ` <span class="tag tag-teal">${escapeHtml(g.ageLabel)}</span>` : ""}${g.published === false ? ' <span class="seed-badge">skryto</span>' : ""}</div>
+              <ul class="admin-slot-list">${slots.length ? slots.map((s) => `<li>${escapeHtml(slotText(s))}${s.published === false ? " (skryto)" : ""}</li>`).join("") : '<li class="admin-warn">Bez termínu, v rozvrhu se neobjeví.</li>'}</ul>
+              ${meta ? `<div class="admin-card-meta">${escapeHtml(meta)}</div>` : ""}
             </div>
-            <div class="admin-card-actions">
-              <a class="btn-mini" href="${escapeHtml(pub(PAGE_SLUG_HREF[slug] || "#"))}" target="_blank" rel="noopener">👁 Náhled</a>
-              <button class="btn-mini" data-action="edit-skupina" data-id="${g.id}">✎ Upravit</button>
-              <button class="btn-mini" data-action="toggle-skupina" data-id="${g.id}">${g.published === false ? "Zobrazit" : "Skrýt"}</button>
-              <button class="btn-mini btn-mini-danger" data-action="delete-skupina" data-id="${g.id}">🗑 Smazat</button>
-            </div>
-          </div>`;
-        }).join("")}
-      `;
-    }).join("");
-    refreshSlotGroupSelect();
+          </div>
+          <div class="admin-card-actions">
+            <button class="btn-mini" data-action="edit-skupina" data-id="${g.id}">✎ Upravit</button>
+            <button class="btn-mini" data-action="copy-skupina" data-id="${g.id}">⧉ Kopie</button>
+            <button class="btn-mini" data-action="toggle-skupina" data-id="${g.id}">${g.published === false ? "Zobrazit" : "Skrýt"}</button>
+            <button class="btn-mini btn-mini-danger" data-action="delete-skupina" data-id="${g.id}">🗑 Smazat</button>
+          </div>
+        </div>`;
+      }).join("")}
+    `).join("");
   }
 
   skupinaForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const f = e.target;
+    const activity = VTStore.krouzky.get(f.activityId.value);
+    if (!activity) { alert("Vyberte aktivitu, pod kterou kurz patří."); return; }
+    const slots = readSlotRows();
+    const bad = slots.find((s) => s.endTime && padTime(s.endTime) <= padTime(s.startTime));
+    if (bad) { alert(`Termín ${DAY_NAMES[bad.weekday]} ${bad.startTime}: konec musí být po začátku.`); return; }
     const submitBtn = f.querySelector(".btn-submit");
     submitBtn.disabled = true;
     const priceExtra = f.priceExtra.value.split("\n").map((s) => s.trim()).filter(Boolean).map((line) => {
@@ -858,10 +932,10 @@
     });
     const ok = await trySave(async () => {
       const patch = {
-        pageSlug: f.pageSlug.value,
+        activityId: activity.id,
         name: f.name.value.trim(),
-        ageMin: f.ageMin.value !== "" ? Number(f.ageMin.value) : null,
-        ageMax: f.ageMax.value !== "" ? Number(f.ageMax.value) : null,
+        shortName: f.shortName.value.trim() || null,
+        ageLabel: f.ageLabel.value.trim() || null,
         description: f.description.value.trim() || null,
         priceCzk: f.priceCzk.value !== "" ? Number(f.priceCzk.value) : null,
         priceNote: f.priceNote.value.trim() || null,
@@ -872,26 +946,35 @@
         sortOrder: Number(f.sortOrder.value) || 100,
         published: f.published.checked,
       };
-      if (editingSkupinaId) {
-        await VTStore.skupiny.update(editingSkupinaId, patch);
+      let groupId = editingSkupinaId;
+      if (groupId) {
+        await VTStore.skupiny.update(groupId, patch);
       } else {
-        const programSlug = PAGE_SLUG_PROGRAM_SLUG[patch.pageSlug] || "volnocas";
-        const program = VTStore.programy.all().find((p) => p.slug === programSlug);
-        if (!program) throw new Error(`Program "${programSlug}" nebyl nalezen.`);
-        patch.programId = program.id;
-        patch.slug = `${patch.pageSlug}-${slugify(patch.name) || "kurz"}-${Date.now().toString(36).slice(-5)}`;
-        await VTStore.skupiny.add(patch);
+        patch.slug = uniqueSlug(`${activity.slug || "kurz"}-${patch.name}`, VTStore.skupiny.all().map((g) => g.slug));
+        groupId = (await VTStore.skupiny.add(patch)).id;
+      }
+      // Termíny: upravit existující, přidat nové, smazat odebrané.
+      const keep = new Set();
+      for (const s of slots) {
+        const row = { weekday: s.weekday, startTime: s.startTime, endTime: s.endTime, placeId: s.placeId, note: s.note };
+        if (s.id) {
+          keep.add(s.id);
+          await VTStore.rozvrhSkupin.update(s.id, row);
+        } else {
+          await VTStore.rozvrhSkupin.add({ ...row, groupId, published: true });
+        }
+      }
+      for (const id of editingSlotIds) {
+        if (!keep.has(id)) await VTStore.rozvrhSkupin.remove(id);
       }
     });
     submitBtn.disabled = false;
+    renderCourseStuff();
     if (!ok) return;
-    resetSkupinaForm();
-    renderSkupiny();
-    renderSlots();
-    updateCounts();
+    resetSkupinaForm(activity.id);
   });
 
-  skupinaForm.querySelector("[data-cancel-edit]").addEventListener("click", resetSkupinaForm);
+  skupinaForm.querySelector("[data-cancel-edit]").addEventListener("click", () => resetSkupinaForm(activitySelect.value));
 
   document.getElementById("skupiny-list").addEventListener("click", async (e) => {
     const btn = e.target.closest("button[data-action]");
@@ -899,171 +982,157 @@
     const id = btn.dataset.id;
     const action = btn.dataset.action;
     if (action === "edit-skupina") {
-      startEditSkupina(id);
+      startEditSkupina(id, false);
+    } else if (action === "copy-skupina") {
+      startEditSkupina(id, true);
     } else if (action === "toggle-skupina") {
       const g = VTStore.skupiny.get(id);
       if (!g) return;
       const ok = await trySave(() => VTStore.skupiny.update(id, { published: g.published === false }));
-      if (ok) renderSkupiny();
+      if (ok) renderCourseStuff();
     } else if (action === "delete-skupina") {
-      if (!confirm("Smazat tento kurz i s jeho rozvrhovými termíny?")) return;
-      const ok = await trySave(async () => {
-        // Nejdřív smazat termíny kurzu, ať sedí i lokální kopie v prohlížeči
-        // (v databázi by je smazal kaskádově i samotný FK).
-        const slots = VTStore.rozvrhSkupin.all().filter((s) => s.groupId === id);
-        for (const s of slots) await VTStore.rozvrhSkupin.remove(s.id);
-        await VTStore.skupiny.remove(id);
-      });
+      const g = VTStore.skupiny.get(id);
+      if (!g || !confirm(`Smazat kurz „${g.name}“ i s jeho termíny?`)) return;
+      const ok = await trySave(() => removeCourse(id));
+      if (editingSkupinaId === id) resetSkupinaForm(g.activityId);
+      renderCourseStuff();
       if (!ok) return;
-      if (editingSkupinaId === id) resetSkupinaForm();
-      renderSkupiny();
-      renderSlots();
-      updateCounts();
     }
   });
 
-  // ------------------------------------------------- rozvrhové termíny kurzů --
-  const slotForm = document.getElementById("form-slot");
-  const slotGroupSelect = document.getElementById("slot-group-select");
-  const slotPlaceSelect = document.getElementById("slot-place-select");
-  let editingSlotId = null;
+  // ---------------------------------------------------------------- místa --
+  const mistoForm = document.getElementById("form-misto");
+  let editingMistoId = null;
 
-  function refreshSlotGroupSelect() {
-    const current = slotGroupSelect.value;
-    const groups = VTStore.skupiny.all().filter((g) => g.pageSlug)
-      .slice().sort((a, b) => PAGE_SLUG_ORDER.indexOf(a.pageSlug) - PAGE_SLUG_ORDER.indexOf(b.pageSlug) || (a.sortOrder || 0) - (b.sortOrder || 0));
-    slotGroupSelect.innerHTML = groups.map((g) => `<option value="${g.id}">${escapeHtml(PAGE_SLUG_NAMES[g.pageSlug] || g.pageSlug)} · ${escapeHtml(g.name)}</option>`).join("");
-    if (groups.some((g) => g.id === current)) slotGroupSelect.value = current;
+  function resetMistoForm() {
+    editingMistoId = null;
+    mistoForm.reset();
+    document.getElementById("form-misto-title").textContent = "Přidat místo";
+    mistoForm.querySelector(".btn-submit").textContent = "Přidat místo";
+    mistoForm.querySelector("[data-cancel-edit]").hidden = true;
+    mistoForm.classList.remove("is-editing");
   }
 
-  function refreshSlotPlaceSelect() {
-    const current = slotPlaceSelect.value;
-    const places = VTStore.mista.all();
-    slotPlaceSelect.innerHTML = `<option value="">Bez místa</option>` + places.map((p) => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
-    slotPlaceSelect.value = current;
+  function renderMista() {
+    const used = new Map();
+    VTStore.rozvrhSkupin.all().forEach((s) => { if (s.placeId) used.set(s.placeId, (used.get(s.placeId) || 0) + 1); });
+    document.getElementById("mista-list").innerHTML = VTStore.mista.all().map((p) => `
+      <div class="admin-card" data-id="${p.id}">
+        <div class="admin-card-main"><div class="admin-card-main-text">
+          <div class="admin-card-title">${escapeHtml(p.name)}${p.shortName && p.shortName !== p.name ? ` <span class="tag">${escapeHtml(p.shortName)}</span>` : ""}</div>
+          <div class="admin-card-meta">${escapeHtml([p.address, p.note].filter(Boolean).join(" · "))}${p.address || p.note ? " · " : ""}${used.get(p.id) || 0} termínů</div>
+        </div></div>
+        <div class="admin-card-actions">
+          <button class="btn-mini" data-action="edit-misto" data-id="${p.id}">✎ Upravit</button>
+          <button class="btn-mini btn-mini-danger" data-action="delete-misto" data-id="${p.id}">🗑 Smazat</button>
+        </div>
+      </div>`).join("");
   }
 
-  function resetSlotForm() {
-    editingSlotId = null;
-    const keepGroup = slotForm.groupId.value;
-    slotForm.reset();
-    slotForm.groupId.value = keepGroup;
-    document.getElementById("form-slot-title").textContent = "Přidat termín";
-    slotForm.querySelector(".btn-submit").textContent = "Přidat termín";
-    slotForm.querySelector("[data-cancel-edit]").hidden = true;
-    slotForm.classList.remove("is-editing");
-  }
-
-  function startEditSlot(id) {
-    const item = VTStore.rozvrhSkupin.get(id);
-    if (!item) return;
-    editingSlotId = id;
-    slotForm.groupId.value = item.groupId;
-    slotForm.weekday.value = String(item.weekday);
-    slotForm.startTime.value = padTime(item.startTime);
-    slotForm.endTime.value = item.endTime ? padTime(item.endTime) : "";
-    slotForm.placeId.value = item.placeId || "";
-    slotForm.note.value = item.note || "";
-    slotForm.published.checked = item.published !== false;
-    document.getElementById("form-slot-title").textContent = "Upravit termín";
-    slotForm.querySelector(".btn-submit").textContent = "Uložit změny";
-    slotForm.querySelector("[data-cancel-edit]").hidden = false;
-    slotForm.classList.add("is-editing");
-    slotForm.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  function renderSlots() {
-    refreshSlotPlaceSelect();
-    const list = document.getElementById("slots-list");
-    const empty = document.getElementById("slots-empty");
-    const items = VTStore.rozvrhSkupin.all();
-    empty.hidden = items.length > 0;
-    const groupsById = new Map(VTStore.skupiny.all().map((g) => [g.id, g]));
-    const placesById = new Map(VTStore.mista.all().map((p) => [p.id, p]));
-    const byGroup = new Map();
-    items.forEach((s) => {
-      if (!byGroup.has(s.groupId)) byGroup.set(s.groupId, []);
-      byGroup.get(s.groupId).push(s);
-    });
-    const groupIds = [...byGroup.keys()].sort((a, b) => {
-      const ga = groupsById.get(a);
-      const gb = groupsById.get(b);
-      return (PAGE_SLUG_ORDER.indexOf(ga && ga.pageSlug) - PAGE_SLUG_ORDER.indexOf(gb && gb.pageSlug)) || ((ga && ga.sortOrder || 0) - (gb && gb.sortOrder || 0));
-    });
-    list.innerHTML = groupIds.map((gid) => {
-      const g = groupsById.get(gid);
-      const rows = byGroup.get(gid).slice().sort((a, b) => (a.weekday - b.weekday) || String(a.startTime).localeCompare(String(b.startTime)));
-      return `
-        <h3 class="admin-subhead">${g ? escapeHtml(`${PAGE_SLUG_NAMES[g.pageSlug] || g.pageSlug} · ${g.name}`) : "(smazaný kurz)"}</h3>
-        ${rows.map((s) => {
-          const place = s.placeId ? placesById.get(s.placeId) : null;
-          const time = s.endTime ? `${s.startTime}–${s.endTime}` : s.startTime;
-          return `
-          <div class="admin-card${s.published === false ? " is-unpublished" : ""}" data-id="${s.id}">
-            <div class="admin-card-main">
-              <div class="admin-card-main-text">
-                <div class="admin-card-title">${escapeHtml(DAY_NAMES[s.weekday] || s.weekday)} ${escapeHtml(time)}${s.published === false ? ' <span class="seed-badge">skryto</span>' : ""}</div>
-                <div class="admin-card-meta">${place ? escapeHtml(place.name) : "bez místa"}${s.note ? " · " + escapeHtml(s.note) : ""}</div>
-              </div>
-            </div>
-            <div class="admin-card-actions">
-              <button class="btn-mini" data-action="edit-slot" data-id="${s.id}">✎ Upravit</button>
-              <button class="btn-mini" data-action="toggle-slot" data-id="${s.id}">${s.published === false ? "Zobrazit" : "Skrýt"}</button>
-              <button class="btn-mini btn-mini-danger" data-action="delete-slot" data-id="${s.id}">🗑 Smazat</button>
-            </div>
-          </div>`;
-        }).join("")}
-      `;
-    }).join("");
-  }
-
-  slotForm.addEventListener("submit", async (e) => {
+  mistoForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const f = e.target;
-    if (!f.groupId.value) { alert("Nejdřív přidejte kurz výše, ke kterému termín patří."); return; }
-    const submitBtn = f.querySelector(".btn-submit");
-    submitBtn.disabled = true;
     const patch = {
-      groupId: f.groupId.value,
-      weekday: Number(f.weekday.value),
-      startTime: f.startTime.value,
-      endTime: f.endTime.value || null,
-      placeId: f.placeId.value || null,
+      name: f.name.value.trim(),
+      shortName: f.shortName.value.trim() || null,
+      address: f.address.value.trim() || null,
       note: f.note.value.trim() || null,
-      published: f.published.checked,
     };
     const ok = await trySave(async () => {
-      if (editingSlotId) await VTStore.rozvrhSkupin.update(editingSlotId, patch);
-      else await VTStore.rozvrhSkupin.add(patch);
+      if (editingMistoId) {
+        await VTStore.mista.update(editingMistoId, patch);
+      } else {
+        const maxOrder = Math.max(0, ...VTStore.mista.all().map((p) => p.sortOrder || 0));
+        await VTStore.mista.add({ ...patch, slug: uniqueSlug(patch.name, VTStore.mista.all().map((p) => p.slug)), sortOrder: maxOrder + 10, published: true });
+      }
     });
-    submitBtn.disabled = false;
     if (!ok) return;
-    resetSlotForm();
-    renderSlots();
+    resetMistoForm();
+    renderCourseStuff();
   });
+  mistoForm.querySelector("[data-cancel-edit]").addEventListener("click", resetMistoForm);
 
-  slotForm.querySelector("[data-cancel-edit]").addEventListener("click", resetSlotForm);
-
-  document.getElementById("slots-list").addEventListener("click", async (e) => {
+  document.getElementById("mista-list").addEventListener("click", async (e) => {
     const btn = e.target.closest("button[data-action]");
     if (!btn) return;
-    const id = btn.dataset.id;
-    const action = btn.dataset.action;
-    if (action === "edit-slot") {
-      startEditSlot(id);
-    } else if (action === "toggle-slot") {
-      const s = VTStore.rozvrhSkupin.get(id);
-      if (!s) return;
-      const ok = await trySave(() => VTStore.rozvrhSkupin.update(id, { published: s.published === false }));
-      if (ok) renderSlots();
-    } else if (action === "delete-slot") {
-      if (!confirm("Smazat tento termín z rozvrhu?")) return;
-      const ok = await trySave(() => VTStore.rozvrhSkupin.remove(id));
-      if (!ok) return;
-      if (editingSlotId === id) resetSlotForm();
-      renderSlots();
+    const p = VTStore.mista.get(btn.dataset.id);
+    if (!p) return;
+    if (btn.dataset.action === "edit-misto") {
+      editingMistoId = p.id;
+      mistoForm.name.value = p.name || "";
+      mistoForm.shortName.value = p.shortName || "";
+      mistoForm.address.value = p.address || "";
+      mistoForm.note.value = p.note || "";
+      document.getElementById("form-misto-title").textContent = "Upravit místo";
+      mistoForm.querySelector(".btn-submit").textContent = "Uložit změny";
+      mistoForm.querySelector("[data-cancel-edit]").hidden = false;
+      mistoForm.classList.add("is-editing");
+      mistoForm.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else if (btn.dataset.action === "delete-misto") {
+      const count = VTStore.rozvrhSkupin.all().filter((s) => s.placeId === p.id).length;
+      if (count) { alert(`Místo „${p.name}“ používá ${count} termínů. Nejdřív u nich vyberte jiné místo.`); return; }
+      if (!confirm(`Smazat místo „${p.name}“?`)) return;
+      const ok = await trySave(() => VTStore.mista.remove(p.id));
+      if (ok) { if (editingMistoId === p.id) resetMistoForm(); renderCourseStuff(); }
     }
   });
+
+  // ------------------------------------------------------- rozvrh (náhled) --
+  let rozvrhSite = "viktoria";
+  document.getElementById("rozvrh-site-filter").addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-site]");
+    if (!btn) return;
+    rozvrhSite = btn.dataset.site;
+    document.querySelectorAll("#rozvrh-site-filter [data-site]").forEach((b) => b.classList.toggle("active", b === btn));
+    renderRozvrh();
+  });
+
+  function renderRozvrh() {
+    const week = document.getElementById("rozvrh-week");
+    const rows = VTStore.timetable({ site: rozvrhSite });
+    const days = rows.some((r) => r.weekday > 5) ? [1, 2, 3, 4, 5, 6, 7] : [1, 2, 3, 4, 5];
+    week.style.setProperty("--tt-cols", days.length);
+    week.innerHTML = days.map((d) => {
+      const list = rows.filter((r) => r.weekday === d);
+      return `<div class="tt-day"><h3 class="tt-dayname">${DAY_NAMES[d]}</h3><ul class="tt-slots">${list.length ? list.map((r) => `
+        <li><button type="button" class="tt-slot tt-${r.program}" data-group="${r.groupId}" title="Upravit kurz">
+          <time>${escapeHtml(r.endTime ? `${r.time}–${r.endTime}` : r.time)}</time>
+          <span class="tt-name">${escapeHtml(r.name)}</span>
+          ${r.note ? `<span class="tt-note">${escapeHtml(r.note)}</span>` : ""}
+        </button></li>`).join("") : '<li class="tt-empty">Žádná lekce</li>'}</ul></div>`;
+    }).join("");
+
+    // Upozornění: co se v rozvrhu tohoto webu neukáže, i když by možná mělo.
+    const acts = VTStore.krouzky.all().filter((a) => (a.site || "viktoria") === rozvrhSite || a.site === "both");
+    const warnings = [];
+    acts.forEach((a) => {
+      const courses = VTStore.coursesOf(a.id, true);
+      if (!courses.length) warnings.push(`<li>Aktivita <b>${escapeHtml(a.name)}</b> nemá žádný zveřejněný kurz.</li>`);
+      courses.forEach((g) => {
+        if (!VTStore.slotsOf(g.id, true).length) warnings.push(`<li>Kurz <button type="button" class="link-btn" data-group="${g.id}">${escapeHtml(g.name)}</button> (${escapeHtml(a.name)}) nemá termín.</li>`);
+      });
+    });
+    const warn = document.getElementById("rozvrh-warn");
+    warn.hidden = !warnings.length;
+    warn.innerHTML = warnings.length ? `<h3 class="admin-subhead">Chybí v rozvrhu</h3><ul>${warnings.join("")}</ul>` : "";
+  }
+
+  document.getElementById("panel-rozvrh").addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-group]");
+    if (!btn) return;
+    switchTab("skupiny");
+    startEditSkupina(btn.dataset.group);
+  });
+
+  // Aktivity, kurzy, místa i rozvrh na sobě závisí: po každé změně překreslit vše.
+  function renderCourseStuff() {
+    renderKrouzky();
+    refreshActivitySelect();
+    renderSkupiny();
+    renderMista();
+    renderRozvrh();
+    updateCounts();
+  }
 
   // -------------------------------------------------------------- galerie --
   // Galerie sdílí tabulku mezi oběma weby (sloupec site), takže je nutné je
@@ -1224,10 +1293,8 @@
     renderSubmissions();
     renderAktuality();
     renderAkce();
-    renderKrouzky();
-    renderRozvrh();
-    renderSkupiny();
-    renderSlots();
+    resetSkupinaForm();
+    renderCourseStuff();
     renderGalerie();
     updateCounts();
   }

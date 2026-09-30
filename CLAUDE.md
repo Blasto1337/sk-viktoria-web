@@ -17,8 +17,8 @@ Repo: https://github.com/Blasto1337/sk-viktoria-web
 ```
 index.html              hlavní stránka (hero → kroužky → akce → galerie → kontakt)
 krouzky.html            přehled kroužků
-kurz-*.html             detail každého kroužku (statické stránky)
-kurz-detail.html        detail kroužku přidaného přes admin (?id=…)
+kurz-detail.html        stránka aktivity, šablona z DB (?a=<slug aktivity>, starší ?id=<uuid>)
+kurz-*.html             jen přesměrování na kurz-detail.html?a=… (kvůli starým odkazům)
 akce.html               přehled akcí (filtry)
 akce-*.html             detail akcí (statické)
 akce-detail.html        detail akce přidané přes admin (?id=…)
@@ -31,7 +31,9 @@ js/render-public.js     vykreslí obsah z VTStore do veřejných stránek
 js/script.js            navigace, mobilní menu, drobné interakce
 js/akce.js           filtrování karet akcí
 js/gallery.js        vykreslení galerie z VTStore + lightbox
-js/kurz-detail.js, akce-detail.js   detail položek z VTStore
+js/kurz-detail.js       hlavička, text a fotky stránky aktivity
+js/kurz-groups.js       boxy kurzů (termíny, místo, cena) na stránce aktivity
+js/akce-detail.js       detail akce z VTStore
 js/admin.js             logika adminu
 assets/hero, akce, gallery   obrázky
 podklady/               originální podklady od klientky (letáky, rozvrh, PDF, reel) — gold source, nepatří na web přímo
@@ -39,6 +41,7 @@ podklady/               originální podklady od klientky (letáky, rozvrh, PDF,
 
 ## Jak kód funguje
 
+- **Aktivita → Kurz → Termín (od 2026-09-30).** Aktivita (`vik_courses`: karta, obecný popis `detail_lead`, štítek `badge`, fotky stránky `detail_photos`, kategorie `program` volnocas/zumba/vfresh = barva a filtr v rozvrhu) → kurz (`vik_groups`, povinné `activity_id`: věk `age_label`, krátký název do rozvrhu `short_name`, cena, zkušební lekce) → termín (`vik_schedule_slots`: den, od–do, místo `vik_places`, poznámka). Rozvrh na webu i v adminu se skládá z termínů (`VTStore.timetable()`), ručně se nezadává; `vik_timetable` a `vik_programs` se už nepoužívají (zůstávají v DB, `vik_timetable` jen jako záloha v seed.js). Admin: záložky Aktivity, Kurzy (vč. termínů a míst) a Rozvrh (jen náhled). Stránka aktivity je jedna šablona `kurz-detail.html?a=<slug>`, nová aktivita tedy nepotřebuje nový HTML soubor. Karta „kdy“ se bez vyplněného `when_label` doplní z termínů (`VTStore.whenLabel`).
 - **Proměnlivý obsah je v databázi.** Kroužky, akce, aktuality, rozvrh i fotky galerie se upravují v adminu; v HTML jsou ručně psané jen detailní stránky (`kurz-*.html`, `akce-*.html`) a statické texty. Videa v galerii zatím nejsou, řeší se zvlášť.
 - **VTStore (`js/store.js`)** je jediná datová vrstva a mluví se Supabase (projekt „Blasto1337's Project", tabulky s prefixem `vik_`: `vik_courses` = kartičky kroužků, `vik_events` = akce, `vik_news` = aktuality, `vik_gallery` = fotky galerie (pořadí `sort_order`, `published`), `vik_timetable` = rozvrh na homepage (den, čas, název, poznámka, program vfresh/zumba/volnocas), `vik_inquiries` = přihlášky z formuláře, `vik_admins` = správci; fotky v bucketu `vik-photos`). Čtení (`all()`/`get()`) je synchronní nad pamětí, která se plní při startu: veřejné stránky čekají na `VTStore.ready`, admin volá `VTStore.loadAdmin()` po přihlášení. Zápisy (`add`/`update`/`remove`) jsou async.
   Veřejnost vidí jen publikovaný obsah a smí jen odeslat formulář (RLS). Nový správce: uživatel v Supabase Auth + řádek v `vik_admins`.
@@ -243,6 +246,6 @@ Podrobná strategie je v Claude Projektu „Viktoria Tábor" → doc `claude/red
 - **Žádné pomlčky (—) v běžném českém textu na webu** (nadpisy, popisky, věty, meta description, hlášky v adminu). Místo nich čárka, dvojtečka, závorka nebo nová věta — podle kontextu. Datumové/číselné rozsahy (např. „3–20 let", „17:45–18:45") používají spojovník/en-dash `–`, ten se netýká, zůstává. `<title>` tagy a `document.title` oddělují stránku a web pomocí ` | ` (ne pomlčkou). Nadpisy typu „Místo · Podnázev" používají `·` (interpunkt), stejně jako zbytek webu (patička, tagy). Výjimka: `—` jako placeholder prázdné hodnoty v dynamických polích (např. `<span id="k-age">—</span>`, než se načte JS) zůstává, to není text.
 - Neměnit strukturu HTML víc, než je nutné — klient chce zachovat přehlednost.
 - Nezavádět build nástroje, frameworky ani npm bez domluvy.
-- Kroužky, akce a aktuality na přehledových stránkách spravuje admin (databáze). Statické stránky `kurz-*.html` a `akce-*.html` zůstávají ručně psané.
+- Aktivity, kurzy, termíny, akce a aktuality spravuje admin (databáze). Stránky aktivit se generují ze šablony `kurz-detail.html`; ručně psané zůstávají jen `akce-*.html`.
 - Po změnách zkontrolovat responsivitu (mobilní menu, karty, slider) a kontrast na tmavém pozadí.
 - Před commitem: `git status`, nepřidávat `.DS_Store`.

@@ -38,7 +38,7 @@
   const isVfresh = (k) => k.group === "vfresh";
 
   function krouzekHref(item) {
-    return VTStore.hrefFor(item, `kurz-detail.html?id=${encodeURIComponent(item.id)}`);
+    return VTStore.hrefFor(item, VTStore.activityHref(item));
   }
   function akceHref(item) {
     return item.detailHref || `akce-detail.html?id=${encodeURIComponent(item.id)}`;
@@ -77,7 +77,7 @@
     const byOrder = (a, b) => (a.heroOrder ?? 100) - (b.heroOrder ?? 100);
     const courses = VTStore.krouzky.all().filter((k) => k.hero && !isVfresh(k)).map((k) => ({
       order: k.heroOrder, type: "Aktivita", title: k.name, lead: k.heroLead || k.description,
-      age: k.age, when: k.when, place: k.location, photo: k.photo, hint: k.photoHint,
+      age: k.age, when: VTStore.whenLabel(k), place: k.location, photo: k.photo, hint: k.photoHint,
       cta: "Zkušební lekce zdarma", ctaHref: contactHref(k.name),
       more: "Zjistit víc", moreHref: krouzekHref(k),
     }));
@@ -178,7 +178,7 @@
           <h3>${esc(item.name)}</h3>
           ${item.description ? `<p>${esc(item.description)}</p>` : ""}
           <div class="course-foot">
-            <span class="course-when">${esc(item.when || "")}</span>
+            <span class="course-when">${esc(VTStore.whenLabel(item))}</span>
             <span class="course-place">${esc(item.location || "")}</span>
           </div>
         </div>
@@ -271,7 +271,8 @@
     const week = document.getElementById("tt-week");
     if (!week) return;
     const DAYS = { 1: "Pondělí", 2: "Úterý", 3: "Středa", 4: "Čtvrtek", 5: "Pátek", 6: "Sobota", 7: "Neděle" };
-    const slots = VTStore.rozvrh.all().filter((r) => r.published !== false);
+    // Rozvrh se skládá z termínů kurzů (admin: Kurzy), viz VTStore.timetable().
+    const slots = VTStore.timetable();
     const hasWeekend = slots.some((r) => r.weekday > 5);
     const days = hasWeekend ? [1, 2, 3, 4, 5, 6, 7] : [1, 2, 3, 4, 5];
     const today = new Date().getDay() || 7;
@@ -333,10 +334,10 @@
     selectCategory(categoryFromUrl(new URL(window.location.href)));
   }
 
-  // ?kurz=zumba (odkazy ze statických stránek kroužků) nebo ?kurzname=Název
-  const KURZ = { gymnastika: "Sportovní gymnastika", telovychova: "Sportuj s VIKTORKOU", zumba: "Zumba & Dance", "dramaticky-klub": "Dramatický klub", viktorianek: "Viktoriánek" };
+  // ?kurz=<slug aktivity> nebo ?kurzname=Název
   function categoryFromUrl(url) {
-    return url.searchParams.get("kurzname") || KURZ[url.searchParams.get("kurz")] || null;
+    const bySlug = VTStore.activityBySlug(url.searchParams.get("kurz"));
+    return url.searchParams.get("kurzname") || (bySlug && bySlug.name) || null;
   }
   function selectCategory(name) {
     const select = document.getElementById("f-category");

@@ -51,8 +51,8 @@
     <button class="admin-tab" data-tab="aktuality">📢 Aktuality <span class="admin-tab-count" id="count-aktuality">0</span></button>
     <button class="admin-tab" data-tab="akce">🎉 Akce <span class="admin-tab-count" id="count-akce">0</span></button>
     <button class="admin-tab" data-tab="krouzky">🏅 Aktivity <span class="admin-tab-count" id="count-krouzky">0</span></button>
+    <button class="admin-tab" data-tab="skupiny">📄 Kurzy <span class="admin-tab-count" id="count-skupiny">0</span></button>
     <button class="admin-tab" data-tab="rozvrh">🗓 Rozvrh <span class="admin-tab-count" id="count-rozvrh">0</span></button>
-    <button class="admin-tab" data-tab="skupiny">📄 Kurzy (rozvrh, cena) <span class="admin-tab-count" id="count-skupiny">0</span></button>
     <button class="admin-tab" data-tab="galerie">📷 Galerie <span class="admin-tab-count" id="count-galerie">0</span></button>
   </nav>
 
@@ -197,55 +197,69 @@
     </div>
   </section>
 
-  <!-- ================= KROUŽKY ================= -->
+  <!-- ================= AKTIVITY ================= -->
   <section class="admin-panel" id="panel-krouzky" data-panel="krouzky" hidden>
     <div class="admin-panel-head"><h2>Aktivity</h2></div>
+    <p class="hint" style="margin:-8px 0 16px">Aktivita je obecná nabídka (např. Karate pro děti): karta na webu a stránka s popisem. Konkrétní skupiny s časy a cenou se k ní přidávají v záložce Kurzy.</p>
     <div class="admin-columns">
       <form class="admin-form" id="form-krouzek" data-collection="krouzky">
         <h3 id="form-krouzek-title">Přidat aktivitu</h3>
+        <label>Název aktivity
+          <input type="text" name="name" placeholder="např. Karate pro děti" required maxlength="80">
+        </label>
+        <label>Kategorie (barva a filtr v rozvrhu)
+          <select name="program">
+            <option value="volnocas" selected>Aktivity SK Viktoria</option>
+            <option value="zumba">Zumba &amp; Dance</option>
+            <option value="vfresh">VFRESH DC (karta vede na web VFRESH)</option>
+          </select>
+        </label>
         <label>Ikona
           <span class="icon-picker-row">
             <span class="icon-preview" id="krouzek-icon-preview" aria-hidden="true"></span>
             <select name="icon" id="krouzek-icon-select"></select>
           </span>
         </label>
-        <label>Skupina
-          <select name="group">
-            <option value="volnocas" selected>Aktivity SK Viktoria</option>
-            <option value="vfresh">VFRESH DC (na hlavním webu jen v kartě VFRESH)</option>
-          </select>
-        </label>
-        <label>Název aktivity
-          <input type="text" name="name" placeholder="např. Judo" required>
-        </label>
         <div class="field-row">
-          <label>Věková kategorie
-            <input type="text" name="age" placeholder="např. 6–10 let">
+          <label>Pro koho (věk)
+            <input type="text" name="age" placeholder="např. 6–10 let" maxlength="40">
           </label>
-          <label>Místo
-            <input type="text" name="location" placeholder="např. Centrum Univerzita Tábor">
+          <label>Místo (krátce)
+            <input type="text" name="location" placeholder="např. CUT Tábor" maxlength="80">
           </label>
         </div>
-        <label>Kdy (krátce, na kartu a do slideru)
-          <input type="text" name="when" placeholder="např. Út a Čt 9:30" maxlength="80">
+        <label>Kdy (krátce, na kartu)
+          <input type="text" name="when" placeholder="Když zůstane prázdné, doplní se z termínů kurzů" maxlength="80">
         </label>
-        <label>Popis
-          <textarea name="description" rows="2" placeholder="Krátký popis pro kartu i detail"></textarea>
+        <label>Krátký popis na kartu
+          <textarea name="description" rows="2" placeholder="1–2 věty do přehledu aktivit" maxlength="240"></textarea>
         </label>
-        <label>Rozvrh (jeden řádek = den | čas)
-          <textarea name="schedule" rows="3" placeholder="Pondělí | 16:00–17:00&#10;Středa | 17:00–18:00"></textarea>
-          <span class="hint">Formát: den a čas oddělte svislítkem „|“. (Napevno napsané aktivity mají rozvrh na vlastní stránce a tady se needituje.)</span>
-        </label>
-        <label>Fotka (nepovinné, jinak se zobrazí ikona)
+
+        <fieldset class="admin-fieldset">
+          <legend>Stránka aktivity</legend>
+          <label>Úvodní text
+            <textarea name="detailLead" rows="5" placeholder="Obecný popis aktivity. Víc odstavců oddělte prázdným řádkem."></textarea>
+            <span class="hint">Pod textem se automaticky vypíší kurzy s termíny a cenami.</span>
+          </label>
+          <label>Štítek (nepovinné)
+            <input type="text" name="badge" placeholder="např. Novinka" maxlength="30">
+          </label>
+          <label>Fotky na stránku aktivity
+            <input type="file" name="detailPhotoFiles" accept="image/*" multiple>
+          </label>
+          <div class="admin-photo-strip" id="krouzek-detail-photos"></div>
+        </fieldset>
+
+        <label>Hlavní fotka (karta, slider, stránka)
           <input type="file" name="photo" accept="image/*">
-          <span class="hint">Foťte na šířku, hlavní dění mějte uprostřed záběru. Na kartě se ořízne na 3:2, ve slideru do čtverce, v detailu 16:9. Ideálně alespoň 1600 px na šířku.</span>
+          <span class="hint">Foťte na šířku, hlavní dění mějte uprostřed záběru. Ideálně alespoň 1600 px na šířku.</span>
         </label>
         <div class="admin-photo-row" id="krouzek-photo-row" hidden>
           <img class="admin-photo-preview" id="krouzek-photo-preview" alt="">
           <button type="button" class="btn-mini btn-mini-danger" data-remove-photo>🗑 Odebrat fotku</button>
         </div>
         <label>Popis fotky, která se hodí
-          <input type="text" name="photoHint" placeholder="např. děti na překážkové dráze v sále" maxlength="160">
+          <input type="text" name="photoHint" placeholder="např. děti na tatami při rozcvičce" maxlength="160">
           <span class="hint">Dokud fotka chybí, zobrazí se na webu místo ní tenhle popis.</span>
         </label>
         <label class="check-row">
@@ -280,104 +294,51 @@
     </div>
   </section>
 
-  <!-- ================= ROZVRH ================= -->
-  <section class="admin-panel" id="panel-rozvrh" data-panel="rozvrh" hidden>
-    <div class="admin-panel-head"><h2>Rozvrh (Kdy trénujeme)</h2></div>
-    <div class="admin-columns">
-      <form class="admin-form" id="form-rozvrh" data-collection="rozvrh">
-        <h3 id="form-rozvrh-title">Přidat trénink do rozvrhu</h3>
-        <div class="field-row">
-          <label>Den
-            <select name="weekday">
-              <option value="1">Pondělí</option>
-              <option value="2">Úterý</option>
-              <option value="3">Středa</option>
-              <option value="4">Čtvrtek</option>
-              <option value="5">Pátek</option>
-              <option value="6">Sobota</option>
-              <option value="7">Neděle</option>
-            </select>
-          </label>
-          <label>Začátek
-            <select name="time" id="rozvrh-time-select" required></select>
-          </label>
-        </div>
-        <label>Název
-          <input type="text" name="name" placeholder="např. Mini Beat" required maxlength="80">
-        </label>
-        <label>Poznámka (věk, místo…)
-          <input type="text" name="note" placeholder="např. 5–8 let · ZŠ Helsinská" maxlength="120">
-          <span class="hint">Zobrazí se malým písmem pod názvem. Když není uvedeno místo, trénuje se v Centru Univerzita Tábor.</span>
-        </label>
-        <label>Program (určuje barvu a filtr)
-          <select name="program">
-            <option value="vfresh">VFRESH DC</option>
-            <option value="zumba">Zumba &amp; Dance</option>
-            <option value="volnocas">Aktivity SK Viktoria</option>
-          </select>
-        </label>
-        <label class="check-row">
-          <input type="checkbox" name="published" checked>
-          Zobrazit na webu
-        </label>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <button class="btn btn-submit" type="submit">Přidat do rozvrhu</button>
-          <button type="button" class="btn-cancel-edit" data-cancel-edit hidden>Zrušit úpravu</button>
-        </div>
-      </form>
-
-      <div>
-        <div class="admin-list" id="rozvrh-list"></div>
-        <p class="admin-empty" id="rozvrh-empty" hidden>Rozvrh je zatím prázdný.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= KURZY (statické stránky) ================= -->
+  <!-- ================= KURZY ================= -->
   <section class="admin-panel" id="panel-skupiny" data-panel="skupiny" hidden>
-    <div class="admin-panel-head"><h2>Kurzy: rozvrh, cena a místo</h2></div>
-    <p class="hint" style="margin:-8px 0 16px">Sem patří obsah stránek Sportovní gymnastika, Viktoriánek, Dramatický klub, Sportuj s VIKTORKOU a Zumba &amp; Dance: rozvrh, cena, místo i popis. Ostatní aktivity (VFRESH DC, kroužky přidané ručně) se spravují v záložce Aktivity.</p>
+    <div class="admin-panel-head"><h2>Kurzy</h2></div>
+    <p class="hint" style="margin:-8px 0 16px">Kurz je konkrétní skupina pod aktivitou: věk, cena a termíny. Z termínů se sám skládá rozvrh na webu.</p>
     <div class="admin-columns">
       <form class="admin-form" id="form-skupina" data-collection="skupiny">
         <h3 id="form-skupina-title">Přidat kurz</h3>
-        <label>Stránka
-          <select name="pageSlug" required>
-            <option value="gymnastika">Sportovní gymnastika</option>
-            <option value="viktorianek">Viktoriánek</option>
-            <option value="dramacek">Dramatický klub</option>
-            <option value="telovychova">Sportuj s VIKTORKOU</option>
-            <option value="zumba">Zumba &amp; Dance</option>
-          </select>
-          <span class="hint">Na stránce se zobrazí jako samostatný box. Když jich má stránka víc (např. Zumba), zobrazí se vedle sebe.</span>
+        <label>Aktivita
+          <select name="activityId" id="skupina-activity-select" required></select>
         </label>
-        <label>Název (nadpis boxu)
-          <input type="text" name="name" placeholder="např. Směr A · Pohybové hry &amp; soutěže" required maxlength="120">
+        <label>Název kurzu
+          <input type="text" name="name" placeholder="např. Karate začátečníci" required maxlength="120">
         </label>
         <div class="field-row">
-          <label>Věk od
-            <input type="number" name="ageMin" min="0" max="99">
+          <label>Věk
+            <input type="text" name="ageLabel" placeholder="např. 6–9 let" maxlength="40">
           </label>
-          <label>Věk do
-            <input type="number" name="ageMax" min="0" max="99">
+          <label>Krátký název do rozvrhu
+            <input type="text" name="shortName" placeholder="Když prázdné, použije se název" maxlength="30">
           </label>
         </div>
-        <label>Popis
-          <textarea name="description" rows="3" placeholder="Zobrazí se pod rozvrhem a cenou. Víc odstavců oddělte novým řádkem."></textarea>
-        </label>
+
+        <fieldset class="admin-fieldset">
+          <legend>Termíny</legend>
+          <div class="slot-rows" id="skupina-slots"></div>
+          <button type="button" class="btn-mini" id="skupina-add-slot">＋ Přidat termín</button>
+          <span class="hint">Poznámka k termínu se ukáže v rozvrhu místo věku (např. „4–7 let“, „ranní“).</span>
+        </fieldset>
+
         <div class="field-row">
           <label>Cena (Kč)
             <input type="number" name="priceCzk" min="0" step="1">
           </label>
           <label>Poznámka k ceně
-            <input type="text" name="priceNote" placeholder="např. blok · 12 lekcí" maxlength="80">
+            <input type="text" name="priceNote" placeholder="např. pololetí · 15 lekcí" maxlength="80">
           </label>
         </div>
         <label>Další ceny (jeden řádek: popisek | částka)
           <textarea name="priceExtra" rows="2" placeholder="jednotlivá lekce | 130 Kč"></textarea>
-          <span class="hint">Nepovinné, např. jednorázový vstup navíc k bloku.</span>
         </label>
         <label>Info k termínu kurzu (malým písmem pod cenou)
-          <input type="text" name="termNote" placeholder="např. 17. 9. – 19. 12. · úterý se nekoná 17. 11.">
+          <input type="text" name="termNote" placeholder="např. 17. 9. – 19. 12. · 28. 10. se nekoná">
+        </label>
+        <label>Popis kurzu
+          <textarea name="description" rows="3" placeholder="Nepovinné. Zobrazí se v boxu kurzu na stránce aktivity."></textarea>
         </label>
         <label class="check-row">
           <input type="checkbox" name="trialLesson">
@@ -387,7 +348,7 @@
           <input type="text" name="trialNote" placeholder="např. 9. 9., 18:00–19:00">
         </label>
         <div class="field-row">
-          <label>Pořadí
+          <label>Pořadí v rámci aktivity
             <input type="number" name="sortOrder" value="100" min="0" step="1">
           </label>
           <label class="check-row">
@@ -403,57 +364,51 @@
 
       <div>
         <div class="admin-list" id="skupiny-list"></div>
-        <p class="admin-empty" id="skupiny-empty" hidden>Zatím žádné kurzy.</p>
+        <p class="admin-empty" id="skupiny-empty" hidden>Zatím žádné kurzy. Nejdřív založte aktivitu, pak k ní přidejte kurz.</p>
       </div>
     </div>
 
-    <div class="admin-panel-head" style="margin-top:32px"><h2>Rozvrhové termíny</h2></div>
-    <p class="hint" style="margin:-8px 0 16px">Ke kurzu vybranému výše přidejte jeden nebo víc termínů: den a čas se vybírá ze seznamu, aby se nestala překlepová chyba.</p>
-    <div class="admin-columns">
-      <form class="admin-form" id="form-slot">
-        <h3 id="form-slot-title">Přidat termín</h3>
-        <label>Kurz
-          <select name="groupId" id="slot-group-select" required></select>
-        </label>
-        <div class="field-row">
-          <label>Den
-            <select name="weekday" required>
-              <option value="1">Pondělí</option>
-              <option value="2">Úterý</option>
-              <option value="3">Středa</option>
-              <option value="4">Čtvrtek</option>
-              <option value="5">Pátek</option>
-              <option value="6">Sobota</option>
-              <option value="7">Neděle</option>
-            </select>
+    <details class="admin-places">
+      <summary>Místa (tělocvičny, sály)</summary>
+      <div class="admin-columns" style="margin-top:16px">
+        <form class="admin-form" id="form-misto">
+          <h3 id="form-misto-title">Přidat místo</h3>
+          <label>Název
+            <input type="text" name="name" placeholder="např. ZŠ Zborovská" required maxlength="80">
           </label>
-          <label>Od
-            <select name="startTime" id="slot-start-select" required></select>
+          <div class="field-row">
+            <label>Krátký název do rozvrhu
+              <input type="text" name="shortName" placeholder="např. ZŠ Zborovská" maxlength="30">
+            </label>
+            <label>Adresa
+              <input type="text" name="address" placeholder="např. Zborovská 123, Tábor" maxlength="120">
+            </label>
+          </div>
+          <label>Poznámka
+            <input type="text" name="note" placeholder="např. vchod ze dvora" maxlength="120">
           </label>
-          <label>Do (nepovinné)
-            <select name="endTime" id="slot-end-select"></select>
-          </label>
-        </div>
-        <label>Místo
-          <select name="placeId" id="slot-place-select"><option value="">Bez místa</option></select>
-        </label>
-        <label>Poznámka
-          <input type="text" name="note" placeholder="např. 4–7 let" maxlength="80">
-        </label>
-        <label class="check-row">
-          <input type="checkbox" name="published" checked>
-          Zobrazit na webu
-        </label>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <button class="btn btn-submit" type="submit">Přidat termín</button>
-          <button type="button" class="btn-cancel-edit" data-cancel-edit hidden>Zrušit úpravu</button>
-        </div>
-      </form>
-      <div>
-        <div class="admin-list" id="slots-list"></div>
-        <p class="admin-empty" id="slots-empty" hidden>Zatím žádné termíny.</p>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button class="btn btn-submit" type="submit">Přidat místo</button>
+            <button type="button" class="btn-cancel-edit" data-cancel-edit hidden>Zrušit úpravu</button>
+          </div>
+        </form>
+        <div class="admin-list" id="mista-list"></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ================= ROZVRH (jen náhled) ================= -->
+  <section class="admin-panel" id="panel-rozvrh" data-panel="rozvrh" hidden>
+    <div class="admin-panel-head">
+      <h2>Rozvrh (Kdy trénujeme)</h2>
+      <div class="admin-filters" id="rozvrh-site-filter">
+        <button class="filter-btn active" data-site="viktoria">SK Viktoria</button>
+        <button class="filter-btn" data-site="vfresh">VFRESH DC</button>
       </div>
     </div>
+    <p class="hint" style="margin:-8px 0 16px">Jen náhled, jak rozvrh vypadá na webu. Skládá se z termínů kurzů: kliknutím na trénink otevřete kurz k úpravě.</p>
+    <div class="admin-tt" id="rozvrh-week"></div>
+    <div class="admin-tt-warn" id="rozvrh-warn" hidden></div>
   </section>
 
   <!-- ================= GALERIE ================= -->

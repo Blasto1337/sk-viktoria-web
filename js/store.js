@@ -56,7 +56,7 @@
     const href = (item && item.detailHref) || fallback || "";
     if (/^[a-z]+:/i.test(href)) return href;
     const home = homeSite(item);
-    if (home === SITE) return href;
+    if (home === SITE) return fallback || href;
     if (home === "vfresh") return SITE_URLS.vfresh + "#rozvrh";
     return SITE_URLS[home] + href.replace(/^\//, "");
   }
@@ -182,6 +182,7 @@
         description: "description", icon: "icon", color: "color", schedule: "schedule",
         photo: "photo_url", detailHref: "detail_href", featured: "featured", site: "site",
         when: "when_label", photoHint: "photo_hint", hero: "hero", heroLead: "hero_lead", heroOrder: "hero_order",
+        slug: "slug", program: "program", badge: "badge", detailLead: "detail_lead", detailPhotos: "detail_photos",
       },
     },
     akce: {
@@ -209,17 +210,17 @@
       compare: (a, b) => (a.weekday - b.weekday) || (timeMinutes(a.time) - timeMinutes(b.time)) || String(a.name).localeCompare(String(b.name), "cs"),
       fields: { weekday: "weekday", time: "start_time", name: "name", note: "note", program: "program", published: "published", site: "site" },
     },
-    // Skupiny/kurzy a jejich rozvrh a místa — pro bohatý obsah statických stránek
-    // kurz-*.html (kurz-groups.js), na rozdíl od vik_courses (kartičky v přehledu).
-    // Tyto tři tabulky nemají sloupec site: skupiny bez pageSlug patří webu VFRESH
-    // a na tomto webu se nikde nefiltrují ani nezobrazují.
+    // Hierarchie: aktivita (vik_courses) -> kurz (vik_groups, activity_id) ->
+    // termín (vik_schedule_slots, group_id). Kurzy, termíny a místa nemají
+    // sloupec site: patří na web své aktivity (viz timetable()).
     skupiny: {
       table: "vik_groups",
       order: "sort_order.asc",
       compare: (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0),
       noSiteFilter: true,
       fields: {
-        programId: "program_id", slug: "slug", pageSlug: "page_slug", name: "name",
+        activityId: "activity_id", programId: "program_id", slug: "slug", pageSlug: "page_slug",
+        name: "name", shortName: "short_name", ageLabel: "age_label",
         shortDescription: "short_description", description: "description",
         ageMin: "age_min", ageMax: "age_max",
         priceCzk: "price_czk", priceNote: "price_note", priceExtra: "price_extra",
@@ -243,7 +244,7 @@
       order: "sort_order.asc",
       compare: (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0),
       noSiteFilter: true,
-      fields: { slug: "slug", name: "name", address: "address", note: "note", sortOrder: "sort_order", published: "published" },
+      fields: { slug: "slug", name: "name", shortName: "short_name", address: "address", note: "note", sortOrder: "sort_order", published: "published" },
     },
     programy: {
       table: "vik_programs",
@@ -365,12 +366,14 @@
   };
 
   // ----------------------------------------------------------------- načtení --
-  const PUBLIC_NAMES = ["krouzky", "akce", "aktuality", "galerie", "rozvrh", "skupiny", "rozvrhSkupin", "mista", "programy"];
-  const ALL_NAMES = ["krouzky", "akce", "aktuality", "galerie", "rozvrh", "skupiny", "rozvrhSkupin", "mista", "programy", "submissions"];
+  // vik_timetable (rozvrh) a vik_programs se už nepoužívají: rozvrh se skládá
+  // z termínů kurzů (timetable()). Kolekce rozvrh zůstává jen pro záložní seed.js.
+  const PUBLIC_NAMES = ["krouzky", "akce", "aktuality", "galerie", "skupiny", "rozvrhSkupin", "mista"];
+  const ALL_NAMES = ["krouzky", "akce", "aktuality", "galerie", "skupiny", "rozvrhSkupin", "mista", "submissions"];
 
   async function fetchCollections(names, admin) {
     // Veřejná stránka si bere jen obsah svého webu, admin vidí oba weby.
-    // Skupiny/rozvrh skupin/místa sloupec site nemají (skupiny bez page_slug patří webu VFRESH a tady se nikde nepoužijí).
+    // Kurzy, termíny a místa sloupec site nemají, filtrují se podle aktivity.
     const results = await Promise.all(names.map((name) => {
       const siteFilter = (admin || COLLECTIONS[name].noSiteFilter) ? "" : `&site=in.(${SITE},both)`;
       return rest(`${COLLECTIONS[name].table}?select=*${siteFilter}&order=${COLLECTIONS[name].order || "created_at.desc"}`, { admin, timeout: LOAD_TIMEOUT_MS });
@@ -386,7 +389,7 @@
     const seed = window.VT_SEED || {};
     // Kopie z prohlížeče, u kolekcí které v ní chybí (starší verze webu) záloha ze seed.js.
     const hasCache = !!(cached && ["krouzky", "akce", "aktuality"].every((n) => Array.isArray(cached[n])));
-    PUBLIC_NAMES.forEach((n) => {
+    PUBLIC_NAMES.concat("rozvrh").forEach((n) => {
       if (hasCache && Array.isArray(cached[n])) {
         store[n]._set(cached[n]);
         return;
@@ -450,6 +453,97 @@
       });
     } catch (e) { /* nevadí, soubor zůstane v úložišti */ }
   }
+
+  // ------------------------------------------------ rozvrh z termínů kurzů --
+  const DAY_SHORT = { 1: "Po", 2: "Út", 3: "St", 4: "Čt", 5: "Pá", 6: "So", 7: "Ne" };
+  const PROGRAMS = ["volnocas", "zumba", "vfresh"];
+
+  // Odkaz na detail aktivity (šablona kurz-detail.html podle slugu).
+  function activityHref(a) {
+    if (!a) return "krouzky.html";
+    return `kurz-detail.html?${a.slug ? "a=" + encodeURIComponent(a.slug) : "id=" + encodeURIComponent(a.id)}`;
+  }
+  function activityBySlug(slug) {
+    return store.krouzky.all().find((a) => a.slug === slug) || null;
+  }
+  // Kurzy aktivity (jen zveřejněné, pokud publishedOnly), seřazené podle pořadí.
+  function coursesOf(activityId, publishedOnly) {
+    return store.skupiny.all()
+      .filter((g) => g.activityId === activityId && (!publishedOnly || g.published !== false))
+      .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  }
+  // Termíny kurzu seřazené podle dne a času.
+  function slotsOf(groupId, publishedOnly) {
+    return store.rozvrhSkupin.all()
+      .filter((s) => s.groupId === groupId && (!publishedOnly || s.published !== false))
+      .sort((a, b) => (a.weekday - b.weekday) || (timeMinutes(a.startTime) - timeMinutes(b.startTime)));
+  }
+
+  /*
+    Rozvrh „Kdy trénujeme“ se skládá z termínů kurzů: název = krátký název kurzu,
+    poznámka = poznámka termínu nebo věk kurzu (+ místo, pokud to není CUT),
+    barva a filtr = kategorie aktivity. opts.site omezí aktivity na daný web
+    (+ both); bez něj se berou všechny načtené aktivity. Zobrazují se jen
+    zveřejněné aktivity, kurzy i termíny.
+  */
+  function timetable(opts) {
+    const site = opts && opts.site;
+    const activities = new Map(store.krouzky.all()
+      .filter((a) => a.published !== false)
+      .filter((a) => !site || (a.site || "viktoria") === site || a.site === "both")
+      .map((a) => [a.id, a]));
+    const groups = new Map(store.skupiny.all()
+      .filter((g) => g.published !== false && activities.has(g.activityId))
+      .map((g) => [g.id, g]));
+    const places = new Map(store.mista.all().map((p) => [p.id, p]));
+    const rows = store.rozvrhSkupin.all()
+      .filter((s) => s.published !== false && groups.has(s.groupId))
+      .map((s) => {
+        const g = groups.get(s.groupId);
+        const a = activities.get(g.activityId);
+        const place = s.placeId ? places.get(s.placeId) : null;
+        const placeLabel = place && place.slug !== "cut" ? (place.shortName || place.name) : "";
+        return {
+          id: s.id, groupId: g.id, activityId: a.id,
+          weekday: s.weekday, time: s.startTime, endTime: s.endTime || null,
+          name: g.shortName || g.name,
+          note: [s.note || g.ageLabel, placeLabel].filter(Boolean).join(" · "),
+          program: PROGRAMS.includes(a.program) ? a.program : (a.group === "vfresh" ? "vfresh" : "volnocas"),
+          site: a.site || "viktoria",
+        };
+      });
+    // Záloha bez serveru: seed.js má ještě starý plochý rozvrh.
+    if (!rows.length && !store.rozvrhSkupin.all().length && store.rozvrh.all().length) {
+      return store.rozvrh.all().filter((r) => r.published !== false).map((r) => ({ ...r, endTime: null }));
+    }
+    return rows.sort((x, y) => (x.weekday - y.weekday) || (timeMinutes(x.time) - timeMinutes(y.time)) || String(x.name).localeCompare(String(y.name), "cs"));
+  }
+
+  // Krátké „kdy“ pro kartu aktivity, když ho admin nevyplnil: "Út 15:00 · Čt 16:30".
+  function whenLabel(activity) {
+    if (!activity) return "";
+    if (activity.when) return activity.when;
+    const slots = [];
+    coursesOf(activity.id, true).forEach((g) => slotsOf(g.id, true).forEach((s) => slots.push(s)));
+    slots.sort((a, b) => (a.weekday - b.weekday) || (timeMinutes(a.startTime) - timeMinutes(b.startTime)));
+    const seen = new Set();
+    const parts = [];
+    slots.forEach((s) => {
+      const key = `${s.weekday} ${s.startTime}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      parts.push(`${DAY_SHORT[s.weekday] || ""} ${s.startTime}`);
+    });
+    return parts.length > 4 ? parts.slice(0, 3).join(" · ") + " · …" : parts.join(" · ");
+  }
+
+  store.timetable = timetable;
+  store.whenLabel = whenLabel;
+  store.activityHref = activityHref;
+  store.activityBySlug = activityBySlug;
+  store.coursesOf = coursesOf;
+  store.slotsOf = slotsOf;
+  store.timeMinutes = timeMinutes;
 
   store.site = SITE;        // "viktoria" | "vfresh"
   store.sites = SITES.slice();

@@ -1,7 +1,6 @@
-// Vykreslí obsah statických stránek kurz-*.html (rozvrh, cena, místo, popis)
-// z databázových skupin (vik_groups / vik_schedule_slots / vik_places), aby vše
-// spravoval admin a nic nebylo natvrdo v HTML. Stránka jen deklaruje svůj
-// page_slug na kontejneru <div id="kurz-groups" data-page-slug="...">.
+// Boxy kurzů na stránce aktivity (kurz-detail.html): termíny, místo, cena,
+// zkušební lekce a popis. Data jsou z databáze: kurzy (vik_groups) patří pod
+// aktivitu přes activity_id, termíny (vik_schedule_slots) pod kurz.
 (() => {
   "use strict";
 
@@ -20,33 +19,34 @@
     return `${Number(n).toLocaleString("cs-CZ")} Kč`;
   }
 
-  // Místo se u skupiny nastavuje na rozvrhových termínech (schedule_slots.place_id).
-  // V praxi všechny termíny jedné skupiny sdílí jedno místo, bereme první nalezené.
-  function renderLocation(slots, placesById) {
-    const withPlace = slots.find((s) => s.placeId && placesById.get(s.placeId));
-    if (!withPlace) return "";
-    const place = placesById.get(withPlace.placeId);
+  function placeLine(place) {
     let line = escapeHtml(place.name);
     if (place.address && !place.name.includes(place.address)) line += `, ${escapeHtml(place.address)}`;
     if (place.note) line += ` (${escapeHtml(place.note)})`;
-    return `<p class="course-location">📍 ${line}</p>`;
+    return line;
   }
 
-  function renderSlots(slots) {
+  // Místo se nastavuje u termínů. Když mají všechny termíny stejné místo, ukáže
+  // se jednou nad nimi, jinak u každého termínu zvlášť.
+  function renderSlots(slots, placesById) {
     if (!slots.length) return "";
+    const placeIds = [...new Set(slots.map((s) => s.placeId || ""))];
+    const shared = placeIds.length === 1 && placeIds[0] && placesById.get(placeIds[0]);
     const rows = slots.map((slot) => {
       const time = slot.endTime ? `${slot.startTime}–${slot.endTime}` : slot.startTime;
+      const own = !shared && slot.placeId && placesById.get(slot.placeId);
+      const note = [slot.note, own ? own.shortName || own.name : ""].filter(Boolean).join(" · ");
       return `
         <div class="course-slot">
           <span class="course-slot-icon" aria-hidden="true">${CALENDAR_ICON}</span>
           <div>
             <div class="course-slot-day">${escapeHtml(DAY_NAMES[slot.weekday] || "")}</div>
             <div class="course-slot-time">${escapeHtml(time)}</div>
-            ${slot.note ? `<div class="course-slot-note">${escapeHtml(slot.note)}</div>` : ""}
+            ${note ? `<div class="course-slot-note">${escapeHtml(note)}</div>` : ""}
           </div>
         </div>`;
     }).join("");
-    return `<div class="course-slots">${rows}</div>`;
+    return `${shared ? `<p class="course-location">📍 ${placeLine(shared)}</p>` : ""}<div class="course-slots">${rows}</div>`;
   }
 
   function renderPrices(group) {
@@ -69,15 +69,15 @@
     return `<div class="course-prices">${chips.join("")}</div>`;
   }
 
-  function renderGroup(group, slotsByGroup, placesById) {
-    const slots = slotsByGroup.get(group.id) || [];
+  function renderGroup(group, placesById) {
+    const slots = VTStore.slotsOf(group.id, true);
     const description = (group.description || "").split("\n").filter(Boolean)
-      .map((p) => `<p style="margin-top:12px;font-size:14px;color:#fff;opacity:.85">${escapeHtml(p)}</p>`).join("");
+      .map((p) => `<p class="course-desc">${escapeHtml(p)}</p>`).join("");
     return `
       <div class="detail-box">
         <h2>${escapeHtml(group.name)}</h2>
-        ${renderLocation(slots, placesById)}
-        ${renderSlots(slots)}
+        ${group.ageLabel ? `<p class="course-age">${escapeHtml(group.ageLabel)}</p>` : ""}
+        ${renderSlots(slots, placesById)}
         ${renderPrices(group)}
         ${group.termNote ? `<p class="course-term">${escapeHtml(group.termNote)}</p>` : ""}
         ${group.trialLesson ? `<p class="course-trial">🎟 Zkušební lekce zdarma${group.trialNote ? ` <b>${escapeHtml(group.trialNote)}</b>` : ""}</p>` : ""}
@@ -88,27 +88,16 @@
   function render() {
     const root = document.getElementById("kurz-groups");
     if (!root) return;
-    const pageSlug = root.dataset.pageSlug;
-    if (!pageSlug) return;
+    const activity = window.vtCurrentActivity ? window.vtCurrentActivity() : null;
+    if (!activity) { root.innerHTML = ""; return; }
 
-    const groups = VTStore.skupiny.all()
-      .filter((g) => g.pageSlug === pageSlug && g.published !== false)
-      .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-
+    const groups = VTStore.coursesOf(activity.id, true);
     if (!groups.length) {
-      root.innerHTML = `<div class="detail-box"><p>Obsah bude brzy upřesněn.</p></div>`;
+      root.innerHTML = `<div class="detail-box"><p>Rozvrh a ceny brzy doplníme. Napište nám a ozveme se.</p></div>`;
       return;
     }
-
     const placesById = new Map(VTStore.mista.all().map((p) => [p.id, p]));
-    const slotsByGroup = new Map();
-    VTStore.rozvrhSkupin.all().filter((s) => s.published !== false).forEach((slot) => {
-      if (!slotsByGroup.has(slot.groupId)) slotsByGroup.set(slot.groupId, []);
-      slotsByGroup.get(slot.groupId).push(slot);
-    });
-    slotsByGroup.forEach((list) => list.sort((a, b) => (a.weekday - b.weekday) || String(a.startTime).localeCompare(String(b.startTime))));
-
-    root.innerHTML = groups.map((g) => renderGroup(g, slotsByGroup, placesById)).join("");
+    root.innerHTML = groups.map((g) => renderGroup(g, placesById)).join("");
   }
 
   VTStore.ready.then(render);

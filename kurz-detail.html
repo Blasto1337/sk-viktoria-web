@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aktivita | SK Viktoria Tábor</title>
-<meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&display=swap" rel="stylesheet">
@@ -44,28 +43,24 @@
   <section class="course-hero course-teal" id="k-hero">
     <div class="wrap">
       <h1 id="k-name">Aktivita</h1>
-      <div class="course-hero-tags">
-        <span class="age-badge" id="k-age">—</span>
-      </div>
+      <div class="course-hero-tags" id="k-tags"></div>
     </div>
   </section>
 
   <section class="detail">
     <div class="wrap">
       <a class="back-link" href="krouzky.html">← Zpět na aktivity</a>
-      <p class="detail-lead" id="k-desc"></p>
-      <div id="k-photo-wrap"></div>
-
-      <div class="detail-grid">
-        <div class="detail-box">
-          <h2>Rozvrh</h2>
-          <ul class="schedule-list" id="k-schedule"></ul>
-        </div>
-        <div class="detail-box">
-          <h2>Kde trénujeme</h2>
-          <p id="k-location">Bude upřesněno.</p>
-        </div>
+      <div id="k-lead"></div>
+      <div class="detail-grid" id="kurz-groups">
+        <div class="detail-box"><p>Načítáme rozvrh…</p></div>
       </div>
+    </div>
+  </section>
+
+  <section class="detail-media" id="k-media" hidden>
+    <div class="wrap">
+      <h2>Fotky a videa</h2>
+      <div class="gallery-grid gallery-grid-preview" id="k-photos"></div>
     </div>
   </section>
 
@@ -93,6 +88,7 @@
 <script src="js/seed.js"></script>
 <script src="js/store.js"></script>
 <script src="js/script.js"></script>
+<script src="js/kurz-groups.js"></script>
 <script src="js/kurz-detail.js"></script>
 </body>
 </html>
