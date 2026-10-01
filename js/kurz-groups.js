@@ -76,7 +76,8 @@
     return `
       <div class="detail-box">
         <h2>${escapeHtml(group.name)}</h2>
-        ${group.ageLabel ? `<p class="course-age">${escapeHtml(group.ageLabel)}</p>` : ""}
+        ${group.ageLabel || group.badge ? `<p class="course-age">${escapeHtml([group.ageLabel, group.badge].filter(Boolean).join(" · "))}</p>` : ""}
+        ${group.shortDescription ? `<p class="course-note">${escapeHtml(group.shortDescription)}</p>` : ""}
         ${renderSlots(slots, placesById)}
         ${renderPrices(group)}
         ${group.termNote ? `<p class="course-term">${escapeHtml(group.termNote)}</p>` : ""}

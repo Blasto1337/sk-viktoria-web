@@ -220,7 +220,7 @@
       noSiteFilter: true,
       fields: {
         activityId: "activity_id", programId: "program_id", slug: "slug", pageSlug: "page_slug",
-        name: "name", shortName: "short_name", ageLabel: "age_label",
+        name: "name", shortName: "short_name", ageLabel: "age_label", badge: "badge",
         shortDescription: "short_description", description: "description",
         ageMin: "age_min", ageMax: "age_max",
         priceCzk: "price_czk", priceNote: "price_note", priceExtra: "price_extra",
@@ -537,6 +537,23 @@
     return parts.length > 4 ? parts.slice(0, 3).join(" · ") + " · …" : parts.join(" · ");
   }
 
+  // Detail kurzu na webu VFRESH (one-page web má pro kurzy vlastní stránku kurz.html).
+  function courseHref(group) {
+    const base = SITE === "vfresh" ? "" : SITE_URLS.vfresh;
+    return `${base}kurz.html?k=${encodeURIComponent(group.slug || group.id)}`;
+  }
+  // Kurzy všech aktivit dané kategorie (např. všechny taneční crew VFRESH DC).
+  function coursesOfProgram(program, publishedOnly) {
+    const ids = new Set(store.krouzky.all()
+      .filter((a) => (!publishedOnly || a.published !== false) && (a.program || (a.group === "vfresh" ? "vfresh" : "volnocas")) === program)
+      .map((a) => a.id));
+    return store.skupiny.all()
+      .filter((g) => ids.has(g.activityId) && (!publishedOnly || g.published !== false))
+      .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  }
+
+  store.courseHref = courseHref;
+  store.coursesOfProgram = coursesOfProgram;
   store.timetable = timetable;
   store.whenLabel = whenLabel;
   store.activityHref = activityHref;

@@ -852,6 +852,8 @@
     skupinaForm.name.value = copy ? `${item.name} (kopie)` : (item.name || "");
     skupinaForm.shortName.value = item.shortName || "";
     skupinaForm.ageLabel.value = item.ageLabel || "";
+    skupinaForm.badge.value = item.badge || "";
+    skupinaForm.shortDescription.value = item.shortDescription || "";
     skupinaForm.description.value = item.description || "";
     skupinaForm.priceCzk.value = item.priceCzk ?? "";
     skupinaForm.priceNote.value = item.priceNote || "";
@@ -873,6 +875,14 @@
     skupinaForm.querySelector("[data-cancel-edit]").hidden = false;
     skupinaForm.classList.toggle("is-editing", !copy);
     skupinaForm.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // Náhled kurzu: kurzy VFRESH DC mají vlastní detail na webu VFRESH,
+  // ostatní se zobrazují v boxech na stránce své aktivity.
+  function coursePreviewHref(g) {
+    const a = VTStore.krouzky.get(g.activityId);
+    if (a && programOf(a) === "vfresh") return VTStore.courseHref(g);
+    return pub(a ? VTStore.activityHref(a) : "krouzky.html");
   }
 
   // Smaže kurz i s jeho termíny (nejdřív termíny, ať sedí i kopie v prohlížeči).
@@ -900,12 +910,13 @@
         <div class="admin-card${g.published === false ? " is-unpublished" : ""}" data-id="${g.id}" id="kurz-${g.id}">
           <div class="admin-card-main">
             <div class="admin-card-main-text">
-              <div class="admin-card-title">${escapeHtml(g.name)}${g.ageLabel ? ` <span class="tag tag-teal">${escapeHtml(g.ageLabel)}</span>` : ""}${g.published === false ? ' <span class="seed-badge">skryto</span>' : ""}</div>
+              <div class="admin-card-title">${escapeHtml(g.name)}${g.ageLabel ? ` <span class="tag tag-teal">${escapeHtml(g.ageLabel)}</span>` : ""}${g.badge ? ` <span class="seed-badge">${escapeHtml(g.badge)}</span>` : ""}${g.published === false ? ' <span class="seed-badge">skryto</span>' : ""}</div>
               <ul class="admin-slot-list">${slots.length ? slots.map((s) => `<li>${escapeHtml(slotText(s))}${s.published === false ? " (skryto)" : ""}</li>`).join("") : '<li class="admin-warn">Bez termínu, v rozvrhu se neobjeví.</li>'}</ul>
               ${meta ? `<div class="admin-card-meta">${escapeHtml(meta)}</div>` : ""}
             </div>
           </div>
           <div class="admin-card-actions">
+            <a class="btn-mini" href="${escapeHtml(coursePreviewHref(g))}" target="_blank" rel="noopener">👁 Náhled</a>
             <button class="btn-mini" data-action="edit-skupina" data-id="${g.id}">✎ Upravit</button>
             <button class="btn-mini" data-action="copy-skupina" data-id="${g.id}">⧉ Kopie</button>
             <button class="btn-mini" data-action="toggle-skupina" data-id="${g.id}">${g.published === false ? "Zobrazit" : "Skrýt"}</button>
@@ -936,6 +947,8 @@
         name: f.name.value.trim(),
         shortName: f.shortName.value.trim() || null,
         ageLabel: f.ageLabel.value.trim() || null,
+        badge: f.badge.value.trim() || null,
+        shortDescription: f.shortDescription.value.trim() || null,
         description: f.description.value.trim() || null,
         priceCzk: f.priceCzk.value !== "" ? Number(f.priceCzk.value) : null,
         priceNote: f.priceNote.value.trim() || null,
