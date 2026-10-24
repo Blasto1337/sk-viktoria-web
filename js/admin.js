@@ -183,7 +183,7 @@
         <div class="admin-card-main">
           <div class="admin-card-main-text">
             <div class="admin-card-title">${escapeHtml(s.name)} <span class="tag tag-teal">${escapeHtml(s.category)}</span></div>
-            <div class="admin-card-meta">${escapeHtml(s.email)} · ${escapeHtml(fmtDate(s.createdAt))}</div>
+            <div class="admin-card-meta"><a href="mailto:${escapeHtml(s.email)}">${escapeHtml(s.email)}</a>${s.phone ? ` · <a href="tel:${escapeHtml(s.phone.replace(/[^0-9+]/g, ""))}">${escapeHtml(s.phone)}</a>` : ""} · ${escapeHtml(fmtDate(s.createdAt))}</div>
             <p class="admin-card-message">${escapeHtml(s.message)}</p>
           </div>
         </div>

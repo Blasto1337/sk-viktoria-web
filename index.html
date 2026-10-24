@@ -150,6 +150,7 @@
           <div class="field"><label for="f-name">Jméno</label><input id="f-name" name="name" type="text" placeholder="Jméno a příjmení" maxlength="150" required></div>
           <div class="field"><label for="f-email">E-mail</label><input id="f-email" name="email" type="email" placeholder="vas@email.cz" required></div>
         </div>
+        <div class="field"><label for="f-phone">Telefon <span class="field-optional">(nepovinné)</span></label><input id="f-phone" name="phone" type="tel" placeholder="+420 123 456 789" maxlength="40" autocomplete="tel"></div>
         <div class="field">
           <label for="f-category">Kategorie dotazu</label>
           <select id="f-category" name="category">
@@ -160,9 +161,13 @@
           <label for="f-message">Vaše zpráva</label>
           <textarea id="f-message" name="message" rows="5" placeholder="O kterou aktivitu máte zájem, věk dítěte, dotaz…" maxlength="3000" required></textarea>
         </div>
+        <div class="hp-field" aria-hidden="true">
+          <label for="f-website">Nevyplňujte</label>
+          <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
         <label class="form-consent" for="f-consent">
           <input id="f-consent" name="consent" type="checkbox" required>
-          <span>Souhlasím se zpracováním osobních údajů (jméno, e-mail, zpráva) za účelem vyřízení dotazu.</span>
+          <span>Souhlasím se zpracováním osobních údajů (jméno, e-mail, telefon, zpráva) za účelem vyřízení dotazu.</span>
         </label>
         <button class="btn btn-submit" type="submit">Odeslat zprávu</button>
         <p class="form-note" id="form-note" role="status" aria-live="polite"></p>
