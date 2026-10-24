@@ -28,6 +28,7 @@ jobs:
               "from"      => "info@viktoria-tabor.cz",
               "from_name" => "Web SK Viktoria Tábor",
               "to"        => $to,
+              "transport" => "mail",
               "smtp"      => ["host" => "smtp.seznam.cz", "port" => 465, "secure" => "ssl",
                               "user" => "info@viktoria-tabor.cz", "pass" => getenv("SMTP_PASSWORD")],
             ];

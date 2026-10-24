@@ -8,6 +8,7 @@ return [
     'from'      => 'info@viktoria-tabor.cz',
     'from_name' => 'Web SK Viktoria Tábor',
     'to'        => ['info@viktoria-tabor.cz'],
+    'transport' => 'mail',         // mail (PHP mail() hostingu) | smtp
     'smtp'      => [
         'host'   => 'smtp.seznam.cz',
         'port'   => 465,
